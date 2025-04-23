@@ -201,11 +201,15 @@
                 overflow-y: auto;
             }
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div id="toolbar">
-        <div class="toolbar-section">
+        <div class="toolbar-section hidden">
             <h3>Карты</h3>
             <button id="load-map-btn">Загрузить карту</button>
             <input type="file" id="map-file" accept=".png" style="display: none;" multiple>
@@ -216,21 +220,36 @@
             <h3>Фигуры</h3>
             <button id="add-shape-btn">Добавить фигуру</button>
             <div id="shape-panel">
-                <div class="shape-preview" data-shape="rect" style="background-color: red;"></div>
+                <!-- <div class="shape-preview" data-shape="rect" style="background-color: red;"></div>
                 <div class="shape-preview" data-shape="circle" style="background-color: green; border-radius: 50%;"></div>
                 <div class="shape-preview" data-shape="triangle" style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 40px solid blue;"></div>
-                <div class="shape-preview" data-shape="line" style="background-color: black; width: 40px; height: 2px; margin-top: 19px;"></div>
+                <div class="shape-preview" data-shape="line" style="background-color: black; width: 40px; height: 2px; margin-top: 19px;"></div> -->
                 
-                <h4>Загрузить фигуру</h4>
-                <input type="file" id="custom-shape" accept=".png">
+                <!-- <h4>Загрузить фигуру</h4> -->
+                <input type="file" id="custom-shape" accept=".png" title="Загрузить фигуру">
                 <div id="custom-shapes-container"></div>
-                <div class="color-picker">
+                <div class="color-picker" style="flex-wrap: wrap;">
                     <span>Цвет:</span>
-                    <input type="color" id="shape-color" value="#ff0000">
+                    <input type="color" id="shape-color" value="#ff0000" class="hidden2" style="width: 30px;">
+                    <button class="player-btn" data-color="#00ffff" style="background-color: #00ffff;" onclick="setShapeColor('#00ffff')">Ёгг</button>
+                    <button class="player-btn" data-color="#800080" style="background: #800080;" onclick="setShapeColor('#800080')">Кшиштоф</button>
+                    <script>
+                        function setShapeColor(color) {
+                            document.getElementById('shape-color').value=color
+                        }
+                        const playerBtns = Array.from(document.querySelectorAll('.player-btn'))
+                        playerBtns.forEach(el => {
+                            const color = el.dataset.color
+                            el.style.backgroundColor = color
+                            el.onclick = _ => setShapeColor(color)
+                        })
+                        playerBtns[0].click()
+                    </script>
                 </div>
                 <div class="color-picker">
                     <span>Размер: </span><output>__</output>
                     <input type="range" id="shape-size" min="10" max="100" value="30" oninput="this.previousElementSibling.value = this.value">
+
                 </div>
                 <button id="place-shape-btn" accesskey="a">Разместить фигуру</button>
             </div>
@@ -246,8 +265,8 @@
                     <input type="color" id="text-color" value="#000000">
                 </div>
                 <div class="color-picker">
-                    <span>Размер:</span>
-                    <input type="range" id="text-size" min="10" max="50" value="16">
+                    <span>Размер:</span><output>___</output>
+                    <input type="range" id="text-size" min="10" max="50" value="16"  oninput="this.previousElementSibling.value = this.value">
                 </div>
                 <button id="place-text-btn">Разместить</button>
             </div>
@@ -255,13 +274,14 @@
         
         <div class="toolbar-section">
             <h3>Управление</h3>
-            <button id="delete-btn">Удалить выбранное</button>
+            <!-- <button id="delete-btn">Удалить выбранное</button> -->
             <div class="color-picker">
                 <span>Масштаб:</span>
                 <input type="range" id="scale-slider" min="25" max="200" value="100">
             </div>
             <span id="scale-value">100%</span>
         </div>
+        <a href="https://github.com/RollingHog/wr-pokon" style="color: white;">Github</a>
     </div>
     
     <div id="canvas-container">
@@ -363,7 +383,7 @@
             document.getElementById('place-shape-btn').addEventListener('click', placeShape);
             document.getElementById('place-text-btn').addEventListener('click', placeText);
             
-            document.getElementById('delete-btn').addEventListener('click', deleteSelected);
+            // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
             
             // Форма редактирования
             document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
