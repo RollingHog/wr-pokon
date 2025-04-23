@@ -229,10 +229,10 @@
                     <input type="color" id="shape-color" value="#ff0000">
                 </div>
                 <div class="color-picker">
-                    <span>Размер:</span>
-                    <input type="range" id="shape-size" min="10" max="200" value="50">
+                    <span>Размер: </span><output>__</output>
+                    <input type="range" id="shape-size" min="10" max="100" value="30" oninput="this.previousElementSibling.value = this.value">
                 </div>
-                <button id="place-shape-btn">Разместить</button>
+                <button id="place-shape-btn" accesskey="a">Разместить фигуру</button>
             </div>
         </div>
         
@@ -266,6 +266,16 @@
     
     <div id="canvas-container">
         <canvas id="map-canvas"></canvas>
+        <div class="tgt_el" style="
+        width: 6px;
+        height: 6px;
+        color: orangered;
+        left: 49%;
+        top: 46.5%;
+        position: absolute;
+        z-index: 10;
+        font-size: xxx-large;
+      ">+</div>
     </div>
     
     <div id="edit-panel">
@@ -287,6 +297,7 @@
     
     <script>
         // Основные переменные
+        /** @type {HTMLCanvasElement} */
         const canvas = document.getElementById('map-canvas');
         const ctx = canvas.getContext('2d');
         const canvasContainer = document.getElementById('canvas-container');
@@ -306,6 +317,12 @@
         let tempOffsetX = 0, tempOffsetY = 0;
         let selectedElement = null;
         let elements = [];
+        /** @type {{
+         * id: mapId,
+         * name: string,
+         * src: event.target.result,
+         * image: Image
+         * }[]} */
         let maps = [];
         let currentMapIndex = -1;
         let customShapes = [];
@@ -314,6 +331,10 @@
         
         // Инициализация
         function init() {
+          
+            loadDefaultMap()
+            loadDefaultCustomImages()
+
             resizeCanvas();
             drawCanvas();
             
@@ -357,8 +378,8 @@
             shapePreviews.forEach(preview => {
                 preview.addEventListener('click', function() {
                     activeShapeType = this.dataset.shape;
-                    document.getElementById('shape-color').value = getRandomColor();
-                    document.getElementById('shape-size').value = 50;
+                    // document.getElementById('shape-color').value = getRandomColor();
+                    // document.getElementById('shape-size').value = 50;
                     
                     // Добавляем класс active к выбранной фигуре
                     shapePreviews.forEach(p => p.classList.remove('active'));
@@ -375,40 +396,7 @@
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         const img = new Image();
-                        img.onload = function() {
-                            const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
-                            customShapes.push({
-                                id: shapeId,
-                                name: file.name,
-                                src: event.target.result
-                            });
-                            
-                            // Создаем превью для пользовательской фигуры
-                            const preview = document.createElement('div');
-                            preview.className = 'shape-preview';
-                            preview.style.backgroundImage = `url(${event.target.result})`;
-                            preview.dataset.shape = 'custom';
-                            preview.dataset.shapeId = shapeId;
-                            preview.title = file.name;
-                            
-                            preview.addEventListener('click', function() {
-                                activeShapeType = 'custom';
-                                document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
-                                this.classList.add('active');
-                            });
-                            
-                            customShapesContainer.appendChild(preview);
-                            
-                            // Также добавляем в модальное окно для мобильных
-                            const modalPreview = preview.cloneNode(true);
-                            modalPreview.addEventListener('click', function() {
-                                activeShapeType = 'custom';
-                                document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
-                                preview.classList.add('active');
-                                shapeModal.style.display = 'none';
-                            });
-                            modalShapesContainer.appendChild(modalPreview);
-                        };
+                        img.onload = _ => onCustomImageLoad(file, event.target.result);
                         img.src = event.target.result;
                     };
                     reader.readAsDataURL(file);
@@ -459,8 +447,8 @@
                     
                     preview.addEventListener('click', function() {
                         activeShapeType = shape.type;
-                        document.getElementById('shape-color').value = getRandomColor();
-                        document.getElementById('shape-size').value = 50;
+                        // document.getElementById('shape-color').value = getRandomColor();
+                        document.getElementById('shape-size').value = 30;
                         shapeModal.style.display = 'none';
                     });
                     
@@ -472,6 +460,78 @@
             
             // Активируем первую фигуру по умолчанию
             document.querySelector('.shape-preview')?.click();
+        }
+
+        function onCustomImageLoad(filename, src) {
+            const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
+            customShapes.push({
+                id: shapeId,
+                name: filename,
+                src: src
+            });
+
+            // Создаем превью для пользовательской фигуры
+            const preview = document.createElement('div');
+            preview.className = 'shape-preview';
+            preview.style.backgroundImage = `url(${src})`;
+            preview.dataset.shape = 'custom';
+            preview.dataset.shapeId = shapeId;
+            preview.title = filename;
+
+            preview.addEventListener('click', function () {
+                activeShapeType = 'custom';
+                document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+
+            customShapesContainer.appendChild(preview);
+
+            // Также добавляем в модальное окно для мобильных
+            const modalPreview = preview.cloneNode(true);
+            modalPreview.addEventListener('click', function () {
+                activeShapeType = 'custom';
+                document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
+                preview.classList.add('active');
+                shapeModal.style.display = 'none';
+            });
+            modalShapesContainer.appendChild(modalPreview);
+        }
+
+        function loadDefaultMap() {
+            var defaultMapImg = new Image();
+            defaultMapImg.onload = function () {
+                var height = defaultMapImg.height;
+                var width = defaultMapImg.width;
+                currentMapIndex = 0
+                maps.push({
+                    name: 'default',
+                    image: defaultMapImg
+                })
+                drawCanvas()
+                renderMapList()
+            }
+            defaultMapImg.src = './map/map.png';
+        }
+
+        function loadDefaultCustomImages() {
+            const defaultBuildings = [
+                'Ферма',
+                'Шахта',
+                'Столица',
+                'Магическая_академия',
+            ]
+            for (const objName of defaultBuildings) {
+                onCustomImageLoad(objName, `assets/buildings/${objName}.png`)
+            }
+            const defaultUnits = [
+                'unit',
+                'Пехота',
+                'Стрелки',
+                'Элита',
+            ]
+            for (const objName of defaultUnits) {
+                onCustomImageLoad(objName, `assets/units/${objName}.png`)
+            }
         }
         
         // Функции отрисовки
@@ -520,6 +580,8 @@
             ctx.scale(scale, scale);
             
             if (shape.shape === 'custom') {
+                ctx.fillStyle = document.getElementById('shape-color').value;
+                ctx.fillRect(0, 0, shape.width, shape.height);
                 const img = new Image();
                 img.src = shape.src;
                 ctx.drawImage(img, 0, 0, shape.width, shape.height);
