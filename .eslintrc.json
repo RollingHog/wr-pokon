@@ -1,0 +1,24 @@
+{
+  "extends": "eslint:recommended", 
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "script",
+    "ecmaFeatures": {
+    }
+  },
+  "rules": {
+    "semi": ["warn", "never"],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "max-len": ["warn", { 
+      "code": 110,
+      "ignoreComments": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true 
+    }]
+  }
+}
