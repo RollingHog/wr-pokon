@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Карта с юнитами</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #map-container { position: relative; }
+        #map-image { display: block; }
+        .unit, .building { 
+            position: absolute; 
+            cursor: move; 
+            user-select: none;
+        }
+        .faction-red { filter: hue-rotate(0deg) saturate(2); }
+        .faction-blue { filter: hue-rotate(240deg) saturate(2); }
+        .path { stroke: white; stroke-width: 2; fill: none; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <label>Фракция: </label>
+        <select id="faction">
+            <option value="red">Красные</option>
+            <option value="blue">Синие</option>
+        </select>
+        <button id="path-mode">Режим маршрутов (Вкл/Выкл)</button>
+        <button id="save">Сохранить в JSON</button>
+        <input type="file" id="load" accept=".json">
+        <input type="file" id="unit-image" accept="image/*">
+    </div>
+
+    <div id="map-container">
+        <img id="map-image" src="" alt="Карта">
+        <!-- Юниты и здания появляются здесь -->
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
