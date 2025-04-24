@@ -259,7 +259,7 @@
             <h3>Текст</h3>
             <button id="add-text-btn">Добавить текст</button>
             <div id="text-panel">
-                <input type="text" id="text-input" placeholder="Введите текст">
+                <input type="text" id="text-input" placeholder="Введите текст" style="max-width: 200px;">
                 <div class="color-picker">
                     <span>Цвет:</span>
                     <input type="color" id="text-color" value="#000000">
@@ -306,7 +306,8 @@
     <div id="edit-panel">
         <button id="edit-delete-btn">Удалить</button>
         <br>
-        <span id="edit-obj-name"></span>
+        <input id="edit-obj-name" list="obj-names-list" disabled></input>
+        <datalist id="obj-names-list"></datalist>
         <div class="color-picker">
             <span>Цвет:</span>
             <input type="color" id="edit-color">
@@ -324,6 +325,20 @@
     
     <script src="./data/data.js"></script>
     <script>
+        const defaultBuildings = [
+            'build_slot',
+            'Ферма',
+            'Шахта',
+            'Столица',
+            'Магическая_академия',
+        ]
+        const defaultUnits = [
+            'unit',
+            'Пехота',
+            'Стрелки',
+            'Элита',
+        ]
+
         // Основные переменные
         /** @type {HTMLCanvasElement} */
         const canvas = document.getElementById('map-canvas');
@@ -375,44 +390,16 @@
             loadDefaultMap()
             loadDefaultData()
             loadDefaultCustomImages()
-            processHotkeyAttribute()
+            hotkeysLib.init({
+              'Delete': () => {
+                deleteSelected()
+              }
+            })
 
             resizeCanvas();
             drawCanvas();
             
-            // События мыши/касания
-            canvas.addEventListener('mousedown', handleMouseDown);
-            canvas.addEventListener('mousemove', handleMouseMove);
-            canvas.addEventListener('mouseup', handleMouseUp);
-            canvas.addEventListener('wheel', handleWheel, { passive: false });
-            
-            // События касания для мобильных устройств
-            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-            canvas.addEventListener('touchend', handleTouchEnd);
-            
-            // Кнопки тулбара
-            document.getElementById('load-map-btn').addEventListener('click', () => {
-                document.getElementById('map-file').click();
-            });
-            
-            document.getElementById('map-file').addEventListener('change', loadMaps);
-            document.getElementById('save-map-btn')?.addEventListener('click', saveMap);
-            document.getElementById('save-objects-btn')?.addEventListener('click', saveObjects);
-            document.getElementById('load-objects-file').addEventListener('change', loadObjects);
-            
-            document.getElementById('add-shape-btn').addEventListener('click', showShapePanel);
-            document.getElementById('add-text-btn').addEventListener('click', showTextPanel);
-            
-            document.getElementById('place-shape-btn').addEventListener('click', placeShape);
-            document.getElementById('place-text-btn').addEventListener('click', placeText);
-            
-            // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
-            
-            // Форма редактирования
-            document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
-            document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
-            document.getElementById('edit-color').addEventListener('input', updateElementColor);
+            addListeners()
             
             // Масштабирование
             scaleSlider.addEventListener('input', updateScale);
@@ -505,7 +492,43 @@
             // Активируем первую фигуру по умолчанию
             document.querySelector('.shape-preview')?.click();
 
-            document.getElementById('add-shape-btn').click()
+            // document.getElementById('add-shape-btn').click()
+        }
+
+        function addListeners() {
+          // События мыши/касания
+          canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('wheel', handleWheel, { passive: false });
+            
+            // События касания для мобильных устройств
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', handleTouchEnd);
+            
+            // Кнопки тулбара
+            document.getElementById('load-map-btn').addEventListener('click', () => {
+                document.getElementById('map-file').click();
+            });
+            
+            document.getElementById('map-file').addEventListener('change', loadMaps);
+            document.getElementById('save-map-btn')?.addEventListener('click', saveMap);
+            document.getElementById('save-objects-btn')?.addEventListener('click', saveObjects);
+            document.getElementById('load-objects-file').addEventListener('change', loadObjects);
+            
+            // document.getElementById('add-shape-btn').addEventListener('click', showShapePanel);
+            // document.getElementById('add-text-btn').addEventListener('click', showTextPanel);
+            
+            document.getElementById('place-shape-btn').addEventListener('click', placeShape);
+            document.getElementById('place-text-btn').addEventListener('click', placeText);
+            
+            // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
+            
+            // Форма редактирования
+            document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
+            document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
+            document.getElementById('edit-color').addEventListener('input', updateElementColor);
         }
 
         function onCustomImageLoad(filename, src) {
@@ -565,25 +588,19 @@
         }
 
         function loadDefaultCustomImages() {
-            const defaultBuildings = [
-                'build_slot',
-                'Ферма',
-                'Шахта',
-                'Столица',
-                'Магическая_академия',
-            ]
+            
             for (const objName of defaultBuildings) {
                 onCustomImageLoad(objName, `assets/buildings/${objName}.png`)
             }
-            const defaultUnits = [
-                'unit',
-                'Пехота',
-                'Стрелки',
-                'Элита',
-            ]
+            
             for (const objName of defaultUnits) {
                 onCustomImageLoad(objName, `assets/units/${objName}.png`)
             }
+
+            document.getElementById('obj-names-list').innerHTML = []
+                .concat(defaultBuildings, defaultUnits)
+                .map(name => `<option value="${name}">\n`)
+                .join('')
         }
         
         // Функции отрисовки
@@ -735,7 +752,7 @@
                     editPanel.style.left = `${mouseX + 10}px`;
                     editPanel.style.top = `${mouseY + 10}px`;
                     document.getElementById('edit-color').value = element.color || '#000000';
-                    document.getElementById('edit-obj-name').textContent = element.name || '';
+                    document.getElementById('edit-obj-name').value = element.name || '';
                     
                     // Начинаем перетаскивание
                     isDragging = true;
@@ -1184,12 +1201,57 @@
             }, 0)
         }
 
-        function processHotkeyAttribute() {
-            for(let i of document.querySelectorAll('button[hotkey]')) {
-                const hk = i.getAttribute('hotkey')
-                i.title += '\nHotkey: Alt+' + hk
-                i.accessKey = hk
+        const hotkeysLib = {
+          hotkeyElsList: {},
+
+          init(hotkeysList_, kModeHotkeys_) {
+            this.enableHotkeysProcessing(hotkeysList_, kModeHotkeys_)
+            this.processHotkeyAttribute()
+          },
+
+          processHotkeyAttribute() {
+            for(let i of document.querySelectorAll('button[hotkey],input[hotkey]')) {
+              const hk = i.getAttribute('hotkey')
+              i.title += '\nHotkey: Alt+' + hk
+              this.hotkeyElsList[`Alt ${hk}`] = i
             }
+          },
+
+          enableHotkeysProcessing(hotkeysList_, kModeHotkeys_) {
+            let kMode = false 
+            const hotkeysList = Object.assign({'Alt K': _ => kMode = true}, hotkeysList_)
+            const kModeHotkeys =  Object.assign({}, kModeHotkeys_)
+
+            const ignoreKeys = ['Alt', 'Tab']
+
+            const that = this
+
+            document.body.addEventListener('keydown', function(evt) {
+              if(!evt.code) return
+              if(ignoreKeys.includes(evt.key)) return 
+              const keyComb = 
+                (evt.ctrlKey ? 'Ctrl ' : '')
+                + (evt.altKey ? 'Alt ' : '')
+                + evt.code.replace(/(Key|Digit)/,'')
+              if(hotkeysList[keyComb]) {
+                hotkeysList[keyComb]()
+                evt.stopPropagation()
+                return false
+              }
+              if(that.hotkeyElsList[keyComb]) {
+                that.hotkeyElsList[keyComb].click()
+                evt.stopPropagation()
+                return false
+              }
+              if(kMode && kModeHotkeys[keyComb]) {
+                kModeHotkeys[keyComb]()
+                kMode = false
+                evt.stopPropagation()
+                return false
+              }
+              if(evt.altKey) console.log(keyComb)
+            })
+          },
         }
         
         // Запуск приложения
