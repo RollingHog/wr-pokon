@@ -251,7 +251,7 @@
                     <input type="range" id="shape-size" min="10" max="100" value="30" oninput="this.previousElementSibling.value = this.value">
 
                 </div>
-                <button id="place-shape-btn" accesskey="a">Разместить фигуру</button>
+                <button id="place-shape-btn" hotkey="A">Разместить фигуру</button>
             </div>
         </div>
         
@@ -274,10 +274,10 @@
         
         <div class="toolbar-section">
             <h3>Управление</h3>
-            <button id="save-map-btn" title="Сохранить карту как изображение для вставки в тред">Экспорт карты</button>
-            <button id="save-objects-btn" title="Сохранить файл нарисованных объектов">Сохранить объекты</button>
+            <button id="save-map-btn" title="Сохранить карту как изображение для вставки в тред" hotkey="P">Экспорт карты</button>
+            <button id="save-objects-btn" title="Сохранить файл нарисованных объектов" hotkey="S">Сохранить объекты</button>
             <!-- <span>Загрузить объекты:</span> -->
-            <input type="file" id="load-objects-file" accept=".json" title="Загрузить объекты">
+            <input type="file" id="load-objects-file" accept=".json.js" title="Загрузить объекты" hotkey="L">
             <!-- <button id="load-objects-btn" title="Загрузить файл нарисованных объектов"></button> -->
             <div class="color-picker">
                 <span>Масштаб:</span>
@@ -305,6 +305,8 @@
     
     <div id="edit-panel">
         <button id="edit-delete-btn">Удалить</button>
+        <br>
+        <span id="edit-obj-name"></span>
         <div class="color-picker">
             <span>Цвет:</span>
             <input type="color" id="edit-color">
@@ -320,6 +322,7 @@
         </div>
     </div>
     
+    <script src="./data/data.js"></script>
     <script>
         // Основные переменные
         /** @type {HTMLCanvasElement} */
@@ -341,6 +344,18 @@
         let canvasOffsetX = 0, canvasOffsetY = 0;
         let tempOffsetX = 0, tempOffsetY = 0;
         let selectedElement = null;
+        /** @type{{                
+     *          type: 'shape',
+                shape: activeShapeType,
+                color: color,
+                name?: color,
+                x: number,
+                y: number,
+                width: width,
+                height: height,
+                src: src}[]} 
+         * 
+        */
         let elements = [];
         /** @type {{
          * id: mapId,
@@ -358,7 +373,9 @@
         function init() {
           
             loadDefaultMap()
+            loadDefaultData()
             loadDefaultCustomImages()
+            processHotkeyAttribute()
 
             resizeCanvas();
             drawCanvas();
@@ -526,6 +543,11 @@
             modalShapesContainer.appendChild(modalPreview);
         }
 
+        function loadDefaultData() {
+            if(typeof DEFAULT_DATA !== 'undefined') {
+                elements = DEFAULT_DATA
+            }
+        }
         function loadDefaultMap() {
             var defaultMapImg = new Image();
             defaultMapImg.onload = function () {
@@ -544,6 +566,7 @@
 
         function loadDefaultCustomImages() {
             const defaultBuildings = [
+                'build_slot',
                 'Ферма',
                 'Шахта',
                 'Столица',
@@ -603,14 +626,20 @@
             });
         }
         
+        /** 
+         * @param {typeof elements[0]} shape 
+        */
         function drawShape(shape) {
             ctx.save();
             ctx.translate(shape.x * scale + canvasOffsetX, shape.y * scale + canvasOffsetY);
             ctx.scale(scale, scale);
             
             if (shape.shape === 'custom') {
-                ctx.fillStyle = document.getElementById('shape-color').value;
-                ctx.fillRect(0, 0, shape.width, shape.height);
+                ctx.fillStyle = shape.color;
+                // обозначаем принадлежность
+                ctx.beginPath();
+                ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
+                ctx.fill();
                 const img = new Image();
                 img.src = shape.src;
                 ctx.drawImage(img, 0, 0, shape.width, shape.height);
@@ -706,6 +735,7 @@
                     editPanel.style.left = `${mouseX + 10}px`;
                     editPanel.style.top = `${mouseY + 10}px`;
                     document.getElementById('edit-color').value = element.color || '#000000';
+                    document.getElementById('edit-obj-name').textContent = element.name || '';
                     
                     // Начинаем перетаскивание
                     isDragging = true;
@@ -840,12 +870,14 @@
             let width = size;
             let height = size;
             let src = null;
+
+            let activePreview = {}
             
             if (activeShapeType === 'line') {
                 height = 2;
                 width = size * 2;
             } else if (activeShapeType === 'custom') {
-                const activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
+                activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
                 if (activePreview) {
                     const shapeId = activePreview.dataset.shapeId;
                     const customShape = customShapes.find(s => s.id === shapeId);
@@ -863,6 +895,7 @@
             
             const shape = {
                 type: 'shape',
+                name: activePreview.title,
                 shape: activeShapeType,
                 color: color,
                 x: (-canvasOffsetX + canvas.width/2 - width*scale/2) / scale,
@@ -1106,7 +1139,7 @@
         }
 
         function saveObjects() {
-            saveFile(`objects-${(new Date().toJSON())}.json`, JSON.stringify(elements))
+            saveFile(`objects-${(new Date().toJSON())}.json.js`, 'DEFAULT_DATA=' + JSON.stringify(elements))
         }
 
         function loadObjects(e) {
@@ -1115,7 +1148,7 @@
             
             const reader = new FileReader();
             reader.onload = function(event) {
-                const data = event.target.result
+                const data = event.target.result.replace('DEFAULT_DATA=', '')
                 elements = JSON.parse(data)
                 drawCanvas()
             }
@@ -1144,6 +1177,14 @@
             document.body.removeChild(a)
             window.URL.revokeObjectURL(url)
             }, 0)
+        }
+
+        function processHotkeyAttribute() {
+            for(let i of document.querySelectorAll('button[hotkey]')) {
+                const hk = i.getAttribute('hotkey')
+                i.title += '\nHotkey: Alt+' + hk
+                i.accessKey = hk
+            }
         }
         
         // Запуск приложения
