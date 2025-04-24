@@ -1,0 +1,939 @@
+/* global 
+DEFAULT_DATA
+*/
+
+const defaultBuildings = [
+  'build_slot',
+  'Ферма',
+  'Шахта',
+  'Столица',
+  'Магическая_академия',
+]
+const defaultUnits = [
+  'unit',
+  'Пехота',
+  'Стрелки',
+  'Элита',
+]
+
+// Основные переменные
+/** @type {HTMLCanvasElement} */
+const canvas = document.getElementById('map-canvas');
+const ctx = canvas.getContext('2d');
+const canvasContainer = document.getElementById('canvas-container');
+const scaleValue = document.getElementById('scale-value');
+const scaleSlider = document.getElementById('scale-slider');
+const editPanel = document.getElementById('edit-panel');
+const customShapesContainer = document.getElementById('custom-shapes-container');
+const mapList = document.getElementById('map-list');
+const shapeModal = document.getElementById('shape-modal');
+const modalShapesContainer = document.getElementById('modal-shapes-container');
+
+let scale = 1;
+let isDragging = false;
+let isDraggingElement = false;
+let dragStartX, dragStartY;
+let canvasOffsetX = 0, canvasOffsetY = 0;
+let tempOffsetX = 0, tempOffsetY = 0;
+let selectedElement = null;
+/** @type{{                
+*          type: 'shape',
+      shape: activeShapeType,
+      color: color,
+      name?: string,
+      x: number,
+      y: number,
+      width: width,
+      height: height,
+      src: src}[]} 
+* 
+*/
+let elements = [];
+/** @type {{
+* id: mapId,
+* name: string,
+* src: event.target.result,
+* image: Image
+* }[]} */
+let maps = [];
+let currentMapIndex = -1;
+let customShapes = [];
+let activeShapeType = 'rect';
+let touchIdentifier = null;
+
+// Инициализация
+function init() {
+
+  loadDefaultMap()
+  loadDefaultData()
+  loadDefaultCustomImages()
+  hotkeysLib.init({
+    'Delete': () => {
+      deleteSelected()
+    }
+  })
+
+  resizeCanvas();
+  drawCanvas();
+  
+  addListeners()
+  
+  // Масштабирование
+  scaleSlider.addEventListener('input', updateScale);
+  
+  // Предпросмотр фигур
+  const shapePreviews = document.querySelectorAll('.shape-preview');
+  shapePreviews.forEach(preview => {
+      preview.addEventListener('click', function() {
+          activeShapeType = this.dataset.shape;
+          // document.getElementById('shape-color').value = getRandomColor();
+          // document.getElementById('shape-size').value = 50;
+          
+          // Добавляем класс active к выбранной фигуре
+          shapePreviews.forEach(p => p.classList.remove('active'));
+          this.classList.add('active');
+      });
+  });
+  
+  // Загрузка пользовательских фигур
+  document.getElementById('custom-shape').addEventListener('change', function(e) {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+      
+      Array.from(files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+              const img = new Image();
+              img.onload = _ => onCustomImageLoad(file, event.target.result);
+              img.src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+      });
+  });
+  
+  // Кнопки модального окна
+  document.getElementById('modal-close-btn')?.addEventListener('click', () => {
+      shapeModal.style.display = 'none';
+  });
+  
+  // Адаптивное отображение панелей
+  if (window.innerWidth < 768) {
+      document.getElementById('shape-panel').style.display = 'none';
+      document.getElementById('text-panel').style.display = 'none';
+      
+      // Для мобильных заменяем стандартные превью на модальное окно
+      const standardShapes = [
+          { type: 'rect', color: 'red', name: 'Квадрат' },
+          { type: 'circle', color: 'green', name: 'Круг' },
+          { type: 'triangle', color: 'blue', name: 'Треугольник' },
+          { type: 'line', color: 'black', name: 'Линия' }
+      ];
+      
+      standardShapes.forEach(shape => {
+          const preview = document.createElement('div');
+          preview.className = 'shape-preview';
+          preview.dataset.shape = shape.type;
+          preview.title = shape.name;
+          
+          if (shape.type === 'rect') {
+              preview.style.backgroundColor = shape.color;
+          } else if (shape.type === 'circle') {
+              preview.style.backgroundColor = shape.color;
+              preview.style.borderRadius = '50%';
+          } else if (shape.type === 'triangle') {
+              preview.style.width = '0';
+              preview.style.height = '0';
+              preview.style.borderLeft = '20px solid transparent';
+              preview.style.borderRight = '20px solid transparent';
+              preview.style.borderBottom = `40px solid ${shape.color}`;
+          } else if (shape.type === 'line') {
+              preview.style.backgroundColor = shape.color;
+              preview.style.width = '40px';
+              preview.style.height = '2px';
+              preview.style.marginTop = '19px';
+          }
+          
+          preview.addEventListener('click', function() {
+              activeShapeType = shape.type;
+              // document.getElementById('shape-color').value = getRandomColor();
+              document.getElementById('shape-size').value = 30;
+              shapeModal.style.display = 'none';
+          });
+          
+          modalShapesContainer.appendChild(preview);
+      });
+  }
+  
+  window.addEventListener('resize', resizeCanvas);
+  
+  // Активируем первую фигуру по умолчанию
+  document.querySelector('.shape-preview')?.click();
+
+  // document.getElementById('add-shape-btn').click()
+}
+
+function addListeners() {
+// События мыши/касания
+canvas.addEventListener('mousedown', handleMouseDown);
+  canvas.addEventListener('mousemove', handleMouseMove);
+  canvas.addEventListener('mouseup', handleMouseUp);
+  canvas.addEventListener('wheel', handleWheel, { passive: false });
+  
+  // События касания для мобильных устройств
+  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+  canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+  canvas.addEventListener('touchend', handleTouchEnd);
+  
+  // Кнопки тулбара
+  document.getElementById('load-map-btn').addEventListener('click', () => {
+      document.getElementById('map-file').click();
+  });
+  
+  document.getElementById('map-file').addEventListener('change', loadMaps);
+  document.getElementById('save-map-btn')?.addEventListener('click', saveMap);
+  document.getElementById('save-objects-btn')?.addEventListener('click', saveObjects);
+  document.getElementById('load-objects-file').addEventListener('change', loadObjects);
+  
+  // document.getElementById('add-shape-btn').addEventListener('click', showShapePanel);
+  // document.getElementById('add-text-btn').addEventListener('click', showTextPanel);
+  
+  document.getElementById('place-shape-btn').addEventListener('click', placeShape);
+  document.getElementById('place-text-btn').addEventListener('click', placeText);
+  
+  // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
+  
+  // Форма редактирования
+  document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
+  document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
+  document.getElementById('edit-color').addEventListener('input', updateElementColor);
+}
+
+function onCustomImageLoad(filename, src) {
+  const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
+  customShapes.push({
+      id: shapeId,
+      name: filename,
+      src: src
+  });
+
+  // Создаем превью для пользовательской фигуры
+  const preview = document.createElement('div');
+  preview.className = 'shape-preview';
+  preview.style.backgroundImage = `url(${src})`;
+  preview.dataset.shape = 'custom';
+  preview.dataset.shapeId = shapeId;
+  preview.title = filename;
+
+  preview.addEventListener('click', function () {
+      activeShapeType = 'custom';
+      document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+  });
+
+  customShapesContainer.appendChild(preview);
+
+  // Также добавляем в модальное окно для мобильных
+  const modalPreview = preview.cloneNode(true);
+  modalPreview.addEventListener('click', function () {
+      activeShapeType = 'custom';
+      document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
+      preview.classList.add('active');
+      shapeModal.style.display = 'none';
+  });
+  modalShapesContainer.appendChild(modalPreview);
+}
+
+function loadDefaultData() {
+  if(typeof DEFAULT_DATA !== 'undefined') {
+      elements = DEFAULT_DATA
+  }
+}
+function loadDefaultMap() {
+  var defaultMapImg = new Image();
+  defaultMapImg.onload = function () {
+      currentMapIndex = 0
+      maps.push({
+          name: 'default',
+          image: defaultMapImg
+      })
+      drawCanvas()
+      renderMapList()
+  }
+  defaultMapImg.src = './map/map.png';
+}
+
+function loadDefaultCustomImages() {
+  
+  for (const objName of defaultBuildings) {
+      onCustomImageLoad(objName, `assets/buildings/${objName}.png`)
+  }
+  
+  for (const objName of defaultUnits) {
+      onCustomImageLoad(objName, `assets/units/${objName}.png`)
+  }
+
+  document.getElementById('obj-names-list').innerHTML = []
+      .concat(defaultBuildings, defaultUnits)
+      .map(name => `<option value="${name}">\n`)
+      .join('')
+}
+
+// Функции отрисовки
+function resizeCanvas() {
+  canvas.width = canvasContainer.clientWidth;
+  canvas.height = canvasContainer.clientHeight;
+  drawCanvas();
+}
+
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Рисуем фон (шахматный узор)
+  const gridSize = 20;
+  for (let x = 0; x < canvas.width; x += gridSize) {
+      for (let y = 0; y < canvas.height; y += gridSize) {
+          const isEven = ((x + y) / gridSize) % 2 === 0;
+          ctx.fillStyle = isEven ? '#eee' : '#ddd';
+          ctx.fillRect(x, y, gridSize, gridSize);
+      }
+  }
+  
+  // Рисуем фоновое изображение (карту)
+  if (currentMapIndex >= 0 && maps[currentMapIndex]) {
+      const map = maps[currentMapIndex];
+      ctx.save();
+      ctx.translate(canvasOffsetX, canvasOffsetY);
+      ctx.scale(scale, scale);
+      ctx.drawImage(map.image, 0, 0, map.image.width, map.image.height);
+      ctx.restore();
+  }
+  
+  // Рисуем все элементы
+  elements.forEach(element => {
+      if (element.type === 'shape') {
+          drawShape(element);
+      } else if (element.type === 'text') {
+          drawText(element);
+      }
+  });
+}
+
+/** 
+* @param {typeof elements[0]} shape 
+*/
+function drawShape(shape) {
+  ctx.save();
+  ctx.translate(shape.x * scale + canvasOffsetX, shape.y * scale + canvasOffsetY);
+  ctx.scale(scale, scale);
+  
+  if (shape.shape === 'custom') {
+      // обозначаем принадлежность
+      ctx.fillStyle = shape.color;
+      ctx.beginPath();
+      ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
+      ctx.fill();
+      const img = new Image();
+      img.src = shape.src;
+      ctx.drawImage(img, 0, 0, shape.width, shape.height);
+  } else {
+      ctx.fillStyle = shape.color;
+      
+      switch (shape.shape) {
+          case 'rect':
+              ctx.fillRect(0, 0, shape.width, shape.height);
+              break;
+          case 'circle':
+              ctx.beginPath();
+              ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
+              ctx.fill();
+              break;
+          case 'triangle':
+              ctx.beginPath();
+              ctx.moveTo(shape.width/2, 0);
+              ctx.lineTo(shape.width, shape.height);
+              ctx.lineTo(0, shape.height);
+              ctx.closePath();
+              ctx.fill();
+              break;
+          case 'line':
+              ctx.strokeStyle = shape.color;
+              ctx.lineWidth = shape.height;
+              ctx.beginPath();
+              ctx.moveTo(0, 0);
+              ctx.lineTo(shape.width, 0);
+              ctx.stroke();
+              break;
+      }
+  }
+  
+  ctx.restore();
+}
+
+function drawText(text) {
+  ctx.save();
+  ctx.translate(text.x * scale + canvasOffsetX, text.y * scale + canvasOffsetY);
+  ctx.scale(scale, scale);
+  
+  ctx.font = `${text.size}px Arial`;
+  ctx.fillStyle = text.color;
+  ctx.fillText(text.content, 0, text.size);
+  
+  // Обновляем размеры текста
+  const metrics = ctx.measureText(text.content);
+  text.width = metrics.width;
+  text.height = text.size;
+  
+  ctx.restore();
+}
+
+// Обработчики событий мыши/касания
+function handleMouseDown(e) {
+  e.preventDefault();
+  startDrag(e.clientX, e.clientY);
+}
+
+function handleTouchStart(e) {
+  if (e.touches.length === 1) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchIdentifier = touch.identifier;
+      startDrag(touch.clientX, touch.clientY);
+  } else if (e.touches.length === 2) {
+      // Обработка масштабирования двумя пальцами
+      e.preventDefault();
+      touchIdentifier = null;
+  }
+}
+
+function startDrag(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = clientX - rect.left;
+  const mouseY = clientY - rect.top;
+  
+  // Проверяем, не кликнули ли мы на элемент
+  for (let i = elements.length - 1; i >= 0; i--) {
+      const element = elements[i];
+      const x = element.x * scale + canvasOffsetX;
+      const y = element.y * scale + canvasOffsetY;
+      const width = element.width * scale;
+      const height = element.height * scale;
+      
+      if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
+          selectedElement = element;
+          isDraggingElement = true;
+          
+          // Показываем панель редактирования
+          editPanel.style.display = 'block';
+          editPanel.style.left = `${mouseX + 10}px`;
+          editPanel.style.top = `${mouseY + 10}px`;
+          document.getElementById('edit-color').value = element.color || '#000000';
+          document.getElementById('edit-obj-name').value = element.name || '';
+          
+          // Начинаем перетаскивание
+          isDragging = true;
+          dragStartX = mouseX;
+          dragStartY = mouseY;
+          tempOffsetX = element.x;
+          tempOffsetY = element.y;
+          
+          drawCanvas();
+          return;
+      }
+  }
+  
+  // Если не кликнули на элемент, начинаем перемещение холста
+  isDragging = true;
+  isDraggingElement = false;
+  dragStartX = clientX;
+  dragStartY = clientY;
+  tempOffsetX = canvasOffsetX;
+  tempOffsetY = canvasOffsetY;
+  
+  // Скрываем панель редактирования, если ничего не выбрано
+  if (selectedElement) {
+      selectedElement = null;
+      editPanel.style.display = 'none';
+      drawCanvas();
+  }
+}
+
+function handleMouseMove(e) {
+  if (!isDragging) return;
+  e.preventDefault();
+  updateDrag(e.clientX, e.clientY);
+}
+
+function handleTouchMove(e) {
+  if (!isDragging || !touchIdentifier) return;
+  e.preventDefault();
+  
+  // Находим нужное касание
+  for (let i = 0; i < e.touches.length; i++) {
+      if (e.touches[i].identifier === touchIdentifier) {
+          updateDrag(e.touches[i].clientX, e.touches[i].clientY);
+          break;
+      }
+  }
+}
+
+function updateDrag(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = clientX - rect.left;
+  const mouseY = clientY - rect.top;
+  
+  if (isDraggingElement && selectedElement) {
+      // Перемещаем выбранный элемент
+      selectedElement.x = tempOffsetX + (mouseX - dragStartX) / scale;
+      selectedElement.y = tempOffsetY + (mouseY - dragStartY) / scale;
+      
+      // Обновляем позицию панели редактирования
+      editPanel.style.left = `${mouseX + 10}px`;
+      editPanel.style.top = `${mouseY + 10}px`;
+  } else {
+      // Перемещаем холст
+      canvasOffsetX = tempOffsetX + (clientX - dragStartX);
+      canvasOffsetY = tempOffsetY + (clientY - dragStartY);
+  }
+  
+  drawCanvas();
+}
+
+function handleMouseUp() {
+  endDrag();
+}
+
+function handleTouchEnd() {
+  endDrag();
+  touchIdentifier = null;
+}
+
+function endDrag() {
+  isDragging = false;
+  isDraggingElement = false;
+}
+
+function handleWheel(e) {
+  e.preventDefault();
+  
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  const newScale = Math.min(Math.max(scale * delta, 0.25), 2);
+  
+  if (newScale !== scale) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      // Корректируем смещение для масштабирования относительно курсора
+      canvasOffsetX = mouseX - (mouseX - canvasOffsetX) * (newScale / scale);
+      canvasOffsetY = mouseY - (mouseY - canvasOffsetY) * (newScale / scale);
+      
+      scale = newScale;
+      scaleValue.textContent = `${Math.round(scale * 100)}%`;
+      scaleSlider.value = scale * 100;
+      
+      drawCanvas();
+  }
+}
+
+// Функции тулбара
+function showShapePanel() {
+  if (window.innerWidth < 768) {
+      shapeModal.style.display = 'flex';
+  } else {
+      document.getElementById('shape-panel').style.display = 'block';
+      document.getElementById('text-panel').style.display = 'none';
+  }
+}
+
+function showTextPanel() {
+  document.getElementById('text-panel').style.display = 'block';
+  document.getElementById('shape-panel').style.display = 'none';
+}
+
+function placeShape() {
+  if (currentMapIndex === -1) {
+      alert('Сначала загрузите карту');
+      return;
+  }
+  
+  const color = document.getElementById('shape-color').value;
+  const size = parseInt(document.getElementById('shape-size').value);
+  
+  let width = size;
+  let height = size;
+  let src = null;
+
+  let activePreview = {}
+  
+  if (activeShapeType === 'line') {
+      height = 2;
+      width = size * 2;
+  } else if (activeShapeType === 'custom') {
+      activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
+      if (activePreview) {
+          const shapeId = activePreview.dataset.shapeId;
+          const customShape = customShapes.find(s => s.id === shapeId);
+          if (customShape) {
+              src = customShape.src;
+              // Сохраняем пропорции изображения
+              const img = new Image();
+              img.src = src;
+              const ratio = img.width / img.height;
+              width = size;
+              height = size / ratio;
+          }
+      }
+  }
+  
+  const shape = {
+      type: 'shape',
+      name: activePreview.title,
+      shape: activeShapeType,
+      color: color,
+      x: (-canvasOffsetX + canvas.width/2 - width*scale/2) / scale,
+      y: (-canvasOffsetY + canvas.height/2 - height*scale/2) / scale,
+      width: width,
+      height: height,
+      src: src
+  };
+  
+  elements.push(shape);
+  drawCanvas();
+}
+
+function placeText() {
+  const content = document.getElementById('text-input').value;
+  if (!content) {
+      alert('Введите текст');
+      return;
+  }
+  
+  if (currentMapIndex === -1) {
+      alert('Сначала загрузите карту');
+      return;
+  }
+  
+  const color = document.getElementById('text-color').value;
+  const size = parseInt(document.getElementById('text-size').value);
+  
+  ctx.font = `${size}px Arial`;
+  const metrics = ctx.measureText(content);
+  
+  const text = {
+      type: 'text',
+      content: content,
+      color: color,
+      size: size,
+      x: (-canvasOffsetX + canvas.width/2 - metrics.width/2) / scale,
+      y: (-canvasOffsetY + canvas.height/2) / scale,
+      width: metrics.width,
+      height: size
+  };
+  
+  elements.push(text);
+  document.getElementById('text-input').value = '';
+  drawCanvas();
+}
+
+function deleteSelected() {
+  if (selectedElement) {
+      elements = elements.filter(el => el !== selectedElement);
+      selectedElement = null;
+      editPanel.style.display = 'none';
+      drawCanvas();
+  }
+}
+
+function closeEditPanel() {
+  editPanel.style.display = 'none';
+  selectedElement = null;
+  drawCanvas();
+}
+
+function updateElementColor() {
+  if (selectedElement) {
+      selectedElement.color = document.getElementById('edit-color').value;
+      drawCanvas();
+  }
+}
+
+function updateScale() {
+  scale = parseInt(scaleSlider.value) / 100;
+  scaleValue.textContent = `${scaleSlider.value}%`;
+  drawCanvas();
+}
+
+// Работа с картами
+function loadMaps(e) {
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
+  
+  Array.from(files).forEach(file => {
+      if (!file.type.match('image.*')) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+              const mapId = 'map-' + Date.now() + Math.random().toString(36).substr(2, 5);
+              maps.push({
+                  id: mapId,
+                  name: file.name,
+                  src: event.target.result,
+                  image: img
+              });
+              
+              renderMapList();
+              
+              // Если это первая загруженная карта, автоматически выбираем ее
+              if (maps.length === 1) {
+                  loadMap(0);
+              }
+          };
+          img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+  });
+}
+
+function renderMapList() {
+  mapList.innerHTML = '';
+  
+  if (maps.length === 0) {
+      const emptyMsg = document.createElement('div');
+      emptyMsg.textContent = 'Нет загруженных карт';
+      emptyMsg.style.color = '#bdc3c7';
+      emptyMsg.style.padding = '5px';
+      mapList.appendChild(emptyMsg);
+      return;
+  }
+  
+  maps.forEach((map, index) => {
+      const mapItem = document.createElement('div');
+      mapItem.className = `map-item ${index === currentMapIndex ? 'active' : ''}`;
+      mapItem.textContent = map.name.length > 15 ? map.name.substring(0, 15) + '...' : map.name;
+      mapItem.title = map.name;
+      
+      mapItem.addEventListener('click', () => loadMap(index));
+      mapList.appendChild(mapItem);
+  });
+}
+
+function loadMap(index) {
+  if (index < 0 || index >= maps.length) return;
+  
+  const map = maps[index];
+  currentMapIndex = index;
+  
+  // Центрируем карту
+  canvasOffsetX = (canvas.width - map.image.width * scale) / 2;
+  canvasOffsetY = (canvas.height - map.image.height * scale) / 2;
+  
+  renderMapList();
+  drawCanvas();
+}
+
+function saveMap() {
+  if (currentMapIndex === -1) {
+      alert('Сначала загрузите карту');
+      return;
+  }
+  
+  // Создаем временный canvas для сохранения
+  const tempCanvas = document.createElement('canvas');
+  const tempCtx = tempCanvas.getContext('2d');
+  const map = maps[currentMapIndex];
+  
+  // Определяем границы всех элементов
+  let minX = 0, minY = 0;
+  let maxX = map.image.width;
+  let maxY = map.image.height;
+  
+  elements.forEach(element => {
+      minX = Math.min(minX, element.x);
+      minY = Math.min(minY, element.y);
+      maxX = Math.max(maxX, element.x + (element.width || 0));
+      maxY = Math.max(maxY, element.y + (element.height || 0));
+  });
+  
+  // Устанавливаем размер временного canvas
+  const padding = 20;
+  tempCanvas.width = (maxX - minX + padding * 2);
+  tempCanvas.height = (maxY - minY + padding * 2);
+  
+  // Отрисовываем фон
+  tempCtx.fillStyle = '#ffffff';
+  tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+  
+  // Отрисовываем фоновое изображение (карту)
+  tempCtx.drawImage(
+      map.image, 
+      padding - minX, 
+      padding - minY, 
+      map.image.width, 
+      map.image.height
+  );
+  
+  // Отрисовываем все элементы
+  elements.forEach(element => {
+      tempCtx.save();
+      tempCtx.translate(padding - minX, padding - minY);
+      
+      if (element.type === 'shape') {
+          if (element.shape === 'custom') {
+              // обозначаем принадлежность
+              tempCtx.fillStyle = element.color;
+              tempCtx.beginPath();
+              tempCtx.arc(
+                element.x + element.width/2, element.y + element.height/2, 
+                element.width/2, 0, Math.PI * 2
+              );
+              tempCtx.fill();
+              const img = new Image();
+              img.src = element.src;
+              tempCtx.drawImage(img, element.x, element.y, element.width, element.height);
+          } else {
+              tempCtx.fillStyle = element.color;
+              
+              switch (element.shape) {
+                  case 'rect':
+                      tempCtx.fillRect(element.x, element.y, element.width, element.height);
+                      break;
+                  case 'circle':
+                      tempCtx.beginPath();
+                      tempCtx.arc(
+                        element.x + element.width/2, element.y + element.height/2, 
+                        element.width/2, 0, Math.PI * 2
+                      );
+                      tempCtx.fill();
+                      break;
+                  case 'triangle':
+                      tempCtx.beginPath();
+                      tempCtx.moveTo(element.x + element.width/2, element.y);
+                      tempCtx.lineTo(element.x + element.width, element.y + element.height);
+                      tempCtx.lineTo(element.x, element.y + element.height);
+                      tempCtx.closePath();
+                      tempCtx.fill();
+                      break;
+                  case 'line':
+                      tempCtx.strokeStyle = element.color;
+                      tempCtx.lineWidth = element.height;
+                      tempCtx.beginPath();
+                      tempCtx.moveTo(element.x, element.y);
+                      tempCtx.lineTo(element.x + element.width, element.y);
+                      tempCtx.stroke();
+                      break;
+              }
+          }
+      } else if (element.type === 'text') {
+          tempCtx.font = `${element.size}px Arial`;
+          tempCtx.fillStyle = element.color;
+          tempCtx.fillText(element.content, element.x, element.y + element.size);
+      }
+      
+      tempCtx.restore();
+  });
+  
+  // Создаем ссылку для скачивания
+  const link = document.createElement('a');
+  link.download = 'map-editor-export.png';
+  link.href = tempCanvas.toDataURL('image/png');
+  link.click();
+}
+
+function saveObjects() {
+  saveFile(`objects-${(new Date().toJSON())}.json.js`, 'DEFAULT_DATA=' + JSON.stringify(elements))
+}
+
+function loadObjects(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(event) {
+      const data = event.target.result.replace('DEFAULT_DATA=', '')
+      elements = JSON.parse(data)
+      drawCanvas()
+  }
+  reader.readAsText(file);
+}
+
+// Вспомогательные функции
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+function saveFile(filename, data) {
+  var file = new Blob([data], { type: 'text' })
+  var a = document.createElement("a"),
+  url = URL.createObjectURL(file)
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  setTimeout(function () {
+  document.body.removeChild(a)
+  window.URL.revokeObjectURL(url)
+  }, 0)
+}
+
+const hotkeysLib = {
+hotkeyElsList: {},
+
+init(hotkeysList_, kModeHotkeys_) {
+  this.enableHotkeysProcessing(hotkeysList_, kModeHotkeys_)
+  this.processHotkeyAttribute()
+},
+
+processHotkeyAttribute() {
+  for(let i of document.querySelectorAll('button[hotkey],input[hotkey]')) {
+    const hk = i.getAttribute('hotkey')
+    i.title += '\nHotkey: Alt+' + hk
+    this.hotkeyElsList[`Alt ${hk}`] = i
+  }
+},
+
+enableHotkeysProcessing(hotkeysList_, kModeHotkeys_) {
+  let kMode = false 
+  const hotkeysList = Object.assign({'Alt K': _ => kMode = true}, hotkeysList_)
+  const kModeHotkeys =  Object.assign({}, kModeHotkeys_)
+
+  const ignoreKeys = ['Alt', 'Tab']
+
+  const that = this
+
+  document.body.addEventListener('keydown', function(evt) {
+    if(!evt.code) return
+    if(ignoreKeys.includes(evt.key)) return 
+    const keyComb = 
+      (evt.ctrlKey ? 'Ctrl ' : '')
+      + (evt.altKey ? 'Alt ' : '')
+      + evt.code.replace(/(Key|Digit)/,'')
+    if(hotkeysList[keyComb]) {
+      hotkeysList[keyComb]()
+      evt.stopPropagation()
+      return false
+    }
+    if(that.hotkeyElsList[keyComb]) {
+      that.hotkeyElsList[keyComb].click()
+      evt.stopPropagation()
+      return false
+    }
+    if(kMode && kModeHotkeys[keyComb]) {
+      kModeHotkeys[keyComb]()
+      kMode = false
+      evt.stopPropagation()
+      return false
+    }
+    if(evt.altKey) console.log(keyComb)
+  })
+},
+}
+
+// Запуск приложения
+init();
