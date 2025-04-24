@@ -348,7 +348,7 @@
      *          type: 'shape',
                 shape: activeShapeType,
                 color: color,
-                name?: color,
+                name?: string,
                 x: number,
                 y: number,
                 width: width,
@@ -635,8 +635,8 @@
             ctx.scale(scale, scale);
             
             if (shape.shape === 'custom') {
-                ctx.fillStyle = shape.color;
                 // обозначаем принадлежность
+                ctx.fillStyle = shape.color;
                 ctx.beginPath();
                 ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
                 ctx.fill();
@@ -1089,6 +1089,11 @@
                 
                 if (element.type === 'shape') {
                     if (element.shape === 'custom') {
+                        // обозначаем принадлежность
+                        tempCtx.fillStyle = element.color;
+                        tempCtx.beginPath();
+                        tempCtx.arc(element.x + element.width/2, element.y + element.height/2, element.width/2, 0, Math.PI * 2);
+                        tempCtx.fill();
                         const img = new Image();
                         img.src = element.src;
                         tempCtx.drawImage(img, element.x, element.y, element.width, element.height);
