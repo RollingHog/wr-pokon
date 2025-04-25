@@ -203,7 +203,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
     </style>
 </head>
@@ -301,15 +301,15 @@
     </div>
     
     <div id="edit-panel">
-        <button id="edit-delete-btn">Удалить</button>
+        <button id="edit-delete-btn">Del</button>
+        <!-- <button id="edit-close-btn">Закрыть</button> -->
         <br>
         <input id="edit-obj-name" list="obj-names-list" disabled></input>
         <datalist id="obj-names-list"></datalist>
         <div class="color-picker">
             <span>Цвет:</span>
-            <input type="color" id="edit-color">
+            <input type="color" id="edit-color" style="width: 24px;">
         </div>
-        <button id="edit-close-btn">Закрыть</button>
     </div>
     
     <div id="shape-modal" class="modal">
@@ -318,6 +318,68 @@
             <div id="modal-shapes-container"></div>
             <button id="modal-close-btn">Закрыть</button>
         </div>
+    </div>
+
+    <!-- Кнопка замка -->
+    <div class="lock-btn unlocked" id="lockBtn" title="Заблокировать">
+        <style>
+          .lock-btn {
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              background: #2c3e50;
+              border: 2px solid #aaa;
+              cursor: pointer;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 10;
+          }
+          
+          .lock-btn:hover {
+              background: #19242e;
+          }
+          
+          .lock-icon {
+              width: 30px;
+              height: 30px;
+              position: relative;
+          }
+          
+          .lock-body {
+              width: 20px;
+              height: 15px;
+              background: #aaa;
+              position: absolute;
+              bottom: 0;
+              left: 5px;
+          }
+          
+          .lock-top {
+              width: 14px;
+              height: 14px;
+              border: 3px solid #aaa;
+              /* background: #333; */
+              border-radius: 10px 10px 0 0;
+              position: absolute;
+              top: 5px;
+              left: 8px;
+          }
+          
+          .lock-btn.unlocked .lock-top {
+              top: -4px;
+          }
+      </style>
+        <div class="lock-icon">
+            <div class="lock-top"></div>
+            <div class="lock-body"></div>
+        </div>
+        <script>
+
+        </script>
     </div>
     
     <script src="./data/data.js"></script>

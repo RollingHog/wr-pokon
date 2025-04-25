@@ -13,6 +13,7 @@ const defaultUnits = [
   'unit',
   'Пехота',
   'Стрелки',
+  'Маги',
   'Элита',
 ]
 
@@ -36,30 +37,36 @@ let dragStartX, dragStartY;
 let canvasOffsetX = 0, canvasOffsetY = 0;
 let tempOffsetX = 0, tempOffsetY = 0;
 let selectedElement = null;
-/** @type{{                
-*          type: 'shape',
-      shape: activeShapeType,
-      color: color,
-      name?: string,
-      x: number,
-      y: number,
-      width: width,
-      height: height,
-      src: src}[]} 
-* 
+/** 
+* @type {{
+*     type: 'shape',
+*     shape: activeShapeType,
+*     color: color,
+*     name?: string,
+*     x: number,
+*     y: number,
+*     width: width,
+*     height: height,
+*     src: src
+*     curr_hp?: number,
+*     max_hp?: number,
+* }[]} 
 */
 let elements = [];
-/** @type {{
+/** 
+ * @type {{
 * id: mapId,
 * name: string,
 * src: event.target.result,
-* image: Image
-* }[]} */
+* image: Image,
+* }[]} 
+*/
 let maps = [];
 let currentMapIndex = -1;
 let customShapes = [];
 let activeShapeType = 'rect';
 let touchIdentifier = null;
+let isGlobalLocked = false;
 
 // Инициализация
 function init() {
@@ -76,10 +83,7 @@ function init() {
   resizeCanvas();
   drawCanvas();
   
-  addListeners()
-  
-  // Масштабирование
-  scaleSlider.addEventListener('input', updateScale);
+  addListeners();
   
   // Предпросмотр фигур
   const shapePreviews = document.querySelectorAll('.shape-preview');
@@ -204,8 +208,24 @@ canvas.addEventListener('mousedown', handleMouseDown);
   
   // Форма редактирования
   document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
-  document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
+  // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   document.getElementById('edit-color').addEventListener('input', updateElementColor);
+
+  // Масштабирование
+  scaleSlider.addEventListener('input', updateScale);
+
+  const lockBtn = document.getElementById('lockBtn');
+  lockBtn.addEventListener('click', function() {
+      isGlobalLocked = !isGlobalLocked;
+      
+      if (isGlobalLocked) {
+        lockBtn.classList.remove('unlocked');
+        lockBtn.title = "Разблокировать";
+      } else {
+          lockBtn.classList.add('unlocked');
+          lockBtn.title = "Заблокировать";
+      }
+  });
 }
 
 function onCustomImageLoad(filename, src) {
@@ -271,11 +291,6 @@ function loadDefaultCustomImages() {
   for (const objName of defaultUnits) {
       onCustomImageLoad(objName, `assets/units/${objName}.png`)
   }
-
-  document.getElementById('obj-names-list').innerHTML = []
-      .concat(defaultBuildings, defaultUnits)
-      .map(name => `<option value="${name}">\n`)
-      .join('')
 }
 
 // Функции отрисовки
@@ -285,7 +300,11 @@ function resizeCanvas() {
   drawCanvas();
 }
 
+let lastPaint = Date.now()
 function drawCanvas() {
+  // TODO?
+  // if(Date.now() - lastPaint < 50) return
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
   // Рисуем фон (шахматный узор)
@@ -316,6 +335,8 @@ function drawCanvas() {
           drawText(element);
       }
   });
+
+  lastPaint = Date.now()
 }
 
 /** 
@@ -332,9 +353,11 @@ function drawShape(shape) {
       ctx.beginPath();
       ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
       ctx.fill();
+      // TODO we don't need separate image for each object, only for types
       const img = new Image();
       img.src = shape.src;
       ctx.drawImage(img, 0, 0, shape.width, shape.height);
+      drawHealthBar(ctx, 0, shape.height, shape.width, 10, 10)
   } else {
       ctx.fillStyle = shape.color;
       
@@ -367,6 +390,55 @@ function drawShape(shape) {
   }
   
   ctx.restore();
+}
+
+/**
+ * Рисует полоску здоровья под юнитом
+ * @param {CanvasRenderingContext2D} ctx - Контекст canvas
+ * @param {number} x - X-координата центра юнита
+ * @param {number} y - Y-координата низа юнита
+ * @param {number} width - Ширина полоски
+ * @param {number} hpCurrent - Текущее здоровье
+ * @param {number} hpMax - Максимальное здоровье
+ * @param {number} [height=5] - Высота полоски (по умолчанию 5px)
+ * @param {number} [offsetY=5] - Отступ от юнита (по умолчанию 5px)
+ */
+function drawHealthBar(ctx, x, y, width, hpCurrent, hpMax, height = 5, offsetY = 5) {
+  // Рассчитываем процент здоровья
+  const healthPercent = hpCurrent / hpMax;
+  
+  // Координаты левого края полоски (центрирование)
+  const barX = x;
+  const barY = y + offsetY;
+  
+  // Цвета
+  const backgroundColor = '#333333';
+  const healthColor = healthPercent > 0.6 ? '#4CAF50' :  // Зеленый
+                     healthPercent > 0.3 ? '#FFC107' :  // Желтый
+                     '#F44336';                         // Красный
+  
+  // Рисуем фон полоски
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(barX, barY, width, height);
+  
+  // Рисуем текущее здоровье
+  ctx.fillStyle = healthColor;
+  ctx.fillRect(barX, barY, width * healthPercent, height);
+  
+  // Обводка для красоты
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(barX, barY, width, height);
+
+  // Текст с текущим здоровьем
+  // ctx.fillStyle = '#FFFFFF';
+  // ctx.font = 'bold 10px Arial';
+  // ctx.textAlign = 'center';
+  // ctx.fillText(
+  //     `${hpCurrent}/${hpMax}`,
+  //     x + width / 2,
+  //     barY + height + 12  // Под полоской
+  // );
 }
 
 function drawText(text) {
@@ -536,6 +608,7 @@ function handleWheel(e) {
 }
 
 // Функции тулбара
+// eslint-disable-next-line no-unused-vars
 function showShapePanel() {
   if (window.innerWidth < 768) {
       shapeModal.style.display = 'flex';
@@ -545,6 +618,7 @@ function showShapePanel() {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function showTextPanel() {
   document.getElementById('text-panel').style.display = 'block';
   document.getElementById('shape-panel').style.display = 'none';
@@ -644,6 +718,7 @@ function deleteSelected() {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function closeEditPanel() {
   editPanel.style.display = 'none';
   selectedElement = null;
@@ -842,7 +917,7 @@ function saveMap() {
 }
 
 function saveObjects() {
-  saveFile(`objects-${(new Date().toJSON())}.json.js`, 'DEFAULT_DATA=' + JSON.stringify(elements))
+  saveFile(`objects-${(new Date().toJSON())}.json.js`, 'DEFAULT_DATA=' + JSON.stringify(elements, 0, 2))
 }
 
 function loadObjects(e) {
@@ -859,6 +934,7 @@ function loadObjects(e) {
 }
 
 // Вспомогательные функции
+// eslint-disable-next-line no-unused-vars
 function getRandomColor() {
   const letters = '0123456789ABCDEF';
   let color = '#';
