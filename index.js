@@ -4,16 +4,18 @@ DEFAULT_DATA
 
 const defaultBuildings = [
   'build_slot',
+  'Аванпост',
+  'Каменоломня',
+  'Магическая_академия',
+  'Столица',
   'Ферма',
   'Шахта',
-  'Столица',
-  'Магическая_академия',
 ]
 const defaultUnits = [
   'unit',
+  'Маги',
   'Пехота',
   'Стрелки',
-  'Маги',
   'Элита',
 ]
 
@@ -36,7 +38,6 @@ let isDraggingElement = false;
 let dragStartX, dragStartY;
 let canvasOffsetX = 0, canvasOffsetY = 0;
 let tempOffsetX = 0, tempOffsetY = 0;
-let selectedElement = null;
 /** 
 * @type {{
 *     type: 'shape',
@@ -53,6 +54,10 @@ let selectedElement = null;
 * }[]} 
 */
 let elements = [];
+/** 
+* @type {typeof elements[0]} 
+*/
+let selectedElement = null;
 /** 
  * @type {{
 * id: mapId,
