@@ -418,7 +418,7 @@ function drawShape(shape) {
       const img = new Image();
       img.src = shape.src;
       ctx.drawImage(img, 0, 0, shape.width, shape.height);
-      if(!isBuilding(shape) || isNoHealth(shape)) {
+      if(!isBuilding(shape) && !isNoHealth(shape)) {
         drawHealthBar(ctx, 0, shape.height, shape.width, 10, 10)
       }
   } else {
