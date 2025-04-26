@@ -240,29 +240,14 @@
                     <button class="player-btn" data-color="#00ffff" onclick="setShapeColor('#00ffff')">Егг</button>
                     <button class="player-btn" data-color="#800080" onclick="setShapeColor('#800080')">Кшиштоф</button>
                     <button class="player-btn" data-color="#d3d3d3" onclick="setShapeColor('#d3d3d3')">Нейтралы</button>
-                    <script>
-                        function setShapeColor(color) {
-                            document.getElementById('shape-color').value=color
-                            if(typeof selectedElement !== 'undefined' && selectedElement) {
-                              selectedElement.color = color
-                              drawCanvas();
-                            }
-                        }
-                        const playerBtns = Array.from(document.querySelectorAll('.player-btn'))
-                        playerBtns.forEach(el => {
-                            const color = el.dataset.color
-                            el.style.backgroundColor = color
-                            el.onclick = _ => setShapeColor(color)
-                        })
-                        playerBtns[0].click()
-                    </script>
                 </div>
                 <div class="color-picker">
                     <span>Размер: </span><output>__</output>
                     <input type="range" id="shape-size" min="10" max="100" value="30" oninput="this.previousElementSibling.value = this.value">
 
                 </div>
-                <button id="place-shape-btn" hotkey="A">Разместить фигуру</button>
+                <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разместить фигуру</button>
+                <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
             </div>
             <hr>
             <div id="text-panel">

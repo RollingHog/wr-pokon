@@ -116,7 +116,6 @@ function init() {
   shapePreviews.forEach(preview => {
       preview.addEventListener('click', function() {
           activeShapeType = this.dataset.shape;
-          // document.getElementById('shape-color').value = getRandomColor();
           // document.getElementById('shape-size').value = 50;
           
           // Добавляем класс active к выбранной фигуре
@@ -185,7 +184,6 @@ function init() {
           
           preview.addEventListener('click', function() {
               activeShapeType = shape.type;
-              // document.getElementById('shape-color').value = getRandomColor();
               document.getElementById('shape-size').value = 30;
               shapeModal.style.display = 'none';
           });
@@ -200,6 +198,23 @@ function init() {
   document.querySelector('.shape-preview')?.click();
 
   // document.getElementById('add-shape-btn').click()
+
+  const playerBtns = Array.from(document.querySelectorAll('.player-btn'))
+  playerBtns.forEach(el => {
+    const color = el.dataset.color
+    el.style.backgroundColor = color
+    el.onclick = _ => setShapeColor(color)
+  })
+  playerBtns[0].click()
+}
+
+function setShapeColor(color) {
+  document.getElementById('shape-color').value=color
+  document.getElementById('text-color').value=color
+  if(typeof selectedElement !== 'undefined' && selectedElement) {
+    selectedElement.color = color
+    drawCanvas();
+  }
 }
 
 function addListeners() {
@@ -226,6 +241,8 @@ function addListeners() {
   document.getElementById('save-objects-btn')?.addEventListener('click', saveObjects);
   document.getElementById('load-objects-file').addEventListener('change', loadObjects);
   document.getElementById('help-btn').addEventListener('click', showHelp);
+  document.getElementById('user-effects-btn').addEventListener('click', userEffectsObj.effectsForSelectedUser);
+  
   
   // document.getElementById('add-shape-btn').addEventListener('click', showShapePanel);
   // document.getElementById('add-text-btn').addEventListener('click', showTextPanel);
@@ -849,6 +866,11 @@ const userEffectsObj = {
         }
       }
       console.log(effectsDict)
+      alert(`Игрок ${username}:\n` +JSON.stringify(effectsDict, 0, 2))
+  },
+  effectsForSelectedUser() {
+    const username = document.querySelector(`[data-color="${document.getElementById('shape-color').value}"]`).textContent
+    userEffectsObj.sumEffects(username)
   }
 }
 
