@@ -5,11 +5,12 @@ DEFAULT_DATA
 const defaultBuildings = [
   'build_slot',
   'Аванпост',
+  'Железная_шахта',
   'Каменоломня',
+  'Лесопилка',
   'Магическая_академия',
   'Столица',
   'Ферма',
-  'Шахта',
 ]
 const defaultUnits = [
   'unit',
@@ -341,14 +342,18 @@ function drawCanvas() {
   
   // Рисуем все элементы
   elements.forEach(element => {
-      if (element.type === 'shape') {
-          drawShape(element);
-      } else if (element.type === 'text') {
-          drawText(element);
-      }
+    drawElement(element)
   });
 
   // lastPaint = Date.now()
+}
+
+function drawElement(element) {
+  if (element.type === 'shape') {
+      drawShape(element);
+  } else if (element.type === 'text') {
+      drawText(element);
+  }
 }
 
 /** 
@@ -566,7 +571,6 @@ function startDrag(clientX, clientY) {
   if (selectedElement) {
       selectedElement = null;
       editPanel.style.display = 'none';
-      drawCanvas();
   }
 }
 
@@ -713,7 +717,7 @@ function placeShape() {
   };
   
   elements.push(shape);
-  drawCanvas();
+  drawElement(shape)
 }
 
 function placeText() {
@@ -747,7 +751,7 @@ function placeText() {
   
   elements.push(text);
   document.getElementById('text-input').value = '';
-  drawCanvas();
+  drawElement(text);
 }
 
 const lineActionsObj = {
@@ -820,13 +824,12 @@ function deleteSelected() {
 function closeEditPanel() {
   editPanel.style.display = 'none';
   selectedElement = null;
-  drawCanvas();
 }
 
 function updateElementColor() {
   if (selectedElement) {
       selectedElement.color = document.getElementById('edit-color').value;
-      drawCanvas();
+      drawElement(selectedElement)
   }
 }
 
