@@ -5,19 +5,34 @@ DEFAULT_DATA
 const defaultBuildings = [
   'build_slot',
   'Аванпост',
+  'Госпиталь',
+  'Дом',
+  // 'Дороги',
   'Железная_шахта',
+  'Казарма',
   'Каменоломня',
+  'Кузница',
   'Лесопилка',
   'Магическая_академия',
+  // 'Мосты',
+  'Склад',
+  // 'Стены',
   'Столица',
+  'Уникальное_здание',
   'Ферма',
+  'Школа_шпионов',
 ]
 const defaultUnits = [
-  'unit',
+  'default_unit',
   'Маги',
   'Пехота',
   'Стрелки',
+  'Шпион',
   'Элита',
+]
+
+const noHealthList = [
+  'build_slot',
 ]
 
 // Основные переменные
@@ -209,6 +224,7 @@ function addListeners() {
   document.getElementById('save-map-btn')?.addEventListener('click', saveMap);
   document.getElementById('save-objects-btn')?.addEventListener('click', saveObjects);
   document.getElementById('load-objects-file').addEventListener('change', loadObjects);
+  document.getElementById('help-btn').addEventListener('click', showHelp);
   
   // document.getElementById('add-shape-btn').addEventListener('click', showShapePanel);
   // document.getElementById('add-text-btn').addEventListener('click', showTextPanel);
@@ -367,7 +383,7 @@ function drawShape(shape) {
   if (shape.shape === 'custom') {
       // обозначаем принадлежность
       ctx.fillStyle = shape.color;
-    if (defaultBuildings.includes(shape.name)) {
+    if (isBuilding(shape)) {
       ctx.beginPath();
       ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
       ctx.fill();
@@ -384,7 +400,9 @@ function drawShape(shape) {
       const img = new Image();
       img.src = shape.src;
       ctx.drawImage(img, 0, 0, shape.width, shape.height);
-      drawHealthBar(ctx, 0, shape.height, shape.width, 10, 10)
+      if(!isBuilding(shape) || isNoHealth(shape)) {
+        drawHealthBar(ctx, 0, shape.height, shape.width, 10, 10)
+      }
   } else {
       ctx.fillStyle = shape.color;
       
@@ -959,7 +977,7 @@ function saveMap() {
           if (element.shape === 'custom') {
               // обозначаем принадлежность
               tempCtx.fillStyle = element.color;
-              if (defaultBuildings.includes(element.name)) {
+              if (isBuilding(element)) {
                 tempCtx.beginPath();
                 tempCtx.arc(
                   element.x + element.width / 2, element.y + element.height / 2,
@@ -1044,6 +1062,15 @@ function loadObjects(e) {
   reader.readAsText(file);
 }
 
+function showHelp() {
+  // TODO
+  alert(`Ну, когда-нибудь.
+* Как правило хоткеи - с Alt
+* Переключение цвета при выбранной фигуре меняет её цвет
+* После перемещения юнитов сделайте "Экспортировать объекты" и запостите файл в тред, я обновлю
+    `)
+}
+
 // Вспомогательные функции
 // eslint-disable-next-line no-unused-vars
 function getRandomColor() {
@@ -1053,6 +1080,17 @@ function getRandomColor() {
       color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
+}
+
+/** 
+* @param {typeof elements[0]} shape 
+*/
+function isBuilding(shape) {
+  return defaultBuildings.includes(shape.name)
+}
+
+function isNoHealth(shape) {
+  return noHealthList.includes(shape.name)
 }
 
 function saveFile(filename, data) {
