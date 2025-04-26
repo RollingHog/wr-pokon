@@ -67,6 +67,10 @@ let customShapes = [];
 let activeShapeType = 'rect';
 let touchIdentifier = null;
 let isGlobalLocked = false;
+const lineModeObj = {
+  active: false,
+  points: [],
+}
 
 // Инициализация
 function init() {
@@ -177,10 +181,12 @@ function init() {
 }
 
 function addListeners() {
-// События мыши/касания
-canvas.addEventListener('mousedown', handleMouseDown);
+  // События мыши/касания
+  canvas.addEventListener('mousedown', handleMouseDown);
   canvas.addEventListener('mousemove', handleMouseMove);
   canvas.addEventListener('mouseup', handleMouseUp);
+  canvas.addEventListener('contextmenu', lineActionsObj.finishLineDrawing);
+
   canvas.addEventListener('wheel', handleWheel, { passive: false });
   
   // События касания для мобильных устройств
@@ -203,6 +209,7 @@ canvas.addEventListener('mousedown', handleMouseDown);
   
   document.getElementById('place-shape-btn').addEventListener('click', placeShape);
   document.getElementById('place-text-btn').addEventListener('click', placeText);
+  document.getElementById('place-line-btn').addEventListener('click', lineActionsObj.placeLineClick);
   
   // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
   
@@ -300,7 +307,7 @@ function resizeCanvas() {
   drawCanvas();
 }
 
-let lastPaint = Date.now()
+// let lastPaint = Date.now()
 function drawCanvas() {
   // TODO?
   // if(Date.now() - lastPaint < 50) return
@@ -336,7 +343,7 @@ function drawCanvas() {
       }
   });
 
-  lastPaint = Date.now()
+  // lastPaint = Date.now()
 }
 
 /** 
@@ -350,9 +357,19 @@ function drawShape(shape) {
   if (shape.shape === 'custom') {
       // обозначаем принадлежность
       ctx.fillStyle = shape.color;
+    if (defaultBuildings.includes(shape.name)) {
       ctx.beginPath();
       ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
       ctx.fill();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(shape.width/2, 0);
+      ctx.lineTo(shape.width, shape.height);
+      ctx.lineTo(0, shape.height);
+      ctx.closePath();
+      ctx.fill();
+    }
+
       // TODO we don't need separate image for each object, only for types
       const img = new Image();
       img.src = shape.src;
@@ -461,7 +478,26 @@ function drawText(text) {
 // Обработчики событий мыши/касания
 function handleMouseDown(e) {
   e.preventDefault();
-  startDrag(e.clientX, e.clientY);
+  if(!lineModeObj.active) {
+    startDrag(e.clientX, e.clientY);
+  } else {
+    if (e.button === 0) {
+      lineModeObj.active = true;
+      
+      // Получаем координаты точки
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Добавляем точку
+      lineModeObj.points.push({x, y});
+      
+      // Перерисовываем холст
+      lineActionsObj.drawLineCanvas();
+      
+      e.preventDefault();
+  }
+  }
 }
 
 function handleTouchStart(e) {
@@ -709,6 +745,63 @@ function placeText() {
   drawCanvas();
 }
 
+const lineActionsObj = {
+  updateLineButton() {
+    document.getElementById('place-line-led').textContent = lineModeObj.active 
+      ? 'ВКЛ'
+      : 'ВЫКЛ'
+  },
+
+  placeLineClick() {
+    lineModeObj.active = !lineModeObj.active
+    lineModeObj.points = []
+    lineActionsObj.updateLineButton()
+
+    if(!lineModeObj.active) return
+  
+    // Настройки линии
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 4;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+  },
+  
+  drawLineCanvas() {
+    // Рисуем все точки
+    lineModeObj.points.forEach((point, index) => {
+      // Точка
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff0000';
+      ctx.fill();
+  
+      // Номер точки
+      ctx.fillStyle = '#000000';
+      ctx.font = '14px Arial';
+      ctx.fillText(index, point.x + 8, point.y + 5);
+  
+      // Линии между точками
+      if (index > 0) {
+        ctx.beginPath();
+        ctx.moveTo(lineModeObj.points[index - 1].x, lineModeObj.points[index - 1].y);
+        ctx.lineTo(point.x, point.y);
+        ctx.stroke();
+      }
+    });
+  },
+  
+  finishLineDrawing(e) {
+    // ПКМ - закончить рисование
+    if (e.button === 2 && lineModeObj.active) {
+        lineModeObj.active = false;
+        lineActionsObj.updateLineButton()
+        // Очищаем массив точек для следующего рисунка
+        lineModeObj.points = [];
+        e.preventDefault();
+    }
+  }
+}
+
 function deleteSelected() {
   if (selectedElement) {
       elements = elements.filter(el => el !== selectedElement);
@@ -858,12 +951,22 @@ function saveMap() {
           if (element.shape === 'custom') {
               // обозначаем принадлежность
               tempCtx.fillStyle = element.color;
-              tempCtx.beginPath();
-              tempCtx.arc(
-                element.x + element.width/2, element.y + element.height/2, 
-                element.width/2, 0, Math.PI * 2
-              );
-              tempCtx.fill();
+              if (defaultBuildings.includes(element.name)) {
+                tempCtx.beginPath();
+                tempCtx.arc(
+                  element.x + element.width / 2, element.y + element.height / 2,
+                  element.width / 2, 0, Math.PI * 2
+                );
+                tempCtx.fill();
+              } else {
+                // unit
+                tempCtx.beginPath();
+                tempCtx.moveTo(element.x + element.width / 2, element.y);
+                tempCtx.lineTo(element.x + element.width, element.y + element.height);
+                tempCtx.lineTo(element.x, element.y + element.height);
+                tempCtx.closePath();
+                tempCtx.fill();
+              }
               const img = new Image();
               img.src = element.src;
               tempCtx.drawImage(img, element.x, element.y, element.width, element.height);
