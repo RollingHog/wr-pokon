@@ -1,3 +1,4 @@
+CURRENT_TURN=1
 DEFAULT_DATA=[
   {
     "type": "shape",

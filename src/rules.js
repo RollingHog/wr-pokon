@@ -23,6 +23,7 @@ const DICT_COMMON = {
     // TODO add empire default values
     effects: [
       ["Хранилище", 15],
+      ["Еда", 30],
     ]
   },
   Дом: {
@@ -63,6 +64,7 @@ const DICT_USER = {
     Столица: {
       effects: [
         ["Кристаллы", 2],
+        ["Еда", 10],
       ]
     }
   },
@@ -70,6 +72,7 @@ const DICT_USER = {
     Столица: {
       effects: [
         ["Кристаллы", 2],
+        ["Еда", 10],
       ]
     }
   },

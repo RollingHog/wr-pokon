@@ -1,5 +1,5 @@
 /* global 
-DEFAULT_DATA 
+CURRENT_TURN DEFAULT_DATA 
 DICT_COMMON DICT_USER EFFECT_LISTS
 */
 
@@ -275,12 +275,20 @@ function addListeners() {
   });
 }
 
+function imageObjByObjName(filename) {
+  return customShapes.find(({ name }) => name === filename).imageObj
+}
+
 function onCustomImageLoad(filename, src) {
+  const imageObj = new Image();
+  imageObj.src = src;
+
   const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
   customShapes.push({
       id: shapeId,
       name: filename,
-      src: src
+      src: src,
+      imageObj,
   });
 
   // Создаем превью для пользовательской фигуры
@@ -414,13 +422,28 @@ function drawShape(shape) {
       ctx.fill();
     }
 
-      // TODO we don't need separate image for each object, only for types
-      const img = new Image();
-      img.src = shape.src;
+      const img = imageObjByObjName(shape.name)
       ctx.drawImage(img, 0, 0, shape.width, shape.height);
       if(!isBuilding(shape) && !isNoHealth(shape)) {
         drawHealthBar(ctx, 0, shape.height, shape.width, 10, 10)
       }
+      // TODO timed building
+      // if(isBuilding(shape) && !isNoHealth(shape)) {
+      //   const dlt = 5
+      //   ctx.strokeStyle = 'white';
+      //   ctx.lineWidth = 2 
+      //   ctx.beginPath();
+      //   ctx.arc(shape.width/2, shape.height/2, shape.width/2-dlt, 0, Math.PI * 2);
+      //   ctx.stroke();
+      //   ctx.beginPath();
+      //   // ctx.moveTo(dlt, dlt-1);
+      //   // ctx.lineTo(shape.width-dlt, dlt-1);
+      //   ctx.moveTo(shape.width/2, dlt-1);
+      //   ctx.lineTo(shape.width/2, shape.height/2);
+      //   ctx.lineTo(shape.width/2 + dlt * 2, shape.height - dlt * 2);
+      //   // ctx.closePath();
+      //   ctx.stroke();
+      // }
   } else {
       ctx.fillStyle = shape.color;
       
@@ -852,10 +875,12 @@ const userEffectsObj = {
   sumEffects(username) {
     const userColor = colorFromUsername(username)
     let userEffects = []
-      const userBuildings = elements.filter(obj => obj.color === userColor && isBuilding(obj))
+      const userObjs = elements.filter(obj => obj.color === userColor && !isNoHealth(obj))
+      const userBuildings = userObjs.filter(obj => isBuilding(obj))
+      const userUnits = userObjs.filter(obj => !isBuilding(obj))
       userEffects = [].concat(userBuildings.map(obj => {
         return [].concat([DICT_USER[username]?.[obj.name]?.effects, DICT_COMMON?.[obj.name]?.effects])
-      }).flat().filter(e=>e)).flat()
+      }).flat().filter(e=>e)).flat().concat([['Еда', -10*userUnits.length]])
       const effectsDict = {}
       for(let [k,v] of userEffects) {
         if(!k) continue
@@ -866,7 +891,9 @@ const userEffectsObj = {
         }
       }
       console.log(effectsDict)
-      alert(`Игрок ${username}:\n` +JSON.stringify(effectsDict, 0, 2))
+      alert(`Игрок ${username}:\n` 
+        +JSON.stringify(effectsDict, 0, 2)
+      )
   },
   effectsForSelectedUser() {
     const username = document.querySelector(`[data-color="${document.getElementById('shape-color').value}"]`).textContent
@@ -1095,7 +1122,9 @@ function saveMap() {
 }
 
 function saveObjects() {
-  saveFile(`objects-${(new Date().toJSON())}.json.js`, 'DEFAULT_DATA=' + JSON.stringify(elements, 0, 2))
+  saveFile(`objects-${(new Date().toJSON())}.json.js`, `CURRENT_TURN=${CURRENT_TURN}\nDEFAULT_DATA=` 
+    + JSON.stringify(elements, 0, 2)
+  )
 }
 
 function loadObjects(e) {
