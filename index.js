@@ -1,5 +1,6 @@
 /* global 
-DEFAULT_DATA
+DEFAULT_DATA 
+DICT_COMMON DICT_USER EFFECT_LISTS
 */
 
 const defaultBuildings = [
@@ -739,10 +740,10 @@ function placeShape() {
 }
 
 function placeText() {
-  const content = document.getElementById('text-input').value;
+  let content = document.getElementById('text-input').value;
   if (!content) {
-      alert('Введите текст');
-      return;
+      content = prompt('Введите текст');
+      if(!content) return;
   }
   
   if (currentMapIndex === -1) {
@@ -827,6 +828,32 @@ const lineActionsObj = {
         e.preventDefault();
     }
   }
+}
+
+// TODO + sort + icons?
+const userEffectsObj = {
+  sumEffects(username) {
+    const userColor = colorFromUsername(username)
+    let userEffects = []
+      const userBuildings = elements.filter(obj => obj.color === userColor && isBuilding(obj))
+      userEffects = [].concat(userBuildings.map(obj => {
+        return [].concat([DICT_USER[username]?.[obj.name]?.effects, DICT_COMMON?.[obj.name]?.effects])
+      }).flat().filter(e=>e)).flat()
+      const effectsDict = {}
+      for(let [k,v] of userEffects) {
+        if(!k) continue
+        if(effectsDict[k]) {
+          effectsDict[k] += +v
+        } else {
+          effectsDict[k] = +v
+        }
+      }
+      console.log(effectsDict)
+  }
+}
+
+function colorFromUsername(username) {
+  return Array.from(document.querySelectorAll('.player-btn')).find(el => el.textContent === username).dataset.color
 }
 
 function deleteSelected() {
