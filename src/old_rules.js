@@ -1,14 +1,12 @@
 /* exported 
-DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
+DICT_COMMON DICT_USER EFFECT_LISTS
 */
 
 const DEFAULT = {
   buildings: [
     'build_slot',
     'Аванпост',
-    'Город',
     'Госпиталь',
-    'Деревня',
     'Дом',
     // 'Дороги',
     'Железная_шахта',
@@ -42,11 +40,11 @@ const EFFECT_LISTS = {
   ],
   // в смысле "добываются в зданиях"
   resources: [
-    "Еда",
     "Железо",
     "Камень",
     "Дерево",
-    // "Лошади",
+    "Еда",
+    "Лошади",
   ],
   local: [],
 }

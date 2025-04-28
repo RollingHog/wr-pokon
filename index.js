@@ -1,36 +1,17 @@
 /* global 
-CURRENT_TURN DEFAULT_DATA 
-DICT_COMMON DICT_USER EFFECT_LISTS
+DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
 */
 
-const defaultBuildings = [
-  'build_slot',
-  'Аванпост',
-  'Госпиталь',
-  'Дом',
-  // 'Дороги',
-  'Железная_шахта',
-  'Казарма',
-  'Каменоломня',
-  'Кузница',
-  'Лесопилка',
-  'Магическая_академия',
-  // 'Мосты',
-  'Склад',
-  // 'Стены',
-  'Столица',
-  'Уникальное_здание',
-  'Ферма',
-  'Школа_шпионов',
-]
-const defaultUnits = [
-  'default_unit',
-  'Маги',
-  'Пехота',
-  'Стрелки',
-  'Шпион',
-  'Элита',
-]
+/// <reference path="./data/data.js"/>
+/* global
+CURRENT_TURN DEFAULT_DATA 
+*/
+
+/// <reference path="./src/rules.js"/>
+/* global
+*/
+
+
 
 const noHealthList = [
   'build_slot',
@@ -339,11 +320,11 @@ function loadDefaultMap() {
 
 function loadDefaultCustomImages() {
   
-  for (const objName of defaultBuildings) {
+  for (const objName of DEFAULT.buildings) {
       onCustomImageLoad(objName, `assets/buildings/${objName}.png`)
   }
   
-  for (const objName of defaultUnits) {
+  for (const objName of DEFAULT.units) {
       onCustomImageLoad(objName, `assets/units/${objName}.png`)
   }
 }
@@ -758,7 +739,7 @@ function placeShape() {
               img.src = src;
               const ratio = img.width / img.height;
               width = size;
-              height = size / ratio;
+              height = +((size / ratio).toFixed(2));
           }
       }
   }
@@ -1164,7 +1145,7 @@ function getRandomColor() {
 * @param {typeof elements[0]} shape 
 */
 function isBuilding(shape) {
-  return defaultBuildings.includes(shape.name)
+  return DEFAULT.buildings.includes(shape.name)
 }
 
 function isNoHealth(shape) {

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Холодное утро - Редактор карт</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            touch-action: none;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #toolbar {
+            width: 100%;
+            background-color: #2c3e50;
+            padding: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            color: white;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .toolbar-section {
+            display: inline-block;
+            margin-right: 15px;
+            vertical-align: top;
+        }
+        
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #7f8c8d;
+            touch-action: none;
+        }
+        
+        #map-canvas {
+            position: absolute;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            touch-action: none;
+        }
+        
+        .shape {
+            position: absolute;
+            user-select: none;
+            touch-action: none;
+        }
+        
+        .text-element {
+            position: absolute;
+            user-select: none;
+            padding: 5px;
+            background-color: rgba(255,255,255,0.7);
+            border-radius: 3px;
+            max-width: 200px;
+            word-wrap: break-word;
+            touch-action: none;
+        }
+        
+        .shape.selected, .text-element.selected {
+            outline: 2px dashed blue;
+        }
+        
+        .shape-preview {
+            width: 40px;
+            height: 40px;
+            margin: 2px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            display: inline-block;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: white;
+        }
+
+        .shape-preview.active {
+          background-color: lightskyblue;
+        }
+
+        
+        button {
+            margin: 2px;
+            padding: 6px 8px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        button:active {
+            background-color: #2980b9;
+        }
+        
+        input, select {
+            margin: 2px;
+            padding: 4px;
+            font-size: 14px;
+            max-width: 100px;
+        }
+        
+        #edit-panel {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 8px;
+            z-index: 1000;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            display: none;
+        }
+        
+        #custom-shapes-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+        
+        #map-list {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+        
+        .map-item {
+            padding: 5px 8px;
+            background-color: #34495e;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+        
+        .map-item.active {
+            background-color: #3498db;
+        }
+        
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 5px 0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                flex-direction: row;
+            }
+            
+            #toolbar {
+                width: 250px;
+                height: 100vh;
+                flex-direction: column;
+                overflow-y: auto;
+                white-space: normal;
+            }
+            
+            .toolbar-section {
+                display: block;
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            #map-list {
+                flex-direction: column;
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="toolbar">
+        <div class="toolbar-section hidden">
+            <h3>Карты</h3>
+            <button id="load-map-btn">Загрузить карту</button>
+            <input type="file" id="map-file" accept=".png" style="display: none;" multiple>
+            <div id="map-list"></div>
+        </div>
+        
+        <div class="toolbar-section">
+            <h3>Фигуры / Текст</h3>
+            <!-- <button id="add-shape-btn">Добавить фигуру</button>
+            <button id="add-text-btn">Добавить текст</button> -->
+            <div id="shape-panel">
+                <!-- <div class="shape-preview" data-shape="rect" style="background-color: red;"></div>
+                <div class="shape-preview" data-shape="circle" style="background-color: green; border-radius: 50%;"></div>
+                <div class="shape-preview" data-shape="triangle" style="width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 40px solid blue;"></div>
+                <div class="shape-preview" data-shape="line" style="background-color: black; width: 40px; height: 2px; margin-top: 19px;"></div> -->
+                
+                <!-- <h4>Загрузить фигуру</h4> -->
+                <input type="file" id="custom-shape" accept=".png" title="Загрузить фигуру">
+                <div id="custom-shapes-container"></div>
+                <div class="color-picker" style="flex-wrap: wrap;">
+                    <span>Цвет:</span>
+                    <input type="color" id="shape-color" value="#ff0000" class="hidden2" style="width: 30px;">
+                    <button class="player-btn" data-color="#00ffff" onclick="setShapeColor('#00ffff')">Егг</button>
+                    <button class="player-btn" data-color="#800080" onclick="setShapeColor('#800080')">Кшиштоф</button>
+                    <button class="player-btn" data-color="#d3d3d3" onclick="setShapeColor('#d3d3d3')">Нейтралы</button>
+                </div>
+                <div class="color-picker">
+                    <span>Размер: </span><output>__</output>
+                    <input type="range" id="shape-size" min="10" max="100" value="30" oninput="this.previousElementSibling.value = this.value">
+
+                </div>
+                <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разместить фигуру</button>
+                <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
+            </div>
+            <hr>
+            <div id="text-panel">
+                <input type="text" id="text-input" placeholder="Введите текст" style="max-width: 200px;">
+                <div class="color-picker">
+                    <span>Цвет:</span>
+                    <input type="color" id="text-color" value="#000000">
+                </div>
+                <div class="color-picker">
+                    <span>Размер:</span><output>___</output>
+                    <input type="range" id="text-size" min="10" max="50" value="16"  oninput="this.previousElementSibling.value = this.value">
+                </div>
+                <button id="place-text-btn" hotkey="T">Разместить</button>
+                <button id="place-line-btn" hotkey="W" title="Ведите линию ЛКМ, завершить ПКМ. Не двигайте/не масштабируйте карту, иначе сотрется">Линия <span id="place-line-led">_</span></button>
+            </div>
+        </div>
+        
+        <div class="toolbar-section">
+            <h3>Управление</h3>
+            <button id="save-map-btn" title="Сохранить карту как изображение для вставки в тред" hotkey="P">Экспорт карты</button>
+            <button id="save-objects-btn" title="Сохранить файл нарисованных объектов" hotkey="S">Сохранить объекты</button>
+            <!-- <span>Загрузить объекты:</span> -->
+            <input type="file" id="load-objects-file" accept=".json.js" title="Загрузить объекты из файла .json.js" hotkey="L">
+            <!-- <button id="load-objects-btn" title="Загрузить файл нарисованных объектов"></button> -->
+            <div class="color-picker">
+                <span>Масштаб:</span>
+                <input type="range" id="scale-slider" min="25" max="200" value="100">
+            </div>
+            <span id="scale-value">100%</span>
+        </div>
+        <button id="help-btn" title="" hotkey="F1">Помощь</button>
+        <a href="https://github.com/RollingHog/wr-pokon" style="color: white; text-align: center;">Github</a>
+    </div>
+    
+    <div id="canvas-container">
+        <canvas id="map-canvas"></canvas>
+        <div class="tgt_el" style="
+        width: 6px;
+        height: 6px;
+        color: orangered;
+        left: 49%;
+        top: 46.5%;
+        position: absolute;
+        z-index: 10;
+        font-size: xx-large;
+        user-select: none;
+      ">+</div>
+    </div>
+    
+    <div id="edit-panel">
+        <button id="edit-delete-btn">Del</button>
+        <!-- <button id="edit-close-btn">Закрыть</button> -->
+        <br>
+        <input id="edit-obj-name" list="obj-names-list" disabled></input>
+        <datalist id="obj-names-list"></datalist>
+        <div class="color-picker">
+            <span>Цвет:</span>
+            <input type="color" id="edit-color" style="width: 24px;">
+        </div>
+    </div>
+    
+    <div id="shape-modal" class="modal">
+        <div class="modal-content">
+            <h3>Выберите фигуру</h3>
+            <div id="modal-shapes-container"></div>
+            <button id="modal-close-btn">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Кнопка замка -->
+    <div class="lock-btn unlocked" id="lockBtn" title="Заблокировать">
+        <style>
+          .lock-btn {
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              background: #2c3e50;
+              border: 2px solid #aaa;
+              cursor: pointer;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 10;
+          }
+          
+          .lock-btn:hover {
+              background: #19242e;
+          }
+          
+          .lock-icon {
+              width: 30px;
+              height: 30px;
+              position: relative;
+          }
+          
+          .lock-body {
+              width: 20px;
+              height: 15px;
+              background: #aaa;
+              position: absolute;
+              bottom: 0;
+              left: 5px;
+          }
+          
+          .lock-top {
+              width: 14px;
+              height: 14px;
+              border: 3px solid #aaa;
+              /* background: #333; */
+              border-radius: 10px 10px 0 0;
+              position: absolute;
+              top: 5px;
+              left: 8px;
+          }
+          
+          .lock-btn.unlocked .lock-top {
+              top: -4px;
+          }
+      </style>
+        <div class="lock-icon">
+            <div class="lock-top"></div>
+            <div class="lock-body"></div>
+        </div>
+        <script>
+
+        </script>
+    </div>
+    
+    <script src="./src/rules.js"></script>
+    <script src="./data/data.js"></script>
+    <script src="../index.js"></script>
+</body>
+</html>
