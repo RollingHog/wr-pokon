@@ -4,213 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Холодное утро - Редактор карт</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            touch-action: none;
-        }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        #toolbar {
-            width: 100%;
-            background-color: #2c3e50;
-            padding: 10px;
-            overflow-x: auto;
-            white-space: nowrap;
-            color: white;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-        
-        .toolbar-section {
-            display: inline-block;
-            margin-right: 15px;
-            vertical-align: top;
-        }
-        
-        #canvas-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background-color: #7f8c8d;
-            touch-action: none;
-        }
-        
-        #map-canvas {
-            position: absolute;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            touch-action: none;
-        }
-        
-        .shape {
-            position: absolute;
-            user-select: none;
-            touch-action: none;
-        }
-        
-        .text-element {
-            position: absolute;
-            user-select: none;
-            padding: 5px;
-            background-color: rgba(255,255,255,0.7);
-            border-radius: 3px;
-            max-width: 200px;
-            word-wrap: break-word;
-            touch-action: none;
-        }
-        
-        .shape.selected, .text-element.selected {
-            outline: 2px dashed blue;
-        }
-        
-        .shape-preview {
-            width: 40px;
-            height: 40px;
-            margin: 2px;
-            cursor: pointer;
-            border: 1px solid #ccc;
-            display: inline-block;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            background-color: white;
-        }
-
-        .shape-preview.active {
-          background-color: lightskyblue;
-        }
-
-        
-        button {
-            margin: 2px;
-            padding: 6px 8px;
-            cursor: pointer;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-        
-        button:active {
-            background-color: #2980b9;
-        }
-        
-        input, select {
-            margin: 2px;
-            padding: 4px;
-            font-size: 14px;
-            max-width: 100px;
-        }
-        
-        #edit-panel {
-            position: absolute;
-            background-color: white;
-            border: 1px solid #ccc;
-            padding: 8px;
-            z-index: 1000;
-            box-shadow: 0 0 5px rgba(0,0,0,0.2);
-            border-radius: 4px;
-            display: none;
-        }
-        
-        #custom-shapes-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px;
-        }
-        
-        #map-list {
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            padding: 5px 0;
-        }
-        
-        .map-item {
-            padding: 5px 8px;
-            background-color: #34495e;
-            border-radius: 4px;
-            cursor: pointer;
-            white-space: nowrap;
-            font-size: 14px;
-        }
-        
-        .map-item.active {
-            background-color: #3498db;
-        }
-        
-        .color-picker {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin: 5px 0;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 15px;
-            border-radius: 5px;
-            max-width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        @media (min-width: 768px) {
-            body {
-                flex-direction: row;
-            }
-            
-            #toolbar {
-                width: 250px;
-                height: 100vh;
-                flex-direction: column;
-                overflow-y: auto;
-                white-space: normal;
-            }
-            
-            .toolbar-section {
-                display: block;
-                margin-right: 0;
-                margin-bottom: 15px;
-            }
-            
-            #map-list {
-                flex-direction: column;
-                overflow-x: hidden;
-                overflow-y: auto;
-            }
-        }
-
-        .hidden {
-            display: none !important;
-        }
-    </style>
+    <link rel="stylesheet" href="./src/main.css">
 </head>
 <body>
     <div id="toolbar">
@@ -284,17 +78,7 @@
     
     <div id="canvas-container">
         <canvas id="map-canvas"></canvas>
-        <div class="tgt_el" style="
-        width: 6px;
-        height: 6px;
-        color: orangered;
-        left: 49%;
-        top: 46.5%;
-        position: absolute;
-        z-index: 10;
-        font-size: xx-large;
-        user-select: none;
-      ">+</div>
+        <div class="tgt_el">+</div>
     </div>
     
     <div id="edit-panel">
@@ -319,57 +103,6 @@
 
     <!-- Кнопка замка -->
     <div class="lock-btn unlocked" id="lockBtn" title="Заблокировать">
-        <style>
-          .lock-btn {
-              position: fixed;
-              top: 20px;
-              right: 20px;
-              width: 50px;
-              height: 50px;
-              border-radius: 50%;
-              background: #2c3e50;
-              border: 2px solid #aaa;
-              cursor: pointer;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              z-index: 10;
-          }
-          
-          .lock-btn:hover {
-              background: #19242e;
-          }
-          
-          .lock-icon {
-              width: 30px;
-              height: 30px;
-              position: relative;
-          }
-          
-          .lock-body {
-              width: 20px;
-              height: 15px;
-              background: #aaa;
-              position: absolute;
-              bottom: 0;
-              left: 5px;
-          }
-          
-          .lock-top {
-              width: 14px;
-              height: 14px;
-              border: 3px solid #aaa;
-              /* background: #333; */
-              border-radius: 10px 10px 0 0;
-              position: absolute;
-              top: 5px;
-              left: 8px;
-          }
-          
-          .lock-btn.unlocked .lock-top {
-              top: -4px;
-          }
-      </style>
         <div class="lock-icon">
             <div class="lock-top"></div>
             <div class="lock-body"></div>
@@ -381,6 +114,6 @@
     
     <script src="./src/rules.js"></script>
     <script src="./data/data.js"></script>
-    <script src="../index.js"></script>
+    <script src="./index.js"></script>
 </body>
 </html>
