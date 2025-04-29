@@ -2,13 +2,17 @@
 DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
 */
 
-/// <reference path="./data/data.js"/>
+/// <reference path="./data/data.json.js"/>
 /* global
 CURRENT_TURN DEFAULT_DATA 
 */
 
 /// <reference path="./src/rules.js"/>
 /* global
+*/
+
+/* exported
+onOutputClick
 */
 
 const noHealthList = [
@@ -1106,7 +1110,7 @@ function saveMap() {
 }
 
 function saveObjects() {
-  saveFile(`objects-${(new Date().toJSON())}.json.js`, `CURRENT_TURN=${CURRENT_TURN}\nDEFAULT_DATA=` 
+  saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN}\nDEFAULT_DATA=` 
     + JSON.stringify(elements, 0, 2)
   )
 }
@@ -1221,6 +1225,12 @@ enableHotkeysProcessing(hotkeysList_, kModeHotkeys_) {
     if(evt.altKey) console.log(keyComb)
   })
 },
+}
+
+function onOutputClick(tgtElName) {
+  const t = prompt('Value')
+  if(!t) return
+  document.getElementById(tgtElName).value = t
 }
 
 // Запуск приложения

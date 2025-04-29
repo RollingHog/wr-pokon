@@ -36,7 +36,7 @@
                     <button class="player-btn" data-color="#d3d3d3" onclick="setShapeColor('#d3d3d3')">Нейтралы</button>
                 </div>
                 <div class="color-picker">
-                    <span>Размер: </span><output>__</output>
+                    <span>Размер: </span><output onclick="onOutputClick('shape-size')">__</output>
                     <input type="range" id="shape-size" min="10" max="100" value="30" oninput="this.previousElementSibling.value = this.value">
 
                 </div>
@@ -113,7 +113,7 @@
     </div>
     
     <script src="./src/rules.js"></script>
-    <script src="./data/data.js"></script>
+    <script src="./data/data.json.js"></script>
     <script src="./index.js"></script>
 </body>
 </html>
