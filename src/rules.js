@@ -5,6 +5,7 @@ DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
 const DEFAULT = {
   buildings: [
     'build_slot',
+    'unknown_bonus',
     'Аванпост',
     'Город',
     'Госпиталь',
@@ -16,6 +17,7 @@ const DEFAULT = {
     'Каменоломня',
     'Кузница',
     'Лесопилка',
+    'Охотник',
     'Магическая_академия',
     // 'Мосты',
     'Склад',
@@ -30,6 +32,7 @@ const DEFAULT = {
     'Маги',
     'Пехота',
     'Стрелки',
+    'Разведчики',
     'Шпион',
     'Элита',
   ]

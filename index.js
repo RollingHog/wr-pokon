@@ -11,10 +11,9 @@ CURRENT_TURN DEFAULT_DATA
 /* global
 */
 
-
-
 const noHealthList = [
   'build_slot',
+  'unknown_bonus',
 ]
 
 // Основные переменные
@@ -165,7 +164,7 @@ function init() {
           
           preview.addEventListener('click', function() {
               activeShapeType = shape.type;
-              document.getElementById('shape-size').value = 30;
+              document.getElementById('shape-size').value = 38;
               shapeModal.style.display = 'none';
           });
           
@@ -527,9 +526,10 @@ function drawText(text) {
 
 // Обработчики событий мыши/касания
 function handleMouseDown(e) {
+  const isRightClick = e.button !== 0
   e.preventDefault();
   if(!lineModeObj.active) {
-    startDrag(e.clientX, e.clientY);
+    startDrag(e.clientX, e.clientY, isRightClick);
   } else {
     if (e.button === 0) {
       lineModeObj.active = true;
@@ -563,13 +563,14 @@ function handleTouchStart(e) {
   }
 }
 
-function startDrag(clientX, clientY) {
+function startDrag(clientX, clientY, isRightClick = false) {
   const rect = canvas.getBoundingClientRect();
   const mouseX = clientX - rect.left;
   const mouseY = clientY - rect.top;
   
-  // Проверяем, не кликнули ли мы на элемент
-  for (let i = elements.length - 1; i >= 0; i--) {
+  if(!isRightClick) {
+    // Проверяем, не кликнули ли мы на элемент
+    for (let i = elements.length - 1; i >= 0; i--) {
       const element = elements[i];
       const x = element.x * scale + canvasOffsetX;
       const y = element.y * scale + canvasOffsetY;
@@ -597,7 +598,9 @@ function startDrag(clientX, clientY) {
           drawCanvas();
           return;
       }
+    }
   }
+  
   
   // Если не кликнули на элемент, начинаем перемещение холста
   isDragging = true;
@@ -1127,6 +1130,7 @@ function showHelp() {
 * Как правило хоткеи - с Alt
 * Переключение цвета при выбранной фигуре меняет её цвет
 * После перемещения юнитов сделайте "Экспортировать объекты" и запостите файл в тред, я обновлю
+* ПКМ - перетаскивание карты без риска выделения юнитов
     `)
 }
 

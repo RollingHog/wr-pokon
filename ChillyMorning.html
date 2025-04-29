@@ -37,7 +37,7 @@
                 </div>
                 <div class="color-picker">
                     <span>Размер: </span><output>__</output>
-                    <input type="range" id="shape-size" min="10" max="100" value="30" oninput="this.previousElementSibling.value = this.value">
+                    <input type="range" id="shape-size" min="10" max="100" value="38" oninput="this.previousElementSibling.value = this.value">
 
                 </div>
                 <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разместить фигуру</button>
@@ -77,8 +77,8 @@
     </div>
     
     <div id="canvas-container">
-        <canvas id="map-canvas"></canvas>
-        <div class="tgt_el">+</div>
+        <canvas id="map-canvas" oncontextmenu="return false;"></canvas>
+        <div id="tgt_el">+</div>
     </div>
     
     <div id="edit-panel">
