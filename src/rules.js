@@ -5,6 +5,7 @@ DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
 const DEFAULT = {
   buildings: [
     'build_slot',
+    'grave',
     'unknown_bonus',
     'Аванпост',
     'Город',
@@ -30,9 +31,10 @@ const DEFAULT = {
   ],
   units: [
     'default_unit',
-    'Маги',
     'Пехота',
     'Стрелки',
+    'Инженеры',
+    'Маги',
     'Разведчики',
     'Шпион',
     'Элита',
@@ -59,8 +61,8 @@ const DICT_COMMON = {
   Столица: {
     // TODO add empire default values
     effects: [
-      ["Хранилище", 15],
-      ["Еда", 30],
+      ["Хранилище", 30],
+      ["Еда", 40],
     ]
   },
   Дом: {

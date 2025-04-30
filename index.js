@@ -17,6 +17,7 @@ onOutputClick
 
 const noHealthList = [
   'build_slot',
+  'grave',
   'unknown_bonus',
 ]
 

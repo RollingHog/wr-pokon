@@ -181,8 +181,8 @@ DEFAULT_DATA=[
     "name": "Деревня",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 557.7566838652056,
-    "y": 2039.1990164511624,
+    "x": 591.2532490196013,
+    "y": 2040.9619935645517,
     "width": 64,
     "height": 35.72,
     "src": "assets/buildings/Деревня.png"
@@ -203,8 +203,8 @@ DEFAULT_DATA=[
     "name": "Деревня",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 325.75668386520556,
-    "y": 3011.199016451162,
+    "x": 301.75668386520556,
+    "y": 2871.199016451162,
     "width": 64,
     "height": 35.72,
     "src": "assets/buildings/Деревня.png"
@@ -676,8 +676,8 @@ DEFAULT_DATA=[
     "name": "Охотник",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2257.6639537392907,
-    "y": 2660.6913362548908,
+    "x": 2245.357188485834,
+    "y": 2659.460659729545,
     "width": 64,
     "height": 64,
     "src": "assets/buildings/Охотник.png"
@@ -775,8 +775,8 @@ DEFAULT_DATA=[
     "name": "unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 706.5426057190277,
-    "y": 1673.1174352974526,
+    "x": 729.4613081930879,
+    "y": 1697.799114884902,
     "width": 64,
     "height": 59.43,
     "src": "assets/buildings/unknown_bonus.png"
@@ -797,8 +797,8 @@ DEFAULT_DATA=[
     "name": "unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 3706.542605719028,
-    "y": 677.1174352974525,
+    "x": 3688.6289023873283,
+    "y": 635.3187941901527,
     "width": 64,
     "height": 59.43,
     "src": "assets/buildings/unknown_bonus.png"
@@ -835,5 +835,82 @@ DEFAULT_DATA=[
     "width": 64,
     "height": 59.43,
     "src": "assets/buildings/unknown_bonus.png"
+  },
+  {
+    "type": "shape",
+    "name": "Железная_шахта",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 2320.5274164890475,
+    "y": 456.0329371518629,
+    "width": 38,
+    "height": 35.29,
+    "src": "assets/buildings/Железная_шахта.png"
+  },
+  {
+    "type": "shape",
+    "name": "Железная_шахта",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 3976.686209737329,
+    "y": 409.4858674376029,
+    "width": 38,
+    "height": 35.29,
+    "src": "assets/buildings/Железная_шахта.png"
+  },
+  {
+    "type": "shape",
+    "name": "Железная_шахта",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 2692.4284999331044,
+    "y": 1434.5791307333993,
+    "width": 38,
+    "height": 35.29,
+    "src": "assets/buildings/Железная_шахта.png"
+  },
+  {
+    "type": "shape",
+    "name": "Железная_шахта",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 4417.863508786865,
+    "y": 1858.037539499707,
+    "width": 38,
+    "height": 35.29,
+    "src": "assets/buildings/Железная_шахта.png"
+  },
+  {
+    "type": "shape",
+    "name": "Железная_шахта",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 4209.294441782564,
+    "y": 3058.8897434638625,
+    "width": 38,
+    "height": 35.29,
+    "src": "assets/buildings/Железная_шахта.png"
+  },
+  {
+    "type": "shape",
+    "name": "Железная_шахта",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 2254.736441330777,
+    "y": 1762.5368160520247,
+    "width": 38,
+    "height": 35.29,
+    "src": "assets/buildings/Железная_шахта.png"
+  },
+  {
+    "type": "shape",
+    "name": "Железная_шахта",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 307.28541194175466,
+    "y": 2223.0506589841993,
+    "width": 38,
+    "height": 35.29,
+    "src": "assets/buildings/Железная_шахта.png"
   }
 ]
