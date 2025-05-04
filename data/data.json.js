@@ -9,7 +9,7 @@ DEFAULT_DATA=[
     "y": 1062.6027133879631,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -20,7 +20,7 @@ DEFAULT_DATA=[
     "y": 472.08501669127537,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -31,7 +31,7 @@ DEFAULT_DATA=[
     "y": 1736.0460919399616,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -42,7 +42,7 @@ DEFAULT_DATA=[
     "y": 2106.710917005646,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -53,7 +53,7 @@ DEFAULT_DATA=[
     "y": 679.5828559727756,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -64,7 +64,7 @@ DEFAULT_DATA=[
     "y": null,
     "width": 64,
     "height": null,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -75,7 +75,7 @@ DEFAULT_DATA=[
     "y": 220.49529395849189,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -86,7 +86,7 @@ DEFAULT_DATA=[
     "y": 1310.4815791972785,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -97,7 +97,7 @@ DEFAULT_DATA=[
     "y": 2864.866303137707,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -108,7 +108,7 @@ DEFAULT_DATA=[
     "y": 2905.218536116509,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -119,7 +119,7 @@ DEFAULT_DATA=[
     "y": 465.26057440458146,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -130,7 +130,7 @@ DEFAULT_DATA=[
     "y": 2605.2364837000396,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Город.png"
+    "src": "images/buildings/Город.png"
   },
   {
     "type": "shape",
@@ -141,7 +141,7 @@ DEFAULT_DATA=[
     "y": 328.97062581241596,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -152,7 +152,7 @@ DEFAULT_DATA=[
     "y": 618.6985342202377,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -163,7 +163,7 @@ DEFAULT_DATA=[
     "y": 1071.1990164511624,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -174,7 +174,7 @@ DEFAULT_DATA=[
     "y": 1555.1990164511624,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -185,7 +185,7 @@ DEFAULT_DATA=[
     "y": 2040.9619935645517,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -196,7 +196,7 @@ DEFAULT_DATA=[
     "y": 2399.199016451162,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -207,7 +207,7 @@ DEFAULT_DATA=[
     "y": 2871.199016451162,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -218,7 +218,7 @@ DEFAULT_DATA=[
     "y": 3125.4012019985703,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -229,7 +229,7 @@ DEFAULT_DATA=[
     "y": 2875.033727194964,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -240,7 +240,7 @@ DEFAULT_DATA=[
     "y": 2855.199016451162,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -251,7 +251,7 @@ DEFAULT_DATA=[
     "y": 3041.6452974428976,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -262,7 +262,7 @@ DEFAULT_DATA=[
     "y": 3167.199016451162,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -273,7 +273,7 @@ DEFAULT_DATA=[
     "y": 3128.267977709657,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -284,7 +284,7 @@ DEFAULT_DATA=[
     "y": 3046.7059372777435,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -295,7 +295,7 @@ DEFAULT_DATA=[
     "y": 2751.7334970804095,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -306,7 +306,7 @@ DEFAULT_DATA=[
     "y": 2553.065045972001,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -317,7 +317,7 @@ DEFAULT_DATA=[
     "y": 2372.9510825668644,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -328,7 +328,7 @@ DEFAULT_DATA=[
     "y": 2495.199016451162,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -339,7 +339,7 @@ DEFAULT_DATA=[
     "y": 1534.9721941598148,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -350,7 +350,7 @@ DEFAULT_DATA=[
     "y": 1496.7660454786114,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -361,7 +361,7 @@ DEFAULT_DATA=[
     "y": 1157.7074838202152,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -372,7 +372,7 @@ DEFAULT_DATA=[
     "y": 863.2251957909826,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -383,7 +383,7 @@ DEFAULT_DATA=[
     "y": 443.19901645116227,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -394,7 +394,7 @@ DEFAULT_DATA=[
     "y": 612.483217012722,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -405,7 +405,7 @@ DEFAULT_DATA=[
     "y": 912.3915186657014,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -416,7 +416,7 @@ DEFAULT_DATA=[
     "y": 311.38983280636216,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -427,7 +427,7 @@ DEFAULT_DATA=[
     "y": 404.97333367812985,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -438,7 +438,7 @@ DEFAULT_DATA=[
     "y": 1078.341201800128,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -449,7 +449,7 @@ DEFAULT_DATA=[
     "y": 1535.1546910171628,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -460,7 +460,7 @@ DEFAULT_DATA=[
     "y": 921.3803769271168,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -471,7 +471,7 @@ DEFAULT_DATA=[
     "y": 1455.3574913119844,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -482,7 +482,7 @@ DEFAULT_DATA=[
     "y": 1584.6494323316795,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -493,7 +493,7 @@ DEFAULT_DATA=[
     "y": 1998.5529436618215,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -504,7 +504,7 @@ DEFAULT_DATA=[
     "y": 1955.365311382002,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -515,7 +515,7 @@ DEFAULT_DATA=[
     "y": 2295.8120595135947,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -526,7 +526,7 @@ DEFAULT_DATA=[
     "y": 2755.0111033968274,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -537,7 +537,7 @@ DEFAULT_DATA=[
     "y": 3040.1037110263433,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -548,7 +548,7 @@ DEFAULT_DATA=[
     "y": 2996.112882053718,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -559,7 +559,7 @@ DEFAULT_DATA=[
     "y": 1523.9684871989675,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -570,7 +570,7 @@ DEFAULT_DATA=[
     "y": 1734.2494620685081,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -581,7 +581,7 @@ DEFAULT_DATA=[
     "y": 1484.949735514546,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -592,7 +592,7 @@ DEFAULT_DATA=[
     "y": 643.0410785570228,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -603,7 +603,7 @@ DEFAULT_DATA=[
     "y": 141.90387859662,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -614,7 +614,7 @@ DEFAULT_DATA=[
     "y": 102.63209219081595,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -625,7 +625,7 @@ DEFAULT_DATA=[
     "y": 449.80772996345064,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -636,7 +636,7 @@ DEFAULT_DATA=[
     "y": 322.9296508062375,
     "width": 64,
     "height": 35.72,
-    "src": "assets/buildings/Деревня.png"
+    "src": "images/buildings/Деревня.png"
   },
   {
     "type": "shape",
@@ -647,7 +647,7 @@ DEFAULT_DATA=[
     "y": 2998.7270239209297,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -658,7 +658,7 @@ DEFAULT_DATA=[
     "y": 2110.1977484967047,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Охотник.png"
+    "src": "images/buildings/Охотник.png"
   },
   {
     "type": "shape",
@@ -669,7 +669,7 @@ DEFAULT_DATA=[
     "y": 2110.197748496704,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Охотник.png"
+    "src": "images/buildings/Охотник.png"
   },
   {
     "type": "shape",
@@ -680,7 +680,7 @@ DEFAULT_DATA=[
     "y": 2659.460659729545,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Охотник.png"
+    "src": "images/buildings/Охотник.png"
   },
   {
     "type": "shape",
@@ -691,7 +691,7 @@ DEFAULT_DATA=[
     "y": 2198.0940952088345,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Охотник.png"
+    "src": "images/buildings/Охотник.png"
   },
   {
     "type": "shape",
@@ -702,7 +702,7 @@ DEFAULT_DATA=[
     "y": 758.0940952088345,
     "width": 64,
     "height": 64,
-    "src": "assets/buildings/Охотник.png"
+    "src": "images/buildings/Охотник.png"
   },
   {
     "type": "shape",
@@ -713,7 +713,7 @@ DEFAULT_DATA=[
     "y": 2320.3790952088343,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -724,7 +724,7 @@ DEFAULT_DATA=[
     "y": 2740.3790952088343,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -735,7 +735,7 @@ DEFAULT_DATA=[
     "y": 809.0585569942316,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/Аванпост.png"
+    "src": "images/buildings/Аванпост.png"
   },
   {
     "type": "shape",
@@ -746,7 +746,7 @@ DEFAULT_DATA=[
     "y": 1741.1174352974526,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -757,7 +757,7 @@ DEFAULT_DATA=[
     "y": 1957.1174352974526,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -768,7 +768,7 @@ DEFAULT_DATA=[
     "y": 2445.7968970828492,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -779,7 +779,7 @@ DEFAULT_DATA=[
     "y": 1697.799114884902,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -790,7 +790,7 @@ DEFAULT_DATA=[
     "y": 1057.1174352974526,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -801,7 +801,7 @@ DEFAULT_DATA=[
     "y": 635.3187941901527,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -812,7 +812,7 @@ DEFAULT_DATA=[
     "y": 2513.117435297452,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -823,7 +823,7 @@ DEFAULT_DATA=[
     "y": 312.8281241035482,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -834,7 +834,7 @@ DEFAULT_DATA=[
     "y": 1358.169051600053,
     "width": 64,
     "height": 59.43,
-    "src": "assets/buildings/unknown_bonus.png"
+    "src": "images/buildings/unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -845,7 +845,7 @@ DEFAULT_DATA=[
     "y": 456.0329371518629,
     "width": 38,
     "height": 35.29,
-    "src": "assets/buildings/Железная_шахта.png"
+    "src": "images/buildings/Железная_шахта.png"
   },
   {
     "type": "shape",
@@ -856,7 +856,7 @@ DEFAULT_DATA=[
     "y": 409.4858674376029,
     "width": 38,
     "height": 35.29,
-    "src": "assets/buildings/Железная_шахта.png"
+    "src": "images/buildings/Железная_шахта.png"
   },
   {
     "type": "shape",
@@ -867,7 +867,7 @@ DEFAULT_DATA=[
     "y": 1434.5791307333993,
     "width": 38,
     "height": 35.29,
-    "src": "assets/buildings/Железная_шахта.png"
+    "src": "images/buildings/Железная_шахта.png"
   },
   {
     "type": "shape",
@@ -878,7 +878,7 @@ DEFAULT_DATA=[
     "y": 1858.037539499707,
     "width": 38,
     "height": 35.29,
-    "src": "assets/buildings/Железная_шахта.png"
+    "src": "images/buildings/Железная_шахта.png"
   },
   {
     "type": "shape",
@@ -889,7 +889,7 @@ DEFAULT_DATA=[
     "y": 3058.8897434638625,
     "width": 38,
     "height": 35.29,
-    "src": "assets/buildings/Железная_шахта.png"
+    "src": "images/buildings/Железная_шахта.png"
   },
   {
     "type": "shape",
@@ -900,7 +900,7 @@ DEFAULT_DATA=[
     "y": 1762.5368160520247,
     "width": 38,
     "height": 35.29,
-    "src": "assets/buildings/Железная_шахта.png"
+    "src": "images/buildings/Железная_шахта.png"
   },
   {
     "type": "shape",
@@ -911,6 +911,6 @@ DEFAULT_DATA=[
     "y": 2223.0506589841993,
     "width": 38,
     "height": 35.29,
-    "src": "assets/buildings/Железная_шахта.png"
+    "src": "images/buildings/Железная_шахта.png"
   }
 ]

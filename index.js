@@ -325,11 +325,11 @@ function loadDefaultMap() {
 function loadDefaultCustomImages() {
   
   for (const objName of DEFAULT.buildings) {
-      onCustomImageLoad(objName, `assets/buildings/${objName}.png`)
+      onCustomImageLoad(objName, `images/buildings/${objName}.png`)
   }
   
   for (const objName of DEFAULT.units) {
-      onCustomImageLoad(objName, `assets/units/${objName}.png`)
+      onCustomImageLoad(objName, `images/units/${objName}.png`)
   }
 }
 

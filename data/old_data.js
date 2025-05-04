@@ -9,7 +9,7 @@ DEFAULT_DATA=[
     "y": 352.3818370370286,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/Столица.png"
+    "src": "images/buildings/Столица.png"
   },
   {
     "type": "shape",
@@ -20,7 +20,7 @@ DEFAULT_DATA=[
     "y": 1286.5460550725093,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/Столица.png"
+    "src": "images/buildings/Столица.png"
   },
   {
     "type": "shape",
@@ -31,7 +31,7 @@ DEFAULT_DATA=[
     "y": 303.4397658354674,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -42,7 +42,7 @@ DEFAULT_DATA=[
     "y": 337.4397658354674,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -53,7 +53,7 @@ DEFAULT_DATA=[
     "y": 399.9397658354674,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -64,7 +64,7 @@ DEFAULT_DATA=[
     "y": 431.9397658354674,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -75,7 +75,7 @@ DEFAULT_DATA=[
     "y": 397.9397658354674,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -86,7 +86,7 @@ DEFAULT_DATA=[
     "y": 1256.0213641094836,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -97,7 +97,7 @@ DEFAULT_DATA=[
     "y": 1223.0213641094836,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -108,7 +108,7 @@ DEFAULT_DATA=[
     "y": 1249.5213641094836,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -119,7 +119,7 @@ DEFAULT_DATA=[
     "y": 1312.0213641094836,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -130,7 +130,7 @@ DEFAULT_DATA=[
     "y": 1342.5213641094836,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -141,7 +141,7 @@ DEFAULT_DATA=[
     "y": 1313.0213641094836,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/build_slot.png"
+    "src": "images/buildings/build_slot.png"
   },
   {
     "type": "shape",
@@ -152,7 +152,7 @@ DEFAULT_DATA=[
     "y": 336.04655531001714,
     "width": 30,
     "height": 27.857142857142858,
-    "src": "assets/buildings/Ферма.png"
+    "src": "images/buildings/Ферма.png"
   },
   {
     "type": "shape",
@@ -163,7 +163,7 @@ DEFAULT_DATA=[
     "y": 277.26968664452403,
     "width": 30,
     "height": 30,
-    "src": "assets/units/Пехота.png"
+    "src": "images/units/Пехота.png"
   },
   {
     "type": "shape",
@@ -174,7 +174,7 @@ DEFAULT_DATA=[
     "y": 413.2636516608799,
     "width": 30,
     "height": 30,
-    "src": "assets/units/Пехота.png"
+    "src": "images/units/Пехота.png"
   },
   {
     "type": "shape",
@@ -185,7 +185,7 @@ DEFAULT_DATA=[
     "y": 384.47548122813726,
     "width": 30,
     "height": 30,
-    "src": "assets/units/Пехота.png"
+    "src": "images/units/Пехота.png"
   },
   {
     "type": "shape",
@@ -196,6 +196,6 @@ DEFAULT_DATA=[
     "y": 376.8873636331194,
     "width": 30,
     "height": 30,
-    "src": "assets/units/Маги.png"
+    "src": "images/units/Маги.png"
   }
 ]
