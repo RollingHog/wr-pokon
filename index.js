@@ -866,11 +866,14 @@ const userEffectsObj = {
     let userEffects = []
       const userObjs = elements.filter(obj => obj.color === userColor && !isNoHealth(obj))
       const userBuildings = userObjs.filter(obj => isBuilding(obj))
-      const userUnits = userObjs.filter(obj => !isBuilding(obj))
+      const userUnits = userObjs.filter(obj => isUnit(obj))
       userEffects = [].concat(userBuildings.map(obj => {
         return [].concat([DICT_USER[username]?.[obj.name]?.effects, DICT_COMMON?.[obj.name]?.effects])
       }).flat().filter(e=>e)).flat().concat([['Еда', -10*userUnits.length]])
-      const effectsDict = {}
+      const effectsDict = {
+        unit_count: userUnits.length,
+        build_count: userBuildings.length,
+      }
       for(let [k,v] of userEffects) {
         if(!k) continue
         if(effectsDict[k]) {
@@ -1155,6 +1158,13 @@ function getRandomColor() {
 */
 function isBuilding(shape) {
   return DEFAULT.buildings.includes(shape.name)
+}
+
+/** 
+* @param {typeof elements[0]} shape 
+*/
+function isUnit(shape) {
+  return DEFAULT.units.includes(shape.name)
 }
 
 function isNoHealth(shape) {
