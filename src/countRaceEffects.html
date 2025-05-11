@@ -11,7 +11,7 @@
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
-            color: #333;
+            /* color: #333; */
         }
         h1 {
             color: #2c3e50;
@@ -66,8 +66,8 @@
             margin-bottom: 20px;
         }
         .category h3 {
-            color: #2c3e50;
-            border-bottom: 1px solid #eee;
+            /* color: #2c3e50; */
+            /* border-bottom: 1px solid #eee; */
             padding-bottom: 5px;
             margin-bottom: 10px;
         }
@@ -76,12 +76,12 @@
             padding-left: 15px;
             position: relative;
         }
-        .effect-item::before {
+        /* .effect-item::before {
             content: "•";
             position: absolute;
             left: 0;
             color: #3498db;
-        }
+        } */
         .error {
             color: #e74c3c;
             text-align: center;
@@ -137,8 +137,8 @@
                 { level: 10, category: "Черты и способности", description: "Мощная уникальная черта" }
             ],
             tech: [
-                { level: 3, category: "Юниты", description: "Отряды инженеров" },
-                { level: 3, category: "Юниты", description: "Доступна простая техника" },
+                { level: 3, category: "Юниты", description: "Есть инженеры" },
+                { level: 3, category: "Юниты", description: "Есть простая техника" },
                 { level: 4, category: "Эффекты", description: "Защ +1" },
                 { level: 5, category: "Черты и способности", description: "Недостаток расы" },
                 { level: 5, category: "Предметы", description: "Технический предмет" },
@@ -164,7 +164,7 @@
                 { level: 10, category: "Черты и способности", description: "Мощная уникальная тайная операция или черта" }
             ],
             magic: [
-                { level: 3, category: "Юниты", description: "Отряды магов" },
+                { level: 3, category: "Юниты", description: "Есть маги" },
                 { level: 3, category: "Школы магии+заклинания", description: "3 простые заклинания" },
                 { level: 4, category: "Эффекты", description: "МЗ +1" },
                 { level: 5, category: "Черты и способности", description: "Недостаток расы" },
@@ -254,17 +254,20 @@
                 if (effects[category] && effects[category].length > 0) {
                     const categoryDiv = document.createElement('div');
                     categoryDiv.className = 'category';
+
+                    categoryDiv.innerHTML += `${category.toUpperCase()}<br>`
                     
-                    const header = document.createElement('h3');
-                    header.textContent = category;
-                    categoryDiv.appendChild(header);
+                    // const header = document.createElement('h3');
+                    // header.textContent = category;
+                    // categoryDiv.appendChild(header);
                     
                     const list = document.createElement('div');
                     effects[category].sort().forEach(item => {
-                        const itemDiv = document.createElement('div');
-                        itemDiv.className = 'effect-item';
-                        itemDiv.textContent = item.replace(/^\[\d+\] /, '')
-                        list.appendChild(itemDiv);
+                        // const itemDiv = document.createElement('div');
+                        // itemDiv.className = 'effect-item';
+                        // itemDiv.textContent = 
+                        list.innerHTML += `${item.replace(/^\[\d+\] /, '')}<br>`
+                        // list.appendChild(itemDiv);
                     });
                     
                     categoryDiv.appendChild(list);
