@@ -233,6 +233,7 @@ function addListeners() {
   // document.getElementById('add-text-btn').addEventListener('click', showTextPanel);
   
   document.getElementById('place-shape-btn').addEventListener('click', placeShape);
+  document.getElementById('clone-shape-btn').addEventListener('click', cloneShape);
   document.getElementById('place-text-btn').addEventListener('click', placeText);
   document.getElementById('place-line-btn').addEventListener('click', lineActionsObj.placeLineClick);
   
@@ -715,6 +716,13 @@ function showShapePanel() {
 function showTextPanel() {
   document.getElementById('text-panel').style.display = 'block';
   document.getElementById('shape-panel').style.display = 'none';
+}
+
+function cloneShape() {
+  if(!selectedElement) return
+  
+  document.querySelector(`.shape-preview[title="${selectedElement.name}"]`).click()
+  placeShape()
 }
 
 function placeShape() {
