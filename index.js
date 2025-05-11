@@ -33,6 +33,7 @@ const customShapesContainer = document.getElementById('custom-shapes-container')
 const mapList = document.getElementById('map-list');
 const shapeModal = document.getElementById('shape-modal');
 const modalShapesContainer = document.getElementById('modal-shapes-container');
+const turnDisplay = document.getElementById('turnDisplay');
 
 let scale = 1;
 let isDragging = false;
@@ -95,6 +96,8 @@ function init() {
   drawCanvas();
   
   addListeners();
+
+  updateTurnDisplay();
   
   // Предпросмотр фигур
   const shapePreviews = document.querySelectorAll('.shape-preview');
@@ -258,6 +261,15 @@ function addListeners() {
           lockBtn.classList.add('unlocked');
           lockBtn.title = "Заблокировать";
       }
+  });
+
+  // Обработчик клика по индикатору хода
+  turnDisplay.addEventListener('click', function () {
+    CURRENT_TURN++;
+    updateTurnDisplay();
+
+    // Можно добавить дополнительную логику при смене хода
+    console.log(`Ход изменён на ${CURRENT_TURN}`);
   });
 }
 
@@ -1138,6 +1150,11 @@ function loadObjects(e) {
       drawCanvas()
   }
   reader.readAsText(file);
+}
+
+// Функция для обновления отображения хода
+function updateTurnDisplay() {
+    turnDisplay.textContent = `Текущий ход: ${CURRENT_TURN}`;
 }
 
 function showHelp() {
