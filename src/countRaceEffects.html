@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Холодное утро - Трекер эффектов</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .stat-input {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .stat-input label {
+            width: 150px;
+            font-weight: bold;
+        }
+        .stat-input input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .results {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .category {
+            margin-bottom: 20px;
+        }
+        .category h3 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .effect-item {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+        .effect-item::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #3498db;
+        }
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Холодное утро - Трекер эффектов характеристик расы</h2>
+    
+    <div class="input-section">
+        <h2>Введите значения характеристик (2-10):</h2>
+        <div class="stat-input">
+            <label for="war">Воинственность:</label>
+            <input type="number" id="war" min="2" max="10" value="2">
+        </div>
+        <div class="stat-input">
+            <label for="tech">Технологичность:</label>
+            <input type="number" id="tech" min="2" max="10" value="2">
+        </div>
+        <div class="stat-input">
+            <label for="cunning">Хитрость:</label>
+            <input type="number" id="cunning" min="2" max="10" value="2">
+        </div>
+        <div class="stat-input">
+            <label for="magic">Магия:</label>
+            <input type="number" id="magic" min="2" max="10" value="2">
+        </div>
+        
+        <div id="error-message" class="error" style="display: none;"></div>
+        
+        <button onclick="calculateEffects()" accesskey="Enter">Показать эффекты</button>
+    </div>
+    
+    <div id="results" class="results" style="display: none;">
+        <h2>Результаты:</h2>
+        <div id="effects-container"></div>
+    </div>
+
+    <script>
+        // База данных эффектов для каждой характеристики
+        const effectsDatabase = {
+            war: [
+                { level: 3, category: "Эффекты", description: "Атака +1" },
+                { level: 4, category: "Эффекты", description: "Мораль +1" },
+                { level: 5, category: "Предметы", description: "Предмет" },
+                { level: 5, category: "Черты и способности", description: "Недостаток расы" },
+                { level: 6, category: "Черты и способности", description: "Уникальная черта" },
+                { level: 7, category: "Черты и способности", description: "Способность, которой можно обучить в казарме" },
+                { level: 8, category: "Черты и способности", description: "Уникальная черта" },
+                { level: 9, category: "Юниты", description: "Уникальный юнит" },
+                { level: 10, category: "Черты и способности", description: "Мощная уникальная черта" }
+            ],
+            tech: [
+                { level: 3, category: "Юниты", description: "Отряды инженеров" },
+                { level: 3, category: "Юниты", description: "Доступна простая техника" },
+                { level: 4, category: "Эффекты", description: "Защ +1" },
+                { level: 5, category: "Черты и способности", description: "Недостаток расы" },
+                { level: 5, category: "Предметы", description: "Технический предмет" },
+                { level: 6, category: "Школы технологии", description: "Уникальная технология, определяет школу технологии расы" },
+                { level: 6, category: "Эффекты", description: "Запчасти +10" },
+                { level: 7, category: "Черты и способности", description: "Способность, которой возможно обучить в казарме" },
+                { level: 8, category: "Школы технологии", description: "Уникальная технология" },
+                { level: 9, category: "Юниты", description: "Уникальный юнит" },
+                { level: 10, category: "Школы технологии", description: "Мощная уникальная технология" }
+            ],
+            cunning: [
+                { level: 2, category: "Юниты", description: "Есть разведчики" },
+                { level: 3, category: "Юниты", description: "Есть шпионы" },
+                { level: 3, category: "Тайные операции", description: "3 простые тайные операции" },
+                { level: 4, category: "Эффекты", description: "Успех операции +1" },
+                { level: 5, category: "Черты и способности", description: "Недостаток расы" },
+                { level: 5, category: "Предметы", description: "Предмет" },
+                { level: 6, category: "Черты и способности", description: "Уникальная тайная операция или черта" },
+                { level: 6, category: "Эффекты", description: "Еда от Охотников +2" },
+                { level: 7, category: "Черты и способности", description: "Способность, которой можно обучить в школе шпионов" },
+                { level: 8, category: "Черты и способности", description: "Уникальная тайная операция или черта" },
+                { level: 9, category: "Юниты", description: "Уникальный юнит" },
+                { level: 10, category: "Черты и способности", description: "Мощная уникальная тайная операция или черта" }
+            ],
+            magic: [
+                { level: 3, category: "Юниты", description: "Отряды магов" },
+                { level: 3, category: "Школы магии+заклинания", description: "3 простые заклинания" },
+                { level: 4, category: "Эффекты", description: "МЗ +1" },
+                { level: 5, category: "Черты и способности", description: "Недостаток расы" },
+                { level: 5, category: "Предметы", description: "Магический предмет" },
+                { level: 6, category: "Школы магии+заклинания", description: "Уникальное заклинание или черта расы. Определяет школу магии." },
+                { level: 6, category: "Эффекты", description: "Кристаллы +1" },
+                { level: 7, category: "Черты и способности", description: "Способность, которой можно обучить в школе магии" },
+                { level: 8, category: "Школы магии+заклинания", description: "Уникальное заклинание" },
+                { level: 9, category: "Юниты", description: "Уникальный юнит" },
+                { level: 10, category: "Школы магии+заклинания", description: "Мощное уникальное заклинание" }
+            ]
+        };
+
+        function calculateEffects() {
+            // Получаем значения характеристик
+            const war = parseInt(document.getElementById('war').value);
+            const tech = parseInt(document.getElementById('tech').value);
+            const cunning = parseInt(document.getElementById('cunning').value);
+            const magic = parseInt(document.getElementById('magic').value);
+            
+            // Валидация ввода
+            const errorElement = document.getElementById('error-message');
+            errorElement.style.display = 'none';
+            
+            if (isNaN(war) || isNaN(tech) || isNaN(cunning) || isNaN(magic) ||
+                war < 2 || war > 10 || tech < 2 || tech > 10 || 
+                cunning < 2 || cunning > 10 || magic < 2 || magic > 10) {
+                errorElement.textContent = 'Ошибка: все характеристики должны быть числами от 2 до 10';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            const statSum = war + tech + cunning + magic
+            if(statSum !== 20) {
+                errorElement.textContent = `Ошибка: сумма параметров должна быть ${20}, сейчас ${statSum}`;
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            // Собираем все эффекты
+            const allEffects = {
+                "Черты и способности": [],
+                "Предметы": [],
+                "Школы магии+заклинания": [],
+                "Школы технологии": [],
+                "Тайные операции": [],
+                "Юниты": [],
+                "Эффекты": []
+            };
+
+            // Функция для добавления эффектов из базы данных
+            function addEffects(statValue, statEffects, statName) {
+                statEffects.forEach(effect => {
+                    if (statValue >= effect.level) {
+                        allEffects[effect.category].push(`[${effect.level.toString(10).padStart(2, '0')}] ${effect.description} (${statName})`);
+                    }
+                });
+            }
+
+            // Добавляем эффекты для каждой характеристики
+            addEffects(war, effectsDatabase.war, 'Война');
+            addEffects(tech, effectsDatabase.tech, 'Технология');
+            addEffects(cunning, effectsDatabase.cunning, 'Хитрость');
+            addEffects(magic, effectsDatabase.magic, 'Магия');
+
+            // Отображаем результаты
+            displayEffects(allEffects);
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function displayEffects(effects) {
+            const container = document.getElementById('effects-container');
+            container.innerHTML = '';
+            
+            // Сортируем категории по порядку
+            const categoryOrder = [
+                "Черты и способности",
+                "Предметы",
+                "Школы магии+заклинания",
+                "Школы технологии",
+                "Тайные операции",
+                "Юниты",
+                "Эффекты"
+            ];
+            
+            categoryOrder.forEach(category => {
+                if (effects[category] && effects[category].length > 0) {
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'category';
+                    
+                    const header = document.createElement('h3');
+                    header.textContent = category;
+                    categoryDiv.appendChild(header);
+                    
+                    const list = document.createElement('div');
+                    effects[category].sort().forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'effect-item';
+                        itemDiv.textContent = item.replace(/^\[\d+\] /, '')
+                        list.appendChild(itemDiv);
+                    });
+                    
+                    categoryDiv.appendChild(list);
+                    container.appendChild(categoryDiv);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
