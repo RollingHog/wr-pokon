@@ -21,7 +21,7 @@ const DEFAULT = {
 
     // 'Мосты',
     // 'Дороги',
-    // 'Стены',
+    'Стена',
     
     'Ферма',
     'Охотник',
@@ -69,10 +69,10 @@ const EFFECT_LISTS = {
 
 const DICT_COMMON = {
   Столица: {
-    // TODO add empire default values
     effects: [
       ["Хранилище", 30],
       ["Еда", 40],
+      ["Дерево", 3],
     ]
   },
   Дом: {

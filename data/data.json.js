@@ -60,17 +60,6 @@ DEFAULT_DATA=[
     "name": "Город",
     "shape": "custom",
     "color": "#D3D3D3",
-    "x": 3636.4483071423315,
-    "y": null,
-    "width": 64,
-    "height": null,
-    "src": "images/buildings/Город.png"
-  },
-  {
-    "type": "shape",
-    "name": "Город",
-    "shape": "custom",
-    "color": "#D3D3D3",
     "x": 3833.723307929702,
     "y": 220.49529395849189,
     "width": 64,
@@ -912,5 +901,167 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 35.29,
     "src": "images/buildings/Железная_шахта.png"
+  },
+  {
+    "type": "shape",
+    "name": "Столица",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1874.780641908141,
+    "y": 864.7522512032974,
+    "width": 50,
+    "height": 46.43,
+    "src": "images/buildings/Столица.png"
+  },
+  
+  
+  
+  {
+    "type": "shape",
+    "name": "build_slot",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1806.7889676528189,
+    "y": 832.5215987553183,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/build_slot.png"
+  },
+  
+  {
+    "type": "shape",
+    "name": "build_slot",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1883.5567710166426,
+    "y": 789.5735158543329,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/build_slot.png"
+  },
+  {
+    "type": "shape",
+    "name": "build_slot",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1954.887360865751,
+    "y": 833.4692634537843,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/build_slot.png"
+  },
+  
+  {
+    "type": "shape",
+    "name": "build_slot",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1954.2014898095094,
+    "y": 920.5748875964454,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/build_slot.png"
+  },
+  
+  {
+    "type": "shape",
+    "name": "build_slot",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1812.2261811675342,
+    "y": 921.2607586526868,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/build_slot.png"
+  },
+  
+  {
+    "type": "shape",
+    "name": "build_slot",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1880.8132867916768,
+    "y": 959.6695378022067,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/build_slot.png"
+  },
+  
+  {
+    "type": "shape",
+    "name": "build_slot",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1926.080776503611,
+    "y": 873.249784715787,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/build_slot.png"
+  },
+  {
+    "type": "shape",
+    "name": "Стена",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1843.4056195320459,
+    "y": 802.9668788388527,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/Стена.png"
+  },
+  {
+    "type": "shape",
+    "name": "Стена",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1920.5737833069597,
+    "y": 763.2479710135293,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/Стена.png"
+  },
+  {
+    "type": "shape",
+    "name": "Стена",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1996.6071211440076,
+    "y": 813.7477252485834,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/Стена.png"
+  },
+  {
+    "type": "shape",
+    "name": "Стена",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1990.9329914546756,
+    "y": 893.1855408992301,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/Стена.png"
+  },
+  {
+    "type": "shape",
+    "name": "Стена",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1913.1974147108283,
+    "y": 928.9325579420213,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/Стена.png"
+  },
+  {
+    "type": "shape",
+    "name": "Стена",
+    "shape": "custom",
+    "color": "#ff0000",
+    "x": 1840.56855468738,
+    "y": 891.4833019924305,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/Стена.png"
   }
 ]
