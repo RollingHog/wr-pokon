@@ -554,8 +554,8 @@ function handleMouseDown(e) {
       
       // Получаем координаты точки
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const x = +(e.clientX - rect.left).toFixed(2);
+      const y = +(e.clientY - rect.top).toFixed(2);
       
       // Добавляем точку
       lineModeObj.points.push({x, y});
@@ -661,8 +661,8 @@ function updateDrag(clientX, clientY) {
   
   if (isDraggingElement && selectedElement) {
       // Перемещаем выбранный элемент
-      selectedElement.x = tempOffsetX + (mouseX - dragStartX) / scale;
-      selectedElement.y = tempOffsetY + (mouseY - dragStartY) / scale;
+      selectedElement.x = +(tempOffsetX + (mouseX - dragStartX) / scale).toFixed(2);
+      selectedElement.y = +(tempOffsetY + (mouseY - dragStartY) / scale).toFixed(2);
       
       // Обновляем позицию панели редактирования
       editPanel.style.left = `${mouseX + 10}px`;

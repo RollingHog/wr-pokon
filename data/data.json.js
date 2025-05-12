@@ -907,15 +907,12 @@ DEFAULT_DATA=[
     "name": "Столица",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1874.780641908141,
-    "y": 864.7522512032974,
+    "x": 1874.8275717372733,
+    "y": 867.7573132494341,
     "width": 50,
     "height": 46.43,
     "src": "images/buildings/Столица.png"
   },
-  
-  
-  
   {
     "type": "shape",
     "name": "build_slot",
@@ -927,7 +924,6 @@ DEFAULT_DATA=[
     "height": 38,
     "src": "images/buildings/build_slot.png"
   },
-  
   {
     "type": "shape",
     "name": "build_slot",
@@ -950,7 +946,6 @@ DEFAULT_DATA=[
     "height": 38,
     "src": "images/buildings/build_slot.png"
   },
-  
   {
     "type": "shape",
     "name": "build_slot",
@@ -962,38 +957,35 @@ DEFAULT_DATA=[
     "height": 38,
     "src": "images/buildings/build_slot.png"
   },
-  
   {
     "type": "shape",
     "name": "build_slot",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1812.2261811675342,
-    "y": 921.2607586526868,
+    "x": 1807.9868673476938,
+    "y": 914.5989797929377,
     "width": 38,
     "height": 38,
     "src": "images/buildings/build_slot.png"
   },
-  
   {
     "type": "shape",
     "name": "build_slot",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1880.8132867916768,
-    "y": 959.6695378022067,
+    "x": 1951.6703892090088,
+    "y": 999.0345947007245,
     "width": 38,
     "height": 38,
     "src": "images/buildings/build_slot.png"
   },
-  
   {
     "type": "shape",
     "name": "build_slot",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1926.080776503611,
-    "y": 873.249784715787,
+    "x": 1925.2928918066218,
+    "y": 875.6183259157247,
     "width": 38,
     "height": 38,
     "src": "images/buildings/build_slot.png"
@@ -1003,8 +995,8 @@ DEFAULT_DATA=[
     "name": "Стена",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1843.4056195320459,
-    "y": 802.9668788388527,
+    "x": 1847.6449333518863,
+    "y": 824.7690641980319,
     "width": 38,
     "height": 38,
     "src": "images/buildings/Стена.png"
@@ -1014,8 +1006,8 @@ DEFAULT_DATA=[
     "name": "Стена",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1920.5737833069597,
-    "y": 763.2479710135293,
+    "x": 1921.785015826914,
+    "y": 788.0782376725944,
     "width": 38,
     "height": 38,
     "src": "images/buildings/Стена.png"
@@ -1025,8 +1017,8 @@ DEFAULT_DATA=[
     "name": "Стена",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1996.6071211440076,
-    "y": 813.7477252485834,
+    "x": 1995.3958886240532,
+    "y": 833.1274455678537,
     "width": 38,
     "height": 38,
     "src": "images/buildings/Стена.png"
@@ -1036,8 +1028,8 @@ DEFAULT_DATA=[
     "name": "Стена",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1990.9329914546756,
-    "y": 893.1855408992301,
+    "x": 1993.9610727545617,
+    "y": 922.8607376381127,
     "width": 38,
     "height": 38,
     "src": "images/buildings/Стена.png"
@@ -1047,8 +1039,8 @@ DEFAULT_DATA=[
     "name": "Стена",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1913.1974147108283,
-    "y": 928.9325579420213,
+    "x": 1991.3219122478868,
+    "y": 1000.3952766193305,
     "width": 38,
     "height": 38,
     "src": "images/buildings/Стена.png"
@@ -1058,8 +1050,8 @@ DEFAULT_DATA=[
     "name": "Стена",
     "shape": "custom",
     "color": "#ff0000",
-    "x": 1840.56855468738,
-    "y": 891.4833019924305,
+    "x": 1849.14,
+    "y": 916.06,
     "width": 38,
     "height": 38,
     "src": "images/buildings/Стена.png"
