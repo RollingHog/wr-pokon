@@ -94,22 +94,22 @@
     <h2>Холодное утро - Трекер эффектов характеристик расы</h2>
     
     <div class="input-section">
-        <h2>Введите значения характеристик (2-10):</h2>
+        <h2>Введите значения характеристик (1-5):</h2>
         <div class="stat-input">
             <label for="war">Воинственность:</label>
-            <input type="number" id="war" min="2" max="10" value="2">
+            <input type="number" id="war" min="1" max="5" value="2">
         </div>
         <div class="stat-input">
             <label for="tech">Технологичность:</label>
-            <input type="number" id="tech" min="2" max="10" value="2">
+            <input type="number" id="tech" min="1" max="5" value="2">
         </div>
         <div class="stat-input">
             <label for="cunning">Хитрость:</label>
-            <input type="number" id="cunning" min="2" max="10" value="2">
+            <input type="number" id="cunning" min="1" max="5" value="2">
         </div>
         <div class="stat-input">
             <label for="magic">Магия:</label>
-            <input type="number" id="magic" min="2" max="10" value="2">
+            <input type="number" id="magic" min="1" max="5" value="2">
         </div>
         
         <div id="error-message" class="error" style="display: none;"></div>
@@ -126,55 +126,55 @@
         // База данных эффектов для каждой характеристики
         const effectsDatabase = {
             war: [
-                { level: 3, category: "Эффекты", description: "Атака +1" },
-                { level: 4, category: "Эффекты", description: "Мораль +1" },
-                { level: 5, category: "Предметы", description: "Предмет" },
-                { level: 5, category: "Черты и способности", description: "Недостаток расы" },
-                { level: 6, category: "Черты и способности", description: "Уникальная черта" },
-                { level: 7, category: "Черты и способности", description: "Способность, которой можно обучить в казарме" },
-                { level: 8, category: "Черты и способности", description: "Уникальная черта" },
-                { level: 9, category: "Юниты", description: "Уникальный юнит" },
-                { level: 10, category: "Черты и способности", description: "Мощная уникальная черта" }
+                { level: 1, category: "Эффекты", description: "Атака +1" },
+                { level: 2, category: "Эффекты", description: "Мораль +1" },
+                { level: 2, category: "Предметы", description: "Предмет" },
+                { level: 2, category: "Черты и способности", description: "Недостаток расы" },
+                { level: 3, category: "Черты и способности", description: "Уникальная черта" },
+                { level: 3, category: "Черты и способности", description: "Способность, которой можно обучить в казарме" },
+                { level: 4, category: "Черты и способности", description: "Уникальная черта" },
+                { level: 4, category: "Юниты", description: "Уникальный юнит" },
+                { level: 5, category: "Черты и способности", description: "Мощная уникальная черта" }
             ],
             tech: [
-                { level: 3, category: "Юниты", description: "Есть инженеры" },
-                { level: 3, category: "Юниты", description: "Есть простая техника" },
-                { level: 4, category: "Эффекты", description: "Защ +1" },
-                { level: 5, category: "Черты и способности", description: "Недостаток расы" },
-                { level: 5, category: "Предметы", description: "Технический предмет" },
-                { level: 6, category: "Школы технологии", description: "Уникальная технология, определяет школу технологии расы" },
-                { level: 6, category: "Эффекты", description: "Запчасти +10" },
-                { level: 7, category: "Черты и способности", description: "Способность, которой возможно обучить в казарме" },
-                { level: 8, category: "Школы технологии", description: "Уникальная технология" },
-                { level: 9, category: "Юниты", description: "Уникальный юнит" },
-                { level: 10, category: "Школы технологии", description: "Мощная уникальная технология" }
+                { level: 1, category: "Юниты", description: "Есть инженеры" },
+                { level: 1, category: "Юниты", description: "Есть простая техника" },
+                { level: 2, category: "Эффекты", description: "Защ +1" },
+                { level: 2, category: "Черты и способности", description: "Недостаток расы" },
+                { level: 2, category: "Предметы", description: "Технический предмет" },
+                { level: 3, category: "Школы технологии", description: "Уникальная технология, определяет школу технологии расы" },
+                { level: 3, category: "Эффекты", description: "Запчасти +10" },
+                { level: 3, category: "Черты и способности", description: "Способность, которой возможно обучить в казарме" },
+                { level: 4, category: "Школы технологии", description: "Уникальная технология" },
+                { level: 4, category: "Юниты", description: "Уникальный юнит" },
+                { level: 5, category: "Школы технологии", description: "Мощная уникальная технология" }
             ],
             cunning: [
-                { level: 2, category: "Юниты", description: "Есть разведчики" },
-                { level: 3, category: "Юниты", description: "Есть шпионы" },
-                { level: 3, category: "Тайные операции", description: "3 простые тайные операции" },
-                { level: 4, category: "Эффекты", description: "Успех операции +1" },
-                { level: 5, category: "Черты и способности", description: "Недостаток расы" },
-                { level: 5, category: "Предметы", description: "Предмет" },
-                { level: 6, category: "Черты и способности", description: "Уникальная тайная операция или черта" },
-                { level: 6, category: "Эффекты", description: "Еда от Охотников +2" },
-                { level: 7, category: "Черты и способности", description: "Способность, которой можно обучить в школе шпионов" },
-                { level: 8, category: "Черты и способности", description: "Уникальная тайная операция или черта" },
-                { level: 9, category: "Юниты", description: "Уникальный юнит" },
-                { level: 10, category: "Черты и способности", description: "Мощная уникальная тайная операция или черта" }
+                { level: 1, category: "Юниты", description: "Есть разведчики" },
+                { level: 1, category: "Юниты", description: "Есть шпионы" },
+                { level: 1, category: "Тайные операции", description: "3 простые тайные операции" },
+                { level: 2, category: "Эффекты", description: "Успех операции +1" },
+                { level: 2, category: "Черты и способности", description: "Недостаток расы" },
+                { level: 2, category: "Предметы", description: "Предмет" },
+                { level: 3, category: "Черты и способности", description: "Уникальная тайная операция или черта" },
+                { level: 3, category: "Эффекты", description: "Еда от Охотников +2" },
+                { level: 3, category: "Черты и способности", description: "Способность, которой можно обучить в школе шпионов" },
+                { level: 4, category: "Черты и способности", description: "Уникальная тайная операция или черта" },
+                { level: 4, category: "Юниты", description: "Уникальный юнит" },
+                { level: 5, category: "Черты и способности", description: "Мощная уникальная тайная операция или черта" }
             ],
             magic: [
-                { level: 3, category: "Юниты", description: "Есть маги" },
-                { level: 3, category: "Школы магии+заклинания", description: "3 простые заклинания" },
-                { level: 4, category: "Эффекты", description: "МЗ +1" },
-                { level: 5, category: "Черты и способности", description: "Недостаток расы" },
-                { level: 5, category: "Предметы", description: "Магический предмет" },
-                { level: 6, category: "Школы магии+заклинания", description: "Уникальное заклинание или черта расы. Определяет школу магии." },
-                { level: 6, category: "Эффекты", description: "Кристаллы +1" },
-                { level: 7, category: "Черты и способности", description: "Способность, которой можно обучить в школе магии" },
-                { level: 8, category: "Школы магии+заклинания", description: "Уникальное заклинание" },
-                { level: 9, category: "Юниты", description: "Уникальный юнит" },
-                { level: 10, category: "Школы магии+заклинания", description: "Мощное уникальное заклинание" }
+                { level: 1, category: "Юниты", description: "Есть маги" },
+                { level: 1, category: "Школы магии+заклинания", description: "3 простые заклинания" },
+                { level: 2, category: "Эффекты", description: "МЗ +1" },
+                { level: 2, category: "Черты и способности", description: "Недостаток расы" },
+                { level: 2, category: "Предметы", description: "Магический предмет" },
+                { level: 3, category: "Школы магии+заклинания", description: "Уникальное заклинание или черта расы. Определяет школу магии." },
+                { level: 3, category: "Эффекты", description: "Кристаллы +1" },
+                { level: 3, category: "Черты и способности", description: "Способность, которой можно обучить в школе магии" },
+                { level: 4, category: "Школы магии+заклинания", description: "Уникальное заклинание" },
+                { level: 4, category: "Юниты", description: "Уникальный юнит" },
+                { level: 5, category: "Школы магии+заклинания", description: "Мощное уникальное заклинание" }
             ]
         };
 
@@ -188,18 +188,25 @@
             // Валидация ввода
             const errorElement = document.getElementById('error-message');
             errorElement.style.display = 'none';
+
+            const minParam = 1
+            const maxParam = 5
+            const tgtSum = maxParam * 2
             
-            if (isNaN(war) || isNaN(tech) || isNaN(cunning) || isNaN(magic) ||
-                war < 2 || war > 10 || tech < 2 || tech > 10 || 
-                cunning < 2 || cunning > 10 || magic < 2 || magic > 10) {
-                errorElement.textContent = 'Ошибка: все характеристики должны быть числами от 2 до 10';
+            if (isNaN(war) || isNaN(tech) || isNaN(cunning) || isNaN(magic) 
+                || war < minParam || war > maxParam 
+                || tech < minParam || tech > maxParam 
+                || cunning < minParam || cunning > maxParam 
+                || magic < minParam || magic > maxParam
+            ) {
+                errorElement.textContent = 'Ошибка: все характеристики должны быть числами от 1 до 5';
                 errorElement.style.display = 'block';
                 return;
             }
 
             const statSum = war + tech + cunning + magic
-            if(statSum !== 20) {
-                errorElement.textContent = `Ошибка: сумма параметров должна быть ${20}, сейчас ${statSum}`;
+            if(statSum !== tgtSum) {
+                errorElement.textContent = `Ошибка: сумма параметров должна быть ${tgtSum}, сейчас ${statSum}`;
                 errorElement.style.display = 'block';
                 return;
             }

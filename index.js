@@ -105,7 +105,6 @@ function init() {
       preview.addEventListener('click', function() {
           activeShapeType = this.dataset.shape;
           // document.getElementById('shape-size').value = 50;
-          
           // Добавляем класс active к выбранной фигуре
           shapePreviews.forEach(p => p.classList.remove('active'));
           this.classList.add('active');
@@ -301,6 +300,12 @@ function onCustomImageLoad(filename, src) {
       activeShapeType = 'custom';
       document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
       this.classList.add('active');
+
+      if(typeof selectedElement !== 'undefined' && selectedElement) {
+        selectedElement.name = this.title
+        selectedElement.src = this.style.backgroundImage.replace(/(^url\(|\)$|")/g,'')
+        drawCanvas();
+      }
   });
 
   customShapesContainer.appendChild(preview);
