@@ -893,7 +893,7 @@ const userEffectsObj = {
       const userBuildings = userObjs.filter(obj => isBuilding(obj))
       const userUnits = userObjs.filter(obj => isUnit(obj))
       userEffects = [].concat(userBuildings.map(obj => {
-        return [].concat([DICT_USER[username]?.[obj.name]?.effects, DICT_COMMON?.[obj.name]?.effects])
+        return [].concat([DICT_USER[username]?.[obj.name], DICT_COMMON?.[obj.name]])
       }).flat().filter(e=>e)).flat().concat([['Еда', -10*userUnits.length]])
       const effectsDict = {
         unit_count: userUnits.length,
