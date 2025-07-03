@@ -49,6 +49,10 @@ const DEFAULT = {
     'Шестеренка',
     // 'Дирижабль',
   ],
+  nocorpse: [
+    'Зверь',
+    'Шестеренка',
+  ]
 }
 
 const EFFECT_LISTS = {
