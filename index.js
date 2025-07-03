@@ -966,7 +966,7 @@ function deleteSelected() {
 
 function switchDisableSelected() {
   if(!selectedElement) return
-  if(typeof selectedElement.disabled === 'undefined') selectedElement.disabled = true
+  if(typeof selectedElement.disabled === 'undefined') selectedElement.disabled = false
   selectedElement.disabled = !selectedElement.disabled
   drawCanvas();
 }
