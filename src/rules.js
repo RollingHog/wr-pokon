@@ -66,8 +66,10 @@ const EFFECT_LISTS = {
     "Рабы",
     // "Лошади",
   ],
-  local: [],
+  local: ["ХП"],
 }
+
+const MAX_UNIT_HP = 2
 
 const DICT_COMMON = {
   _building_: [],
