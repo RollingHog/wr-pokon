@@ -430,7 +430,7 @@ function drawShape(shape) {
 
       const img = imageObjByObjName(shape.name)
       ctx.drawImage(img, 0, 0, shape.width, shape.height);
-      if(!isBuilding(shape) && !isNoHealth(shape)) {
+      if((shape.curr_hp < MAX_UNIT_HP) && !isNoHealth(shape)) {
         drawHealthBar(ctx, 0, shape.height, shape.width, shape.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
       }
       // TODO timed building
