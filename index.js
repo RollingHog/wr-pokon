@@ -89,6 +89,9 @@ function init() {
   hotkeysLib.init({
     'Delete': () => {
       deleteSelected()
+    },
+    'End': () => {
+      damageSelected()
     }
   })
 
@@ -428,7 +431,7 @@ function drawShape(shape) {
       const img = imageObjByObjName(shape.name)
       ctx.drawImage(img, 0, 0, shape.width, shape.height);
       if(!isBuilding(shape) && !isNoHealth(shape)) {
-        drawHealthBar(ctx, 0, shape.height, shape.width, 10, 10)
+        drawHealthBar(ctx, 0, shape.height, shape.width, shape.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
       }
       // TODO timed building
       // if(isBuilding(shape) && !isNoHealth(shape)) {
@@ -786,7 +789,8 @@ function placeShape() {
       y: (-canvasOffsetY + canvas.height/2 - height*scale/2) / scale,
       width: width,
       height: height,
-      src: src
+      src: src,
+      curr_hp: MAX_UNIT_HP,
   };
   
   elements.push(shape);
@@ -935,6 +939,24 @@ function deleteSelected() {
       elements = elements.filter(el => el !== selectedElement);
       selectedElement = null;
       editPanel.style.display = 'none';
+      drawCanvas();
+  }
+}
+
+function damageSelected() {
+  if (selectedElement) {
+      if(isNoHealth(selectedElement)) return
+      if(typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = MAX_UNIT_HP
+      selectedElement.curr_hp -= 1;
+      if(selectedElement.curr_hp <= 0) {
+        if(isBuilding(selectedElement)) {
+          deleteSelected()
+          return
+        }
+        if(isUnit(selectedElement)) {
+          selectedElement.name = 'grave'
+        }
+      }
       drawCanvas();
   }
 }
