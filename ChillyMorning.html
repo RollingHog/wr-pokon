@@ -49,8 +49,8 @@
             <hr>
             <div id="text-panel">
                 <input type="text" id="text-input" placeholder="Введите текст" style="max-width: 200px;">
-                <div class="color-picker">
-                    <span>Цвет:</span>
+                <div class="color-picker" style="display:inline;">
+<!--                     <span>Цвет:</span> -->
                     <input type="color" id="text-color" value="#000000">
                 </div>
                 <div class="color-picker">
@@ -86,16 +86,16 @@
         <canvas id="map-canvas" oncontextmenu="return false;"></canvas>
         <div id="tgt_el">+</div>
     </div>
-    
+
+    <!-- блок выбранного объекта -->
     <div id="edit-panel">
-        <button id="edit-delete-btn">Del</button>
+        <!-- <button id="edit-delete-btn">Del</button> -->
         <!-- <button id="edit-close-btn">Закрыть</button> -->
-        <br>
+        <!-- <br> -->
         <input id="edit-obj-name" list="obj-names-list" disabled></input>
         <datalist id="obj-names-list"></datalist>
         <div class="color-picker">
-            <span>Цвет:</span>
-            <input type="color" id="edit-color" style="width: 24px;">
+            <input type="color" title='Выбрать цвет' id="edit-color" style="width: 24px;">
         </div>
     </div>
     
