@@ -908,6 +908,7 @@ const userEffectsObj = {
       }
       for(let [k,v] of userEffects) {
         if(!k) continue
+        if(EFFECT_LISTS.local.includes(k)) continue
         if(effectsDict[k]) {
           effectsDict[k] += +v
         } else {
