@@ -892,9 +892,16 @@ const userEffectsObj = {
       const userObjs = elements.filter(obj => obj.color === userColor && !isNoHealth(obj))
       const userBuildings = userObjs.filter(obj => isBuilding(obj))
       const userUnits = userObjs.filter(obj => isUnit(obj))
-      userEffects = [].concat(userBuildings.map(obj => {
-        return [].concat([DICT_USER[username]?.[obj.name], DICT_COMMON?.[obj.name]])
-      }).flat().filter(e=>e)).flat().concat([['Еда', -10*userUnits.length]])
+      userEffects = [].concat(
+        userObjs.map(obj => {
+          return [].concat([
+            DICT_USER[username]?.[isBuilding(obj) ? '_building_' : '_unit_'], 
+            DICT_USER[username]?.[obj.name], 
+            DICT_COMMON?.[isBuilding(obj) ? '_building_' : '_unit_'],
+            DICT_COMMON?.[obj.name]
+          ])
+        }).flat().filter(e => e),
+      ).flat()
       const effectsDict = {
         unit_count: userUnits.length,
         build_count: userBuildings.length,
