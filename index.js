@@ -92,6 +92,9 @@ function init() {
     },
     'End': () => {
       damageSelected()
+    },
+    'S': () => {
+      switchDisableSelected()
     }
   })
 
@@ -245,7 +248,7 @@ function addListeners() {
   // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
   
   // Форма редактирования
-  document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
+  // document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   document.getElementById('edit-color').addEventListener('input', updateElementColor);
 
@@ -432,6 +435,22 @@ function drawShape(shape) {
       ctx.drawImage(img, 0, 0, shape.width, shape.height);
       if((shape.curr_hp < MAX_UNIT_HP) && !isNoHealth(shape)) {
         drawHealthBar(ctx, 0, shape.height, shape.width, shape.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
+      }
+      if(obj.disabled) {
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2 
+        
+        ctx.beginPath();
+        ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
+        ctx.fill();
+                
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(shape.width, shape.height);
+        // ctx.moveTo(0, shape.height);
+        // ctx.lineTo(shape.width, 0);
+        ctx.closePath();
+        ctx.stroke();
       }
       // TODO timed building
       // if(isBuilding(shape) && !isNoHealth(shape)) {
@@ -791,6 +810,7 @@ function placeShape() {
       height: height,
       src: src,
       curr_hp: MAX_UNIT_HP,
+      disabled: false,
   };
   
   elements.push(shape);
@@ -898,6 +918,7 @@ const userEffectsObj = {
       const userUnits = userObjs.filter(obj => isUnit(obj))
       userEffects = [].concat(
         userObjs.map(obj => {
+          if(obj.disabled) return []
           return [].concat([
             DICT_USER[username]?.[isBuilding(obj) ? '_building_' : '_unit_'], 
             DICT_USER[username]?.[obj.name], 
@@ -941,6 +962,13 @@ function deleteSelected() {
       editPanel.style.display = 'none';
       drawCanvas();
   }
+}
+
+function switchDisableSelected() {
+  if(!selectedElement) return
+  if(typeof selectedElement.disabled === 'undefined') selectedElement.disabled = true
+  selectedElement.disabled = !selectedElement.disabled
+  drawCanvas();
 }
 
 function damageSelected() {
