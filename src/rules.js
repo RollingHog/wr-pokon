@@ -70,6 +70,10 @@ const EFFECT_LISTS = {
 }
 
 const DICT_COMMON = {
+  _building_: [],
+  _unit_: [
+    ["Еда", -10]
+  ],
   Столица:
     [
       ["Хранилище", 30],
