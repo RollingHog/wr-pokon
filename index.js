@@ -442,7 +442,7 @@ function drawShape(shape) {
         
         ctx.beginPath();
         ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.stroke();
                 
         ctx.beginPath();
         ctx.moveTo(0, 0);
