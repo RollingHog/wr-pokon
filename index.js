@@ -436,7 +436,7 @@ function drawShape(shape) {
       if((shape.curr_hp < MAX_UNIT_HP) && !isNoHealth(shape)) {
         drawHealthBar(ctx, 0, shape.height, shape.width, shape.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
       }
-      if(obj.disabled) {
+      if(shape.disabled) {
         ctx.strokeStyle = 'white';
         ctx.lineWidth = 2 
         
