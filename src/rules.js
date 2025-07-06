@@ -1,6 +1,10 @@
 /* exported 
-DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
+DICT_COMMON DICT_USER GRAVE_UNIT
+EFFECT_LISTS DEFAULT
+MAX_UNIT_HP
 */
+
+const GRAVE_UNIT = 'grave'
 
 const DEFAULT = {
   buildings: [
@@ -47,9 +51,16 @@ const DEFAULT = {
     'Командир',
     'Зверь',
     'Шестеренка',
+    'Демон',
+    'Раб',
     // 'Дирижабль',
   ],
-  nocorpse: [
+  noHealth: [
+    'build_slot',
+    GRAVE_UNIT,
+    'unknown_bonus',
+  ],
+  noGrave: [
     'Зверь',
     'Шестеренка',
   ]

@@ -9,17 +9,12 @@ CURRENT_TURN DEFAULT_DATA
 
 /// <reference path="./src/rules.js"/>
 /* global
+GRAVE_UNIT MAX_UNIT_HP
 */
 
 /* exported
 onOutputClick
 */
-
-const noHealthList = [
-  'build_slot',
-  'grave',
-  'unknown_bonus',
-]
 
 // Основные переменные
 /** @type {HTMLCanvasElement} */
@@ -982,7 +977,7 @@ function damageSelected() {
           return
         }
         if(isUnit(selectedElement)) {
-          selectedElement.name = 'grave'
+          selectedElement.name = GRAVE_UNIT
         }
       }
       drawCanvas();
@@ -1256,7 +1251,7 @@ function isUnit(shape) {
 }
 
 function isNoHealth(shape) {
-  return noHealthList.includes(shape.name)
+  return DEFAULT.noHealth.includes(shape.name)
 }
 
 function saveFile(filename, data) {
