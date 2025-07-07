@@ -1,10 +1,10 @@
 /* global 
-DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
 */
 
 /// <reference path="./data/data.json.js"/>
 /* global
-CURRENT_TURN DEFAULT_DATA 
+CURRENT_TURN DEFAULT_DATA MAP_PATH
+DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
 */
 
 /// <reference path="./src/rules.js"/>
@@ -338,7 +338,7 @@ function loadDefaultMap() {
       drawCanvas()
       renderMapList()
   }
-  defaultMapImg.src = './map/map.png';
+  defaultMapImg.src = MAP_PATH;
 }
 
 function loadDefaultCustomImages() {
