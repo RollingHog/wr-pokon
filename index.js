@@ -48,7 +48,8 @@ let tempOffsetX = 0, tempOffsetY = 0;
 *     height: height,
 *     src: src
 *     curr_hp?: number,
-*     max_hp?: number,
+*     disabled?: boolean,
+*     endedTurn?: boolean,
 * }[]} 
 */
 let elements = [];
@@ -90,6 +91,9 @@ function init() {
     },
     'S': () => {
       switchDisableSelected()
+    },
+    'E': () => {
+      switchEndedTurnSelected()
     }
   })
 
@@ -407,7 +411,7 @@ const lvlTextSize = 14
 
 /**
  * @param {CanvasRenderingContext2D | null} ctx 
- * @param {*} el 
+ * @param {typeof elements[0]} el 
  * @param {*} x 
  * @param {*} y 
  */
@@ -449,6 +453,20 @@ function drawCustomObj(ctx, el, x, y) {
     ctx.moveTo(x, y);
     ctx.lineTo(x + el.width, y + el.height);
     ctx.closePath();
+    ctx.stroke();
+  } else if(el.endedTurn) {
+    ctx.strokeStyle = 'green';
+    ctx.lineWidth = 5
+
+    ctx.beginPath();
+    ctx.arc(x + el.width/2, y + el.height/2, el.width/2, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x + 5, y + el.height/2);
+    ctx.lineTo(x + el.width/2, y + el.height - 5);
+    ctx.lineTo(x + el.width, y);
+    // ctx.closePath();
     ctx.stroke();
   }
   if(el.lvl && +el.lvl > 1) {
@@ -830,6 +848,7 @@ function placeShape() {
       src: src,
       curr_hp: MAX_UNIT_HP,
       disabled: false,
+      endedTurn: false,
   };
   
   elements.push(shape);
@@ -987,6 +1006,13 @@ function switchDisableSelected() {
   if(!selectedElement) return
   if(typeof selectedElement.disabled === 'undefined') selectedElement.disabled = false
   selectedElement.disabled = !selectedElement.disabled
+  drawElement(selectedElement);
+}
+function switchEndedTurnSelected() {
+  if(!selectedElement) return
+  if(isNoHealth(selectedElement.name)) return
+  if(typeof selectedElement.endedTurn === 'undefined') selectedElement.disabled = false
+  selectedElement.endedTurn = !selectedElement.endedTurn
   drawElement(selectedElement);
 }
 
