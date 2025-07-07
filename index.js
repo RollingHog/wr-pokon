@@ -48,6 +48,7 @@ let tempOffsetX = 0, tempOffsetY = 0;
 *     height: height,
 *     src: src
 *     curr_hp?: number,
+*     lvl?: number,
 *     disabled?: boolean,
 *     endedTurn?: boolean,
 * }[]} 
@@ -407,7 +408,7 @@ function drawElement(element) {
   }
 }
 
-const lvlTextSize = 14
+const lvlTextSize = 16
 
 /**
  * @param {CanvasRenderingContext2D | null} ctx 
@@ -470,9 +471,12 @@ function drawCustomObj(ctx, el, x, y) {
     ctx.stroke();
   }
   if(el.lvl && +el.lvl > 1) {
-      ctx.font = `${lvlTextSize}px Arial`;
-      ctx.fillStyle = 'black';
-      ctx.fillText(el.lvl, x, y, lvlTextSize);
+    ctx.font = `${lvlTextSize}px Arial`;
+
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'white';
+    ctx.strokeText(el.lvl, x, y+5, lvlTextSize);
+    ctx.fillText(el.lvl, x, y+5, lvlTextSize);
   }
 }
 
@@ -957,14 +961,24 @@ const userEffectsObj = {
       userEffects = [].concat(
         userObjs.map(obj => {
           if(obj.disabled) return []
-          return [].concat([
+          const res = [].concat([
             DICT_USER[username]?.[isBuilding(obj) ? '_building_' : '_unit_'], 
             DICT_USER[username]?.[obj.name], 
             DICT_COMMON?.[isBuilding(obj) ? '_building_' : '_unit_'],
             DICT_COMMON?.[obj.name]
           ])
-        }).flat().filter(e => e),
-      ).flat()
+          if(!res) return res
+          return res.flat().map((el)=> {
+            if(!el) return el
+            const [k,v] = el
+            if(!k) return el
+            if (typeof v === 'number' || !isNaN(+v)) return [k,v]
+            if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || 1]
+            if (v === '-ЛВЛ') return [k, -obj.lvl || -1]
+            console.warn('bad DICT rule for',  obj.name, [k,v])
+          })
+        }),
+      ).flat().filter(e => e)
       const effectsDict = {
         unit_count: userUnits.length,
         build_count: userBuildings.length,
