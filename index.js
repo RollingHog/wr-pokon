@@ -245,7 +245,8 @@ function addListeners() {
   // Форма редактирования
   // document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
-  document.getElementById('edit-color').addEventListener('input', updateElementColor);
+  // document.getElementById('edit-color').addEventListener('input', updateElementColor);
+  document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
 
   // Масштабирование
   scaleSlider.addEventListener('input', updateScale);
@@ -402,6 +403,61 @@ function drawElement(element) {
   }
 }
 
+const lvlTextSize = 14
+
+/**
+ * @param {CanvasRenderingContext2D | null} ctx 
+ * @param {*} el 
+ * @param {*} x 
+ * @param {*} y 
+ */
+function drawCustomObj(ctx, el, x, y) {
+  // обозначаем принадлежность
+  ctx.fillStyle = el.color;
+  if (isBuilding(el)) {
+    ctx.beginPath();
+    ctx.arc(
+      x + el.width / 2, y + el.height / 2,
+      el.width / 2, 0, Math.PI * 2
+    );
+    ctx.fill();
+  } else {
+    // unit
+    ctx.beginPath();
+    ctx.moveTo(x + el.width / 2, y);
+    ctx.lineTo(x + el.width, y + el.height);
+    ctx.lineTo(x, y + el.height);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  const img = imageObjByObjName(el.name)
+  ctx.drawImage(img, x, y, el.width, el.height);
+  ///
+  if((el.curr_hp < MAX_UNIT_HP) && !isNoHealth(el)) {
+    drawHealthBar(ctx, x, y + el.height, el.width, el.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
+  }
+  if(el.disabled) {
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2 
+    
+    ctx.beginPath();
+    ctx.arc(x + el.width/2, y + el.height/2, el.width/2, 0, Math.PI * 2);
+    ctx.stroke();
+            
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + el.width, y + el.height);
+    ctx.closePath();
+    ctx.stroke();
+  }
+  if(el.lvl && +el.lvl > 1) {
+      ctx.font = `${lvlTextSize}px Arial`;
+      ctx.fillStyle = 'black';
+      ctx.fillText(el.lvl, x, y, lvlTextSize);
+  }
+}
+
 /** 
 * @param {typeof elements[0]} shape 
 */
@@ -411,42 +467,9 @@ function drawShape(shape) {
   ctx.scale(scale, scale);
   
   if (shape.shape === 'custom') {
-      // обозначаем принадлежность
-      ctx.fillStyle = shape.color;
-    if (isBuilding(shape)) {
-      ctx.beginPath();
-      ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      ctx.beginPath();
-      ctx.moveTo(shape.width/2, 0);
-      ctx.lineTo(shape.width, shape.height);
-      ctx.lineTo(0, shape.height);
-      ctx.closePath();
-      ctx.fill();
-    }
+    drawCustomObj(ctx, shape, 0, 0)
 
-      const img = imageObjByObjName(shape.name)
-      ctx.drawImage(img, 0, 0, shape.width, shape.height);
-      if((shape.curr_hp < MAX_UNIT_HP) && !isNoHealth(shape)) {
-        drawHealthBar(ctx, 0, shape.height, shape.width, shape.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
-      }
-      if(shape.disabled) {
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 2 
-        
-        ctx.beginPath();
-        ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
-        ctx.stroke();
-                
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(shape.width, shape.height);
-        // ctx.moveTo(0, shape.height);
-        // ctx.lineTo(shape.width, 0);
-        ctx.closePath();
-        ctx.stroke();
-      }
+      
       // TODO timed building
       // if(isBuilding(shape) && !isNoHealth(shape)) {
       //   const dlt = 5
@@ -625,7 +648,8 @@ function startDrag(clientX, clientY, isRightClick = false) {
           editPanel.style.display = 'block';
           editPanel.style.left = `${mouseX + 10}px`;
           editPanel.style.top = `${mouseY + 10}px`;
-          document.getElementById('edit-color').value = element.color || '#000000';
+          // document.getElementById('edit-color').value = element.color || '#000000';
+          document.getElementById('obj-lvl').value = element.lvl || 1;
           document.getElementById('edit-obj-name').value = element.name || '';
           
           // Начинаем перетаскивание
@@ -963,7 +987,7 @@ function switchDisableSelected() {
   if(!selectedElement) return
   if(typeof selectedElement.disabled === 'undefined') selectedElement.disabled = false
   selectedElement.disabled = !selectedElement.disabled
-  drawCanvas();
+  drawElement(selectedElement);
 }
 
 function damageSelected() {
@@ -980,7 +1004,7 @@ function damageSelected() {
           selectedElement.name = GRAVE_UNIT
         }
       }
-      drawCanvas();
+      drawElement(selectedElement);
   }
 }
 
@@ -990,9 +1014,9 @@ function closeEditPanel() {
   selectedElement = null;
 }
 
-function updateElementColor() {
+function updateElementLvl() {
   if (selectedElement) {
-      selectedElement.color = document.getElementById('edit-color').value;
+      selectedElement.lvl = +document.getElementById('obj-lvl').value || 1;
       drawElement(selectedElement)
   }
 }
@@ -1121,50 +1145,11 @@ function saveMap() {
       
       if (element.type === 'shape') {
           if (element.shape === 'custom') {
-              // обозначаем принадлежность
-              tempCtx.fillStyle = element.color;
-              if (isBuilding(element)) {
-                tempCtx.beginPath();
-                tempCtx.arc(
-                  element.x + element.width / 2, element.y + element.height / 2,
-                  element.width / 2, 0, Math.PI * 2
-                );
-                tempCtx.fill();
-              } else {
-                // unit
-                tempCtx.beginPath();
-                tempCtx.moveTo(element.x + element.width / 2, element.y);
-                tempCtx.lineTo(element.x + element.width, element.y + element.height);
-                tempCtx.lineTo(element.x, element.y + element.height);
-                tempCtx.closePath();
-                tempCtx.fill();
-              }
-              const img = new Image();
-              img.src = element.src;
-              tempCtx.drawImage(img, element.x, element.y, element.width, element.height);
+             drawCustomObj(tempCtx, element, element.x, element.y)
           } else {
               tempCtx.fillStyle = element.color;
               
               switch (element.shape) {
-                  case 'rect':
-                      tempCtx.fillRect(element.x, element.y, element.width, element.height);
-                      break;
-                  case 'circle':
-                      tempCtx.beginPath();
-                      tempCtx.arc(
-                        element.x + element.width/2, element.y + element.height/2, 
-                        element.width/2, 0, Math.PI * 2
-                      );
-                      tempCtx.fill();
-                      break;
-                  case 'triangle':
-                      tempCtx.beginPath();
-                      tempCtx.moveTo(element.x + element.width/2, element.y);
-                      tempCtx.lineTo(element.x + element.width, element.y + element.height);
-                      tempCtx.lineTo(element.x, element.y + element.height);
-                      tempCtx.closePath();
-                      tempCtx.fill();
-                      break;
                   case 'line':
                       tempCtx.strokeStyle = element.color;
                       tempCtx.lineWidth = element.height;

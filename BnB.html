@@ -33,7 +33,8 @@
                     <input type="color" id="shape-color" value="#ff0000" class="hidden2" style="width: 30px;">
                     <button class="player-btn" data-color="#d3d3d3" onclick="setShapeColor('#d3d3d3')">Нейтралы</button>
                     <button class="player-btn" data-color="#930000" onclick="setShapeColor('#930000')">Варвары</button>
-                    <button class="player-btn" data-color="#ff0000" onclick="setShapeColor('#ff0000')">Вампиры</button>
+                    <button class="player-btn" data-color="#ff0000" onclick="setShapeColor('#ff0000')">Красные</button>
+                    <button class="player-btn" data-color="#0000ff" onclick="setShapeColor('#0000ff')">Синие</button>
                     <!-- <button class="player-btn" data-color="#9acd32" onclick="setShapeColor('#9acd32')">Орки</button> -->
                 </div>
                 <div class="color-picker">
@@ -93,8 +94,9 @@
         <input id="edit-obj-name" list="obj-names-list" disabled></input>
         <datalist id="obj-names-list"></datalist>
         <div class="color-picker">
-            <span>Цвет:</span>
-            <input type="color" id="edit-color" style="width: 24px;">
+            <span>Ур.:</span>
+            <!-- <input type="color" id="edit-color" style="width: 24px;"> -->
+            <input type="text" id="obj-lvl" title="Уровень объекта" style="width: 40px;">
         </div>
     </div>
     
