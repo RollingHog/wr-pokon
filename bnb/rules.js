@@ -8,6 +8,9 @@ const MAP_PATH = './map/bnb/bnb.png'
 const GRAVE_UNIT = 'grave'
 const MAX_UNIT_HP = 10
 
+// may be left empty, then _pop_ wont be applied
+const POP_PROP = 'Население'
+
 const DEFAULT = {
   buildings: [
     'build_slot',
@@ -43,9 +46,9 @@ const DEFAULT = {
 
     'Корабль_1',
     'Корабль_2',
-    'Корабль_3',
+    // 'Корабль_3',
   ],
-    noHealth: [
+  noHealth: [
     'build_slot',
     GRAVE_UNIT,
     'unknown_bonus',
@@ -63,7 +66,6 @@ const EFFECT_LISTS = {
   resources: [
     "Еда",
     "Железо",
-    // "Камень",
     "Дерево",
     "Рабы",
     // "Лошади",
@@ -75,10 +77,13 @@ const DICT_COMMON = {
   _building_: [],
   _unit_: [
     ["Еда", -10],
+  ], 
+  _pop_: [
+    ["Еда", -1],
   ],
   Столица:
   [
-      ["Население", '+ЛВЛ'],
+      [POP_PROP, '+ЛВЛ'],
       ["Еда", 30],
       ["Дерево", 3],
       // ["Лимит населения", 60],
@@ -87,26 +92,26 @@ const DICT_COMMON = {
   Железная_шахта:
     [
       ["Железо", 1],
-      ["Работник", 1],
+      [POP_PROP, -1],
     ],
 
   Лесопилка:
     [
       ["Дерево", 3],
-      ["Работник", 1],
+      [POP_PROP, -1],
     ],
 
   Ферма:
     [
       ["Еда", 7],
-      ["Работник", 1],
+      [POP_PROP, -1],
       // ["Лошади", 1],
     ],
 
   Охотник:
     [
       ["Еда", 2],
-      ["Работник", 1],
+      [POP_PROP, -1],
     ],
 
 };

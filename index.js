@@ -3,13 +3,13 @@
 
 /// <reference path="./data/data.json.js"/>
 /* global
-CURRENT_TURN DEFAULT_DATA MAP_PATH
-DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
+CURRENT_TURN DEFAULT_DATA 
 */
 
 /// <reference path="./src/rules.js"/>
 /* global
-GRAVE_UNIT MAX_UNIT_HP
+GRAVE_UNIT MAX_UNIT_HP POP_PROP MAP_PATH
+DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
 */
 
 /* exported
@@ -408,7 +408,7 @@ function drawElement(element) {
   }
 }
 
-const lvlTextSize = 16
+const lvlTextSize = 20
 
 /**
  * @param {CanvasRenderingContext2D | null} ctx 
@@ -473,8 +473,8 @@ function drawCustomObj(ctx, el, x, y) {
   if(el.lvl && +el.lvl > 1) {
     ctx.font = `${lvlTextSize}px Arial`;
 
-    ctx.strokeStyle = 'black';
-    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'white';
+    ctx.fillStyle = 'black';
     ctx.strokeText(el.lvl, x, y+5, lvlTextSize);
     ctx.fillText(el.lvl, x, y+5, lvlTextSize);
   }
@@ -978,11 +978,14 @@ const userEffectsObj = {
             console.warn('bad DICT rule for',  obj.name, [k,v])
           })
         }),
-      ).flat().filter(e => e)
+      )
+        .flat()
+        .filter(e => e)
       const effectsDict = {
         unit_count: userUnits.length,
         build_count: userBuildings.length,
       }
+      //       
       for(let [k,v] of userEffects) {
         if(!k) continue
         if(EFFECT_LISTS.local.includes(k)) continue
@@ -990,6 +993,21 @@ const userEffectsObj = {
           effectsDict[k] += +v
         } else {
           effectsDict[k] = +v
+        }
+      }
+      if (POP_PROP) {
+        const popEff = [].concat(
+          DICT_USER[username]?._pop_,
+          DICT_COMMON?._pop_
+        ).filter(e => e)
+        for (let [k, v] of popEff) {
+          if (!k) continue
+          if (EFFECT_LISTS.local.includes(k)) continue
+          if (effectsDict[k]) {
+            effectsDict[k] += +v * (effectsDict[POP_PROP] || 0)
+          } else {
+            effectsDict[k] = +v * (effectsDict[POP_PROP] || 0)
+          }
         }
       }
       console.log(effectsDict)
@@ -1020,14 +1038,14 @@ function switchDisableSelected() {
   if(!selectedElement) return
   if(typeof selectedElement.disabled === 'undefined') selectedElement.disabled = false
   selectedElement.disabled = !selectedElement.disabled
-  drawElement(selectedElement);
+  drawCanvas();
 }
 function switchEndedTurnSelected() {
   if(!selectedElement) return
   if(isNoHealth(selectedElement.name)) return
   if(typeof selectedElement.endedTurn === 'undefined') selectedElement.disabled = false
   selectedElement.endedTurn = !selectedElement.endedTurn
-  drawElement(selectedElement);
+  drawCanvas();
 }
 
 function damageSelected() {
@@ -1057,7 +1075,7 @@ function closeEditPanel() {
 function updateElementLvl() {
   if (selectedElement) {
       selectedElement.lvl = +document.getElementById('obj-lvl').value || 1;
-      drawElement(selectedElement)
+      drawCanvas()
   }
 }
 
