@@ -8,7 +8,8 @@ CURRENT_TURN DEFAULT_DATA
 
 /// <reference path="./src/rules.js"/>
 /* global
-GRAVE_UNIT MAX_UNIT_HP POP_PROP MAP_PATH
+GRAVE_UNIT WRECK_UNIT
+MAX_UNIT_HP POP_PROP MAP_PATH
 DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
 */
 
@@ -90,7 +91,7 @@ function init() {
     'End': () => {
       damageSelected()
     },
-    'S': () => {
+    'Q': () => {
       switchDisableSelected()
     },
     'E': () => {
@@ -1056,11 +1057,19 @@ function damageSelected() {
       selectedElement.curr_hp -= 1;
       if(selectedElement.curr_hp <= 0) {
         if(isBuilding(selectedElement)) {
-          deleteSelected()
+          selectedElement.name = WRECK_UNIT
           return
         }
         if(isUnit(selectedElement)) {
-          selectedElement.name = GRAVE_UNIT
+          if(DEFAULT.noGrave.includes(selectedElement.name)) {
+            deleteSelected()
+            return
+          }
+          if(DEFAULT.wreckUnit.includes(selectedElement.name)) {
+            selectedElement.name = WRECK_UNIT
+          } else {
+            selectedElement.name = GRAVE_UNIT
+          }
         }
       }
       drawElement(selectedElement);
@@ -1261,11 +1270,20 @@ function updateTurnDisplay() {
 
 function showHelp() {
   // TODO
-  alert(`Ну, когда-нибудь.
+  alert(`ПОМОЩЬ. 
+  Ну, когда-нибудь.
 * Как правило хоткеи - с Alt
 * Переключение цвета при выбранной фигуре меняет её цвет
 * После перемещения юнитов сделайте "Экспортировать объекты" и запостите файл в тред, я обновлю
 * ПКМ - перетаскивание карты без риска выделения юнитов
+
+Горячие клавиши:
+Выбранный юнит:
+* Alt + Delete - удалить
+* Alt + End - повредить
+* Q - отключить/включить
+* E - пометить закончившим ход
+
     `)
 }
 

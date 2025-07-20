@@ -1,11 +1,12 @@
 /* exported 
-DICT_COMMON DICT_USER GRAVE_UNIT
+DICT_COMMON DICT_USER GRAVE_UNIT WRECK_UNIT
 EFFECT_LISTS DEFAULT
 MAX_UNIT_HP MAP_PATH
 */
 
 const MAP_PATH = './map/bnb/bnb.png'
-const GRAVE_UNIT = 'grave'
+const GRAVE_UNIT = '_могила'
+const WRECK_UNIT = '_обломки'
 const MAX_UNIT_HP = 10
 
 // may be left empty, then _pop_ wont be applied
@@ -13,9 +14,10 @@ const POP_PROP = 'Население'
 
 const DEFAULT = {
   buildings: [
-    'build_slot',
-    'grave',
-    'unknown_bonus',
+    '_build_slot',
+    GRAVE_UNIT,
+    WRECK_UNIT,
+    '_unknown_bonus',
     'Город',
     'Столица',
 
@@ -26,8 +28,10 @@ const DEFAULT = {
     'Ферма',
     'Железная_шахта',
     'Лесопилка',
+    'Сад',
 
     'Кузница',
+    'Порт',
     // 'Казарма',
   ],
   units: [
@@ -37,6 +41,12 @@ const DEFAULT = {
     'Щитовик',
     'Разведчики',
     'Инженеры',
+
+    'Баллиста',
+    'Катапульта',
+
+    'Зверь',
+    'Скот',
     // 'Элита',
     // 'Демон',
     // 'Командир',
@@ -48,10 +58,20 @@ const DEFAULT = {
   noHealth: [
     'build_slot',
     GRAVE_UNIT,
+    WRECK_UNIT,
     'unknown_bonus',
+  ],
+  wreckUnit: [
+    'Корабль_1',
+    'Корабль_2',
+    'Корабль_3',
+    'Баллиста',
+    'Катапульта',
   ],
   noGrave: [
   ],
+  // noEat: [
+  // ],
 }
 
 const EFFECT_LISTS = {
@@ -70,10 +90,12 @@ const EFFECT_LISTS = {
   local: ["ХП"],
 }
 
+const UNIT_UPKEEP = 3
+
 const DICT_COMMON = {
   _building_: [],
   _unit_: [
-    ["Еда", -3],
+    ["Еда", -UNIT_UPKEEP],
   ],
   _pop_: [
     ["Еда", -1],
@@ -84,7 +106,7 @@ const DICT_COMMON = {
       ["Еда", 25],
       ["Дерево", 3],
     ],
-    
+
   Город:
     [
       [POP_PROP, '+ЛВЛ'],
@@ -102,6 +124,13 @@ const DICT_COMMON = {
       [POP_PROP, -1],
     ],
 
+  Сад:
+    [
+      ["Еда", 2],
+      ["Дерево", 2],
+      [POP_PROP, -1],
+    ],
+
   Ферма:
     [
       ["Еда", 7],
@@ -114,6 +143,11 @@ const DICT_COMMON = {
       [POP_PROP, -1],
     ],
 
+  Скот:
+    [
+      // чтобы компенсировать затраты еды на содержание скота как юнита
+      ["Еда", UNIT_UPKEEP + 1],
+    ],
 };
 
 const DICT_USER = {
