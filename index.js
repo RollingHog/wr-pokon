@@ -104,7 +104,7 @@ function init() {
   
   addListeners();
 
-  updateTurnDisplay();
+  drawTurnDisplay();
   
   // Предпросмотр фигур
   const shapePreviews = document.querySelectorAll('.shape-preview');
@@ -273,10 +273,15 @@ function addListeners() {
   // Обработчик клика по индикатору хода
   turnDisplay.addEventListener('click', function () {
     CURRENT_TURN++;
-    updateTurnDisplay();
+    drawTurnDisplay();
 
     // Можно добавить дополнительную логику при смене хода
-    console.log(`Ход изменён на ${CURRENT_TURN}`);
+    for (let el of elements) {
+      el.endedTurn = false
+    }
+    drawCanvas()
+
+    // console.log(`Ход изменён на ${CURRENT_TURN}`);
   });
 }
 
@@ -976,7 +981,9 @@ const userEffectsObj = {
             if(!k) return el
             if (typeof v === 'number' || !isNaN(+v)) return [k,v]
             if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || 1]
+            if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2*+obj.lvl || 1]
             if (v === '-ЛВЛ') return [k, -obj.lvl || -1]
+            if (v === '-ЛВЛ*2') return [k, 2*-obj.lvl || -1]
             console.warn('bad DICT rule for',  obj.name, [k,v])
           })
         }),
@@ -1264,7 +1271,7 @@ function loadObjects(e) {
 }
 
 // Функция для обновления отображения хода
-function updateTurnDisplay() {
+function drawTurnDisplay() {
     turnDisplay.textContent = `Текущий ход: ${CURRENT_TURN}`;
 }
 
