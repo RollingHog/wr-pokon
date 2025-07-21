@@ -1,7 +1,8 @@
 /* exported 
 DICT_COMMON DICT_USER GRAVE_UNIT WRECK_UNIT
-EFFECT_LISTS DEFAULT
-MAX_UNIT_HP MAP_PATH
+CATEGORY_PRICES OBJ_CATEGORIES 
+EFFECT_LISTS DEFAULT 
+MAX_UNIT_HP MAP_PATH POP_PROP
 */
 
 const MAP_PATH = './map/bnb/bnb.png'
@@ -48,6 +49,7 @@ const DEFAULT = {
 
     'Зверь',
     'Скот',
+    'Кони',
     // 'Элита',
     // 'Демон',
     // 'Командир',
@@ -73,6 +75,52 @@ const DEFAULT = {
   ],
   // noEat: [
   // ],
+}
+
+const CATEGORY_PRICES = {
+  UNITS: {
+    _default_: [
+      ['Население', 3],
+      ['Железо', 1],
+    ],
+    Скот: [
+      ['Еда', 4],
+    ],
+    Корабль: [
+      ['Население', 'ЛВЛ'],
+      ['Дерево', 'ЛВЛ*2'],
+      ['Железо', 'ЛВЛ'],
+    ],
+    Осадная_машина: [
+
+    ],
+  },
+  BUILDINS: {
+    _default_: [
+      ['Население', 3],
+      ['Железо', 1],
+    ],
+  }
+}
+
+const OBJ_CATEGORIES = {
+  UNITS: {
+    Скот: [
+      'Скот',
+    ],
+    Корабль: [
+      'Корабль_1',
+      'Корабль_2',
+      'Корабль_3',
+    ],
+    Осадная_машина: [
+      'Баллиста',
+      'Катапульта',
+    ],
+  },
+  BUILDINS: {
+    
+  }
 }
 
 const EFFECT_LISTS = {

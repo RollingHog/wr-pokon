@@ -10,9 +10,9 @@ const MAX_UNIT_HP = 10
 
 const DEFAULT = {
   buildings: [
-    'build_slot',
-    'grave',
-    'unknown_bonus',
+    '_build_slot',
+    '_могила',
+    '_unknown_bonus',
     'Аванпост',
     'Деревня',
     'Город',

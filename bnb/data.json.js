@@ -1,4 +1,9 @@
-CURRENT_TURN=4
+CURRENT_TURN=4;
+OTHER_SAVE_DATA={
+  "scale": 0.8935197849869643,
+  "dragStartX": 932,
+  "dragStartY": 225
+};
 DEFAULT_DATA=[
   {
     "type": "shape",
@@ -625,8 +630,8 @@ DEFAULT_DATA=[
     "name": "Скот",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 2206.31,
-    "y": 515.52,
+    "x": 2250.46,
+    "y": 486.08,
     "width": 38,
     "height": 38,
     "src": "images/units/Скот.png",

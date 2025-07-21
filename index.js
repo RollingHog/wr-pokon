@@ -3,14 +3,15 @@
 
 /// <reference path="./data/data.json.js"/>
 /* global
-CURRENT_TURN DEFAULT_DATA 
+CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA
 */
 
 /// <reference path="./src/rules.js"/>
 /* global
-GRAVE_UNIT WRECK_UNIT
-MAX_UNIT_HP POP_PROP MAP_PATH
-DICT_COMMON DICT_USER EFFECT_LISTS DEFAULT
+DICT_COMMON DICT_USER GRAVE_UNIT WRECK_UNIT
+CATEGORY_PRICES OBJ_CATEGORIES 
+EFFECT_LISTS DEFAULT 
+MAX_UNIT_HP MAP_PATH POP_PROP
 */
 
 /* exported
@@ -96,6 +97,9 @@ function init() {
     },
     'E': () => {
       switchEndedTurnSelected()
+    },
+    'Space': () => {
+      onEndTurn()
     }
   })
 
@@ -232,8 +236,8 @@ function addListeners() {
   
   document.getElementById('map-file').addEventListener('change', loadMaps);
   document.getElementById('save-map-btn')?.addEventListener('click', saveMap);
-  document.getElementById('save-objects-btn')?.addEventListener('click', saveObjects);
-  document.getElementById('load-objects-file').addEventListener('change', loadObjects);
+  document.getElementById('save-objects-btn')?.addEventListener('click', saveGame);
+  document.getElementById('load-objects-file').addEventListener('change', loadGame);
   document.getElementById('help-btn').addEventListener('click', showHelp);
   document.getElementById('user-effects-btn').addEventListener('click', userEffectsObj.effectsForSelectedUser);
   
@@ -270,19 +274,30 @@ function addListeners() {
       }
   });
 
+  
   // Обработчик клика по индикатору хода
-  turnDisplay.addEventListener('click', function () {
-    CURRENT_TURN++;
-    drawTurnDisplay();
+  turnDisplay.addEventListener('click', onEndTurn);
+}
 
-    // Можно добавить дополнительную логику при смене хода
-    for (let el of elements) {
-      el.endedTurn = false
-    }
-    drawCanvas()
+let turnEndChecked = false
 
-    // console.log(`Ход изменён на ${CURRENT_TURN}`);
-  });
+function onEndTurn() {
+
+  if(!turnEndChecked) {
+    alert('Конец хода, рассчитайте эффекты игроков')
+    turnEndChecked = true
+    return
+  }
+  turnEndChecked = false
+
+  // Можно добавить дополнительную логику при смене хода
+  for (let el of elements) {
+    el.endedTurn = false
+  }
+  drawCanvas()
+
+  CURRENT_TURN++;
+  drawTurnDisplay();
 }
 
 function imageObjByObjName(filename) {
@@ -307,15 +322,38 @@ function onCustomImageLoad(filename, src) {
   preview.style.backgroundImage = `url(${src})`;
   preview.dataset.shape = 'custom';
   preview.dataset.shapeId = shapeId;
-  preview.title = filename;
+  preview.dataset.filename = filename;
 
+  const effArrToStr = (arr) => arr.map(e => e.join(': ')).join('\n')
+  let costStr = ''
+  
+  if(!DEFAULT.noHealth.includes(filename)) {
+    costStr = '\nЦЕНА:\n'
+    let categoryPrice = null
+    for(let category in OBJ_CATEGORIES.UNITS) {
+      if(OBJ_CATEGORIES.UNITS[category].includes(filename)) {
+        categoryPrice = CATEGORY_PRICES.UNITS[category]
+      }
+    }
+    if(!categoryPrice) {
+      categoryPrice = CATEGORY_PRICES.UNITS._default_
+    }
+    costStr += effArrToStr(categoryPrice)
+  } 
+
+  const effStr = typeof DICT_COMMON[filename] !== 'undefined'
+    ? '\nЭФФЕКТЫ:\n' + effArrToStr(DICT_COMMON[filename])
+    : ''
+
+  preview.title = filename + costStr + effStr
+    
   preview.addEventListener('click', function () {
       activeShapeType = 'custom';
       document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
       this.classList.add('active');
 
       if(typeof selectedElement !== 'undefined' && selectedElement) {
-        selectedElement.name = this.title
+        selectedElement.name = this.dataset.filename
         selectedElement.src = this.style.backgroundImage.replace(/(^url\(|\)$|")/g,'')
         drawCanvas();
       }
@@ -337,6 +375,12 @@ function onCustomImageLoad(filename, src) {
 function loadDefaultData() {
   if(typeof DEFAULT_DATA !== 'undefined') {
       elements = DEFAULT_DATA
+  }
+  if(typeof OTHER_SAVE_DATA !== 'undefined') {
+      const oth = OTHER_SAVE_DATA
+      scale = oth.scale 
+      // canvasOffsetX = oth.canvasOffsetX 
+      // canvasOffsetY = oth.canvasOffsetY 
   }
 }
 function loadDefaultMap() {
@@ -808,7 +852,7 @@ function showTextPanel() {
 function cloneShape() {
   if(!selectedElement) return
   
-  document.querySelector(`.shape-preview[title="${selectedElement.name}"]`).click()
+  document.querySelector(`.shape-preview[data-filename="${selectedElement.name}"]`).click()
   placeShape()
 }
 
@@ -849,7 +893,7 @@ function placeShape() {
   
   const shape = {
       type: 'shape',
-      name: activePreview.title,
+      name: activePreview.dataset.filename,
       shape: activeShapeType,
       color: color,
       x: (-canvasOffsetX + canvas.width/2 - width*scale/2) / scale,
@@ -1251,16 +1295,22 @@ function saveMap() {
   link.click();
 }
 
-function saveObjects() {
-  saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN}\nDEFAULT_DATA=` 
+function saveGame() {
+  const otherData = {
+    scale, canvasOffsetX, canvasOffsetY,
+  }
+  saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
+OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
+DEFAULT_DATA=` 
     + JSON.stringify(elements, 0, 2)
   )
 }
 
-function loadObjects(e) {
+function loadGame(e) {
   const file = e.target.files[0];
   if (!file) return;
   
+  // TODO pretty sure this doesnt work
   const reader = new FileReader();
   reader.onload = function(event) {
       const data = event.target.result.replace('DEFAULT_DATA=', '')
