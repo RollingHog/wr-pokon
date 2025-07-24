@@ -1,67 +1,30 @@
 /* exported 
-DICT_COMMON DICT_USER GRAVE_UNIT WRECK_UNIT
+DICT_COMMON DICT_USER
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP
 */
 
+/// <reference path="../src/keywords.js"/>
+/* global
+KW
+*/
+
 const MAP_PATH = './map/bnb/bnb.png'
-const GRAVE_UNIT = '_могила'
-const WRECK_UNIT = '_обломки'
+
 const MAX_UNIT_HP = 10
 
 // may be left empty, then _pop_ wont be applied
 const POP_PROP = 'Население'
 
+// filled up later
 const DEFAULT = {
-  buildings: [
-    '_build_slot',
-    GRAVE_UNIT,
-    WRECK_UNIT,
-    '_unknown_bonus',
-    'Аванпост',
-    'Город',
-    'Столица',
-
-    // 'Дороги',
-    'Стена',
-
-    'Охотник',
-    'Ферма',
-    'Железная_шахта',
-    'Лесопилка',
-    'Сад',
-
-    'Кузница',
-    'Порт',
-    // 'Казарма',
-  ],
-  units: [
-    'default_unit',
-    'Пехота',
-    'Стрелки',
-    'Щитовик',
-    'Разведчики',
-    'Инженеры',
-
-    'Баллиста',
-    'Катапульта',
-
-    'Зверь',
-    'Скот',
-    'Кони',
-    // 'Элита',
-    // 'Демон',
-    // 'Командир',
-
-    'Корабль_1',
-    'Корабль_2',
-    'Корабль_3',
-  ],
+  buildings: [],
+  units: [],
   noHealth: [
     'build_slot',
-    GRAVE_UNIT,
-    WRECK_UNIT,
+    KW.GRAVE_UNIT,
+    KW.WRECK_UNIT,
     'unknown_bonus',
   ],
   wreckUnit: [
@@ -95,33 +58,83 @@ const CATEGORY_PRICES = {
 
     ],
   },
-  BUILDINS: {
+  BUILDINGS: {
     _default_: [
+      ['Дерево', 5],
+      // ['Железо', 1],
+    ],
+    Аванпост: [
+      ['Дерево', 15],
+    ],
+    Город: [
+      ['Дерево', 60],
       ['Население', 3],
-      ['Железо', 1],
     ],
   }
 }
 
 const OBJ_CATEGORIES = {
   UNITS: {
+    _none_: ['default_unit',],
+    _default_: [
+
+      'Пехота',
+      'Стрелки',
+      'Щитовик',
+      'Разведчики',
+      'Инженеры',
+
+      // 'Элита',
+      // 'Демон',
+      // 'Командир',
+    ],
     Скот: [
       'Скот',
+      'Зверь',
+      'Лютый_зверь',
+      'Кони',
+    ],
+    Осадная_машина: [
+      'Баллиста',
+      'Катапульта',
     ],
     Корабль: [
       'Корабль_1',
       'Корабль_2',
       'Корабль_3',
     ],
-    Осадная_машина: [
-      'Баллиста',
-      'Катапульта',
-    ],
   },
-  BUILDINS: {
-    
+  BUILDINGS: {
+    _none_: ['_build_slot',
+      KW.GRAVE_UNIT,
+      KW.WRECK_UNIT,
+      '_unknown_bonus',],
+    _default_: [
+
+      'Столица',
+
+      // 'Дороги',
+      'Стена',
+
+      'Охотник',
+      'Ферма',
+      'Железная_шахта',
+      'Лесопилка',
+      'Сад',
+
+      'Кузница',
+      'Порт',
+      // 'Казарма',
+    ],
+    Город: [
+      'Город',
+    ],
+    Аванпост: ['Аванпост'],
   }
 }
+
+DEFAULT.units = Object.values(OBJ_CATEGORIES.UNITS).flat()
+DEFAULT.buildings = Object.values(OBJ_CATEGORIES.BUILDINGS).flat()
 
 const EFFECT_LISTS = {
   // статичные эффекты, нам важно текущее значение
@@ -140,10 +153,10 @@ const EFFECT_LISTS = {
     // "Лошади",
   ],
   local: [
-    "Атака",
-    "Защита",
+    KW.ATK,
+    KW.DEF,
     "ХП",
-    "Регенерация",
+    KW.REGEN,
   ],
 }
 
@@ -153,12 +166,13 @@ const UNDO_UNIT_UPKEEP = ["Еда", 0.5]
 const DICT_COMMON = {
   _building_: [
     [POP_PROP, -1],
+    [KW.REGEN, 2],
   ],
   _unit_: [
     ["Еда", -UNIT_UPKEEP],
 
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 0],
+    [KW.DEF, 0],
   ],
   _pop_: [
     ["Еда", -0.5],
@@ -198,13 +212,13 @@ const DICT_COMMON = {
 
   Сад:
     [
-      ["Еда", 2],
+      ["Еда", -1],
       ["Дерево", 2],
     ],
 
   Ферма:
     [
-      ["Еда", 7],
+      ["Еда", 4],
     ],
 
   Охотник:
@@ -213,55 +227,58 @@ const DICT_COMMON = {
     ],
 
   //////////////// units
-  Скот:
-    [
-      // чтобы компенсировать затраты еды на содержание скота как юнита
-      UNDO_UNIT_UPKEEP
-    ],
 
   Пехота: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 2],
+    [KW.DEF, 2],
   ],
   Стрелки: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 2],
+    [KW.DEF, 1],
   ],
   Щитовик: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 2],
+    [KW.DEF, 3],
   ],
   Разведчики: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 1],
+    [KW.DEF, 0],
   ],
   Инженеры: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 1],
+    [KW.DEF, 0],
   ],
+
   Баллиста: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 3],
+    [KW.DEF, 1],
   ],
   Катапульта: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 0],
+    [KW.DEF, 0],
+  ],
+
+  Скот: [
+      UNDO_UNIT_UPKEEP,
+      [KW.REGEN, 1],
   ],
   Зверь: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 0],
+    [KW.DEF, 0],
+    [KW.REGEN, 1],
   ],
+
   Корабль_1: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 0],
+    [KW.DEF, 0],
   ],
   Корабль_2: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 0],
+    [KW.DEF, 0],
   ],
   Корабль_3: [
-    ["Атака", 0],
-    ["Защита", 0],
+    [KW.ATK, 0],
+    [KW.DEF, 0],
   ],
 
 };

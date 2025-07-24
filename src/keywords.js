@@ -1,0 +1,12 @@
+/* exported 
+KW
+*/
+
+const KW = /** @type {const} */ ({
+  GRAVE_UNIT: '_могила',
+  WRECK_UNIT: '_обломки',
+
+  ATK: "Атака",
+  DEF: 'Защита',
+  REGEN: 'Регенерация',
+})

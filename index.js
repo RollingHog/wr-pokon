@@ -6,6 +6,11 @@
 CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA
 */
 
+/// <reference path="./src/keywords.js"/>
+/* global
+KW
+*/
+
 /// <reference path="./src/rules.js"/>
 /* global
 DICT_COMMON DICT_USER GRAVE_UNIT WRECK_UNIT
@@ -91,6 +96,9 @@ function init() {
     },
     'End': () => {
       damageSelected()
+    },
+    'Ctrl End': () => {
+      damageSelected(prompt('Damage amount? Minus to heal'))
     },
     'Q': () => {
       switchDisableSelected()
@@ -253,7 +261,7 @@ function addListeners() {
   // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
   
   // Форма редактирования
-  document.getElementById('edit-atk-btn').addEventListener('click', attackBySelected);
+  document.getElementById('edit-atk-btn').addEventListener('click', enableAttackMode);
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   // document.getElementById('edit-color').addEventListener('input', updateElementColor);
   document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
@@ -294,6 +302,21 @@ function onEndTurn() {
   for (let el of elements) {
     el.endedTurn = false
   }
+
+  elements.forEach(obj => {
+    const effects = DICT_COMMON[obj.name];
+    if (!effects) return;
+
+    const regenEffect = effects.find(effect => Array.isArray(effect) && effect[0] === KW.REGEN);
+
+    if (regenEffect) {
+      const healAmount = regenEffect[1];
+      if (typeof healAmount === 'number') {
+        offsetUnitHp(obj, healAmount)
+      }
+    }
+  });
+
   drawCanvas()
 
   CURRENT_TURN++;
@@ -330,15 +353,17 @@ function onCustomImageLoad(filename, src) {
   if(!DEFAULT.noHealth.includes(filename)) {
     costStr = '\nЦЕНА:\n'
     let categoryPrice = null
-    for(let category in OBJ_CATEGORIES.UNITS) {
-      if(OBJ_CATEGORIES.UNITS[category].includes(filename)) {
-        categoryPrice = CATEGORY_PRICES.UNITS[category]
+    if(isUnit({name: filename})&& !OBJ_CATEGORIES.UNITS._none_.includes(filename)) {
+      for(let category in OBJ_CATEGORIES.UNITS) {
+        if(OBJ_CATEGORIES.UNITS[category].includes(filename)) {
+          categoryPrice = CATEGORY_PRICES.UNITS[category]
+        }
       }
+      if(!categoryPrice) {
+        categoryPrice = CATEGORY_PRICES.UNITS._default_
+      }
+      costStr += effArrToStr(categoryPrice)
     }
-    if(!categoryPrice) {
-      categoryPrice = CATEGORY_PRICES.UNITS._default_
-    }
-    costStr += effArrToStr(categoryPrice)
   } 
 
   const effStr = typeof DICT_COMMON[filename] !== 'undefined'
@@ -713,6 +738,12 @@ function startDrag(clientX, clientY, isRightClick = false) {
       const height = element.height * scale;
       
       if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
+          if(isAttack) {
+            isAttack = false
+            attackObj(selectedElement, element)
+            return 
+          }
+
           selectedElement = element;
           isDraggingElement = true;
           
@@ -736,6 +767,7 @@ function startDrag(clientX, clientY, isRightClick = false) {
           return;
       }
     }
+    isAttack = false
   }
   
   
@@ -1134,6 +1166,10 @@ function colorFromUsername(username) {
   return Array.from(document.querySelectorAll('.player-btn')).find(el => el.textContent === username).dataset.color
 }
 
+function playerByColor(colorStr) {
+  return Array.from(document.querySelectorAll('.player-btn')).find(el => el.dataset.color === colorStr).textContent
+}
+
 function deleteSelected() {
   if (selectedElement) {
       elements = elements.filter(el => el !== selectedElement);
@@ -1143,8 +1179,75 @@ function deleteSelected() {
   }
 }
 
-function attackBySelected() {
+let isAttack = false
+function enableAttackMode() {
   if(!selectedElement) return
+  isAttack = true
+}
+
+/**
+ * @param {typeof elements[0]} obj 
+ * @param {*} amount 
+ */
+function offsetUnitHp(obj, amount) {
+  const curr = obj.curr_hp
+  let res = curr + amount
+  if (res > MAX_UNIT_HP) {
+    res = MAX_UNIT_HP
+  }
+  if (res / MAX_UNIT_HP < 0.3) {
+    obj.disabled = true
+  } else if (res / MAX_UNIT_HP >= 0.3 && curr / MAX_UNIT_HP < 0.3) {
+    obj.disabled = false
+  }
+  obj.curr_hp = res
+
+  if (obj.curr_hp <= 0) {
+    obj.disabled = false
+    if (isBuilding(obj)) {
+      obj.name = WRECK_UNIT
+      drawCanvas(obj);
+      return
+    }
+    if (isUnit(obj)) {
+      if (DEFAULT.noGrave.includes(obj.name)) {
+        deleteSelected()
+        return
+      }
+      if (DEFAULT.wreckUnit.includes(obj.name)) {
+        obj.name = WRECK_UNIT
+      } else {
+        obj.name = GRAVE_UNIT
+      }
+    }
+  }
+  drawCanvas(obj);
+
+  console.log(`${obj.name} изменился на ${amount} HP. Текущее HP: ${obj.curr_hp}`);
+
+}
+
+/**
+ * @param {typeof elements[0]} obj 
+ */
+function getBattleParams(obj) {
+  const list = userEffectsObj.getCachedEffects(obj.name, playerByColor(obj.color)) || []
+  // ([]).
+  return {
+    atk: list.filter(([k,v])=> k === 'Атака')[0][1] || 0,
+    def: list.filter(([k,v])=> k === 'Защита')[0][1] || 0
+  }
+}
+
+/**
+ * @param {typeof elements[0]} atkr 
+ * @param {typeof elements[0]} dfdr 
+ */
+function attackObj(atkr, dfdr) {
+  console.log(
+    getBattleParams(atkr),
+    getBattleParams(dfdr),
+  )
 }
 
 function switchDisableSelected() {
@@ -1161,29 +1264,11 @@ function switchEndedTurnSelected() {
   drawCanvas();
 }
 
-function damageSelected() {
+function damageSelected(amount = 1) {
   if (selectedElement) {
       if(isNoHealth(selectedElement)) return
       if(typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = MAX_UNIT_HP
-      selectedElement.curr_hp -= 1;
-      if(selectedElement.curr_hp <= 0) {
-        if(isBuilding(selectedElement)) {
-          selectedElement.name = WRECK_UNIT
-          return
-        }
-        if(isUnit(selectedElement)) {
-          if(DEFAULT.noGrave.includes(selectedElement.name)) {
-            deleteSelected()
-            return
-          }
-          if(DEFAULT.wreckUnit.includes(selectedElement.name)) {
-            selectedElement.name = WRECK_UNIT
-          } else {
-            selectedElement.name = GRAVE_UNIT
-          }
-        }
-      }
-      drawElement(selectedElement);
+      offsetUnitHp(selectedElement, -amount)
   }
 }
 
@@ -1397,7 +1482,8 @@ function showHelp() {
 Горячие клавиши:
 Выбранный юнит:
 * Alt + Delete - удалить
-* Alt + End - повредить
+* End - повредить
+* Ctrl+End - повредить на величину
 * Q - отключить/включить
 * E - пометить закончившим ход
 
