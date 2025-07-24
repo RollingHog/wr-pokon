@@ -253,7 +253,7 @@ function addListeners() {
   // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
   
   // Форма редактирования
-  // document.getElementById('edit-delete-btn').addEventListener('click', deleteSelected);
+  document.getElementById('edit-atk-btn').addEventListener('click', attackBySelected);
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   // document.getElementById('edit-color').addEventListener('input', updateElementColor);
   document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
@@ -1003,6 +1003,78 @@ const lineActionsObj = {
 
 // TODO + sort + icons?
 const userEffectsObj = {
+  effCache: {},
+  getCachedEffects(objName, username) {
+    const cacheKey = `${objName}-${username}`;
+    if (this.effCache[cacheKey]) {
+      return this.effCache[cacheKey];
+    }
+
+    const obj = {name: objName}
+    const list = [].concat([
+      DICT_USER[username]?.[isBuilding(obj) ? '_building_' : '_unit_'],
+      DICT_USER[username]?.[obj.name],
+      DICT_COMMON?.[isBuilding(obj) ? '_building_' : '_unit_'],
+      DICT_COMMON?.[obj.name]
+    ])
+    if (!list) return list
+    const res = list.flat().map((el) => {
+      if (!el) return el
+      const [k, v] = el
+      if (!k) return el
+      if (typeof v === 'number' || !isNaN(+v)) return [k, v]
+      if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || 1]
+      if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2 * +obj.lvl || 1]
+      if (v === '-ЛВЛ') return [k, -obj.lvl || -1]
+      if (v === '-ЛВЛ*2') return [k, 2 * -obj.lvl || -1]
+      console.warn('bad DICT rule for', obj.name, [k, v])
+    })
+    this.effCache[cacheKey] = res
+    return res
+  },
+  groupBySections(obj) {
+    const result = {};
+
+    // Инициализируем все секции пустыми массивами
+    for (const section of Object.keys(EFFECT_LISTS)) {
+      result[section] = [];
+    }
+
+    // Преобразуем списки свойств в Set для быстрого поиска
+    const lookup = {};
+    for (const [section, keys] of Object.entries(EFFECT_LISTS)) {
+      lookup[section] = new Set(keys);
+    }
+
+    // Перебираем свойства входного объекта
+    for (const [key, value] of Object.entries(obj)) {
+      // Проверяем, входит ли ключ в каждую из секций
+      let matched = false;
+      for (const section of Object.keys(lookup)) {
+        if (lookup[section].has(key)) {
+          result[section].push([key, value]);
+          matched = true;
+          break;
+        }
+      }
+      if(!matched) {
+        console.warn('not matched:', key)
+      }
+      // Если не подошёл ни к одной — можно игнорировать или добавить в "другие"
+    }
+
+    return {
+      result,
+      toObj() { return result },
+      toPrettyList() {
+        return Object.entries(result)
+          .map(([section, eff]) =>
+            (`==${section}==\n ${eff.map((arr) => arr.join(': ')).join('\n')}\n`)
+          ).join('')
+      }
+    };
+  },
+
   sumEffects(username) {
     const userColor = colorFromUsername(username)
     let userEffects = []
@@ -1012,24 +1084,7 @@ const userEffectsObj = {
       userEffects = [].concat(
         userObjs.map(obj => {
           if(obj.disabled) return []
-          const res = [].concat([
-            DICT_USER[username]?.[isBuilding(obj) ? '_building_' : '_unit_'], 
-            DICT_USER[username]?.[obj.name], 
-            DICT_COMMON?.[isBuilding(obj) ? '_building_' : '_unit_'],
-            DICT_COMMON?.[obj.name]
-          ])
-          if(!res) return res
-          return res.flat().map((el)=> {
-            if(!el) return el
-            const [k,v] = el
-            if(!k) return el
-            if (typeof v === 'number' || !isNaN(+v)) return [k,v]
-            if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || 1]
-            if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2*+obj.lvl || 1]
-            if (v === '-ЛВЛ') return [k, -obj.lvl || -1]
-            if (v === '-ЛВЛ*2') return [k, 2*-obj.lvl || -1]
-            console.warn('bad DICT rule for',  obj.name, [k,v])
-          })
+          return userEffectsObj.getCachedEffects(obj.name, username)
         }),
       )
         .flat()
@@ -1065,7 +1120,8 @@ const userEffectsObj = {
       }
       console.log(effectsDict)
       alert(`Игрок ${username}:\n` 
-        +JSON.stringify(effectsDict, 0, 2)
+        + (this.groupBySections(effectsDict).toPrettyList())
+        // + JSON.stringify(, 0, 2)
       )
   },
   effectsForSelectedUser() {
@@ -1085,6 +1141,10 @@ function deleteSelected() {
       editPanel.style.display = 'none';
       drawCanvas();
   }
+}
+
+function attackBySelected() {
+  if(!selectedElement) return
 }
 
 function switchDisableSelected() {
