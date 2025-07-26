@@ -13,7 +13,7 @@ KW
 
 /// <reference path="./src/rules.js"/>
 /* global
-DICT_COMMON DICT_USER GRAVE_UNIT WRECK_UNIT
+DICT_COMMON DICT_USER
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP
@@ -92,19 +92,22 @@ function init() {
   loadDefaultCustomImages()
   hotkeysLib.init({
     'Delete': () => {
-      deleteSelected()
+      selection.delete()
     },
     'End': () => {
-      damageSelected()
+      selection.damage()
+    },
+    'Escape': () => {
+      selection.drop()
     },
     'Ctrl End': () => {
-      damageSelected(prompt('Damage amount? Minus to heal'))
+      selection.damage(prompt('Damage amount? Minus to heal'))
     },
     'Q': () => {
-      switchDisableSelected()
+      selection.switchDisable()
     },
     'E': () => {
-      switchEndedTurnSelected()
+      selection.switchEndedTurn()
     },
     'Space': () => {
       onEndTurn()
@@ -304,21 +307,29 @@ function onEndTurn() {
   }
 
   elements.forEach(obj => {
-    const effects = DICT_COMMON[obj.name];
+    const effects = userEffectsObj.getCachedEffects(obj.name, playerByColor(obj.color));
     if (!effects) return;
 
     const regenEffect = effects.find(effect => Array.isArray(effect) && effect[0] === KW.REGEN);
-
     if (regenEffect) {
       const healAmount = regenEffect[1];
       if (typeof healAmount === 'number') {
         offsetUnitHp(obj, healAmount)
       }
     }
+
+    const lvlDriftEffect = effects.find(effect => Array.isArray(effect) && effect[0] === KW.LVL_DRIFT);
+    if (lvlDriftEffect) {
+      const amount = +lvlDriftEffect[1];
+      if (typeof amount === 'number') {
+        offsetObjLvl(obj, amount)
+      }
+    }
   });
 
   drawCanvas()
 
+  // eslint-disable-next-line no-global-assign
   CURRENT_TURN++;
   drawTurnDisplay();
 }
@@ -545,7 +556,7 @@ function drawCustomObj(ctx, el, x, y) {
     // ctx.closePath();
     ctx.stroke();
   }
-  if(el.lvl && +el.lvl > 1) {
+  if(typeof el.lvl === 'number' && +el.lvl !== 1) {
     ctx.font = `${lvlTextSize}px Arial`;
 
     ctx.strokeStyle = 'white';
@@ -781,8 +792,42 @@ function startDrag(clientX, clientY, isRightClick = false) {
   
   // Скрываем панель редактирования, если ничего не выбрано
   if (selectedElement) {
+    selection.drop()
+  }
+}
+
+const selection = {
+  drop() {
       selectedElement = null;
       editPanel.style.display = 'none';
+  },
+  damage(amount = 1) {
+    if (selectedElement) {
+      if (isNoHealth(selectedElement)) return
+      if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = MAX_UNIT_HP
+      offsetUnitHp(selectedElement, -amount)
+    }
+  },
+  switchEndedTurn() {
+    if (!selectedElement) return
+    if (isNoHealth(selectedElement.name)) return
+    if (typeof selectedElement.endedTurn === 'undefined') selectedElement.disabled = false
+    selectedElement.endedTurn = !selectedElement.endedTurn
+    drawCanvas();
+  },
+  switchDisable() {
+    if (!selectedElement) return
+    if (typeof selectedElement.disabled === 'undefined') selectedElement.disabled = false
+    selectedElement.disabled = !selectedElement.disabled
+    drawCanvas();
+  },
+  delete() {
+    if (selectedElement) {
+      elements = elements.filter(el => el !== selectedElement);
+      selectedElement = null;
+      editPanel.style.display = 'none';
+      drawCanvas();
+    }
   }
 }
 
@@ -1039,7 +1084,7 @@ const userEffectsObj = {
   getCachedEffects(objName, username) {
     const cacheKey = `${objName}-${username}`;
     if (this.effCache[cacheKey]) {
-      return this.effCache[cacheKey];
+      return Object.entries(this.effCache[cacheKey]);
     }
 
     const obj = {name: objName}
@@ -1181,15 +1226,6 @@ function playerByColor(colorStr) {
   return Array.from(document.querySelectorAll('.player-btn')).find(el => el.dataset.color === colorStr).textContent
 }
 
-function deleteSelected() {
-  if (selectedElement) {
-      elements = elements.filter(el => el !== selectedElement);
-      selectedElement = null;
-      editPanel.style.display = 'none';
-      drawCanvas();
-  }
-}
-
 let isAttack = false
 function enableAttackMode() {
   if(!selectedElement) return
@@ -1199,7 +1235,26 @@ function enableAttackMode() {
 
 /**
  * @param {typeof elements[0]} obj 
- * @param {*} amount 
+ * @param {number} amount 
+ */
+function offsetObjLvl(obj, amount) {
+  const curr = obj.lvl
+  let res = curr + amount
+  if (res <= 0) {
+    if (DEFAULT.noGrave.includes(obj.name)) {
+      selection.delete()
+    } else {
+      obj.name = KW.WRECK_UNIT
+    }
+  } else {
+    obj.lvl = res
+  }
+  drawCanvas(obj)
+}
+
+/**
+ * @param {typeof elements[0]} obj 
+ * @param {number} amount 
  */
 function offsetUnitHp(obj, amount) {
   const curr = obj.curr_hp
@@ -1217,26 +1272,25 @@ function offsetUnitHp(obj, amount) {
   if (obj.curr_hp <= 0) {
     obj.disabled = false
     if (isBuilding(obj)) {
-      obj.name = WRECK_UNIT
+      obj.name = KW.WRECK_UNIT
       drawCanvas(obj);
       return
     }
     if (isUnit(obj)) {
       if (DEFAULT.noGrave.includes(obj.name)) {
-        deleteSelected()
+        selection.delete()
         return
       }
       if (DEFAULT.wreckUnit.includes(obj.name)) {
-        obj.name = WRECK_UNIT
+        obj.name = KW.WRECK_UNIT
       } else {
-        obj.name = GRAVE_UNIT
+        obj.name = KW.GRAVE_UNIT
       }
     }
   }
   drawCanvas(obj);
 
   console.log(`${obj.name} изменился на ${amount} HP. Текущее HP: ${obj.curr_hp}`);
-
 }
 
 /**
@@ -1247,42 +1301,28 @@ function getBattleParams(obj) {
     .filter(e=>e) || []
   // ([]).
   return {
-    atk: list.filter(([k,v])=> k === KW.ATK)[0][1] || 0,
-    def: list.filter(([k,v])=> k === KW.DEF)[0][1] || 0
+    atk: list.filter(([k,_])=> k === KW.ATK)[0][1] || 0,
+    def: list.filter(([k,_])=> k === KW.DEF)[0][1] || 0,
+    dist: list.filter(([k,_])=> k === KW.DIST)[0][1] || 0,
   }
 }
 
 /**
- * @param {typeof elements[0]} atkr 
- * @param {typeof elements[0]} dfdr 
+ * @param {typeof elements[0]} atkObj 
+ * @param {typeof elements[0]} defObj 
  */
-function attackObj(atkr, dfdr) {
-  console.log(
-    getBattleParams(atkr),
-    getBattleParams(dfdr),
-  )
-}
+function attackObj(atkObj, defObj) {
+  const atk = getBattleParams(atkObj)
+  const def = getBattleParams(defObj)
+  const res = `${atkObj.name} атакует ${defObj.name}:
+Атака ##1d${atk.atk}## + ##1d3## 
+Защита ##1d${def.def}##
 
-function switchDisableSelected() {
-  if(!selectedElement) return
-  if(typeof selectedElement.disabled === 'undefined') selectedElement.disabled = false
-  selectedElement.disabled = !selectedElement.disabled
-  drawCanvas();
-}
-function switchEndedTurnSelected() {
-  if(!selectedElement) return
-  if(isNoHealth(selectedElement.name)) return
-  if(typeof selectedElement.endedTurn === 'undefined') selectedElement.disabled = false
-  selectedElement.endedTurn = !selectedElement.endedTurn
-  drawCanvas();
-}
-
-function damageSelected(amount = 1) {
-  if (selectedElement) {
-      if(isNoHealth(selectedElement)) return
-      if(typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = MAX_UNIT_HP
-      offsetUnitHp(selectedElement, -amount)
-  }
+${defObj.name} контратакует:
+Атака ##1d${def.atk}## + ##1d3## 
+Защита ##1d${atk.def}##
+`
+  console.log(res)
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -1468,7 +1508,7 @@ function loadGame(e) {
   const file = e.target.files[0];
   if (!file) return;
   
-  // TODO pretty sure this doesnt work
+  // TODO pretty sure this doesn't work
   const reader = new FileReader();
   reader.onload = function(event) {
       const data = event.target.result.replace('DEFAULT_DATA=', '')

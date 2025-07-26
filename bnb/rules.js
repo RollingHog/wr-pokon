@@ -27,6 +27,7 @@ const DEFAULT = {
     KW.GRAVE_UNIT,
     KW.WRECK_UNIT,
     'unknown_bonus',
+    '_Маркер_недовольства',
   ],
   wreckUnit: [
     'Корабль_1',
@@ -34,6 +35,7 @@ const DEFAULT = {
     'Корабль_3',
     'Баллиста',
     'Катапульта',
+    'Танк_Леонардо',
   ],
   noGrave: [
   ],
@@ -86,6 +88,8 @@ const OBJ_CATEGORIES = {
       'Щитовик',
       'Разведчики',
       'Инженеры',
+      
+      // 'Танк_Леонардо',
 
       // 'Элита',
       // 'Демон',
@@ -93,9 +97,9 @@ const OBJ_CATEGORIES = {
     ],
     Скот: [
       'Скот',
+      'Кони',
       'Зверь',
       'Лютый_зверь',
-      'Кони',
     ],
     Осадная_машина: [
       'Баллиста',
@@ -108,10 +112,13 @@ const OBJ_CATEGORIES = {
     ],
   },
   BUILDINGS: {
-    _none_: ['_build_slot',
+    _none_: [
+      '_build_slot',
       KW.GRAVE_UNIT,
       KW.WRECK_UNIT,
-      '_unknown_bonus',],
+      '_unknown_bonus',
+      '_Маркер_недовольства',
+    ],
     _default_: [
 
       'Столица',
@@ -146,6 +153,7 @@ const EFFECT_LISTS = {
     'unit_count',
     'build_count',
     'Население',
+    'Недовольство',
   ],
   // добывается, фактически показывает прибыль ресурса
   resources: [
@@ -201,6 +209,13 @@ const DICT_COMMON = {
       // он больше обычного здания и требует людей для обслуживания
       [POP_PROP, -1],
       [POP_PROP, '+ЛВЛ'],
+    ],
+
+  _Маркер_недовольства:
+    [
+      [POP_PROP, 1],
+      ['Недовольство', '+ЛВЛ'],
+      [KW.LVL_DRIFT, -1],
     ],
 
   Железная_шахта:
@@ -277,7 +292,7 @@ const DICT_COMMON = {
 
   Корабль_1: [
     [KW.ATK, 2],
-    [KW.DEF, 3],
+    [KW.DEF, 2],
   ],
   Корабль_2: [
     [KW.ATK, 3],
