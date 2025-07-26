@@ -227,6 +227,7 @@ function setShapeColor(color) {
     drawCanvas();
   }
 
+  info_panel.style.display = ''
   drawInfoPanel(color)
 }
 
