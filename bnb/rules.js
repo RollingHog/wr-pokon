@@ -17,9 +17,10 @@ const MAX_UNIT_HP = 10
 // may be left empty, then _pop_ wont be applied
 const POP_PROP = 'Население'
 
-// filled up later
 const DEFAULT = {
+  /* filled up later */
   buildings: [],
+  /* filled up later */
   units: [],
   noHealth: [
     'build_slot',
@@ -39,6 +40,8 @@ const DEFAULT = {
   // noEat: [
   // ],
 }
+
+const WEATHER_EFF = {}
 
 const CATEGORY_PRICES = {
   UNITS: {
@@ -155,6 +158,7 @@ const EFFECT_LISTS = {
   local: [
     KW.ATK,
     KW.DEF,
+    KW.DIST,
     "ХП",
     KW.REGEN,
   ],
@@ -194,7 +198,7 @@ const DICT_COMMON = {
 
   Аванпост:
     [
-      // он больше обычного здания, все же
+      // он больше обычного здания и требует людей для обслуживания
       [POP_PROP, -1],
       [POP_PROP, '+ЛВЛ'],
     ],
@@ -235,6 +239,7 @@ const DICT_COMMON = {
   Стрелки: [
     [KW.ATK, 2],
     [KW.DEF, 1],
+    [KW.DIST, 1],
   ],
   Щитовик: [
     [KW.ATK, 2],
@@ -243,6 +248,7 @@ const DICT_COMMON = {
   Разведчики: [
     [KW.ATK, 1],
     [KW.DEF, 0],
+    [KW.DIST, 1],
   ],
   Инженеры: [
     [KW.ATK, 1],
@@ -252,6 +258,7 @@ const DICT_COMMON = {
   Баллиста: [
     [KW.ATK, 3],
     [KW.DEF, 1],
+    [KW.DIST, 2],
   ],
   Катапульта: [
     [KW.ATK, 0],
@@ -259,26 +266,28 @@ const DICT_COMMON = {
   ],
 
   Скот: [
-      UNDO_UNIT_UPKEEP,
-      [KW.REGEN, 1],
+    UNDO_UNIT_UPKEEP,
+    [KW.REGEN, 1],
   ],
   Зверь: [
-    [KW.ATK, 0],
+    [KW.ATK, 2],
     [KW.DEF, 0],
     [KW.REGEN, 1],
   ],
 
   Корабль_1: [
-    [KW.ATK, 0],
-    [KW.DEF, 0],
+    [KW.ATK, 2],
+    [KW.DEF, 3],
   ],
   Корабль_2: [
-    [KW.ATK, 0],
-    [KW.DEF, 0],
+    [KW.ATK, 3],
+    [KW.DEF, 3],
+    [KW.DIST, 1],
   ],
   Корабль_3: [
-    [KW.ATK, 0],
-    [KW.DEF, 0],
+    [KW.ATK, 4],
+    [KW.DEF, 4],
+    [KW.DIST, 2],
   ],
 
 };

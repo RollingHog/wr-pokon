@@ -1049,7 +1049,7 @@ const userEffectsObj = {
       DICT_COMMON?.[isBuilding(obj) ? '_building_' : '_unit_'],
       DICT_COMMON?.[obj.name]
     ])
-    if (!list) return list
+    if (!list) return []
     const res = list.flat().map((el) => {
       if (!el) return el
       const [k, v] = el
@@ -1060,9 +1060,20 @@ const userEffectsObj = {
       if (v === '-ЛВЛ') return [k, -obj.lvl || -1]
       if (v === '-ЛВЛ*2') return [k, 2 * -obj.lvl || -1]
       console.warn('bad DICT rule for', obj.name, [k, v])
-    })
-    this.effCache[cacheKey] = res
-    return res
+    }).filter(e=>e)
+
+    const effectsDict = {}
+    for(let [k,v] of res) {
+        if(!k) continue
+        if(effectsDict[k]) {
+          effectsDict[k] += +v
+        } else {
+          effectsDict[k] = +v
+        }
+    }
+
+    this.effCache[cacheKey] = effectsDict
+    return Object.entries(effectsDict)
   },
   groupBySections(obj) {
     const result = {};
@@ -1183,6 +1194,7 @@ let isAttack = false
 function enableAttackMode() {
   if(!selectedElement) return
   isAttack = true
+  editPanel.style.display = 'none';
 }
 
 /**
@@ -1231,11 +1243,12 @@ function offsetUnitHp(obj, amount) {
  * @param {typeof elements[0]} obj 
  */
 function getBattleParams(obj) {
-  const list = userEffectsObj.getCachedEffects(obj.name, playerByColor(obj.color)) || []
+  const list = userEffectsObj.getCachedEffects(obj.name, playerByColor(obj.color))
+    .filter(e=>e) || []
   // ([]).
   return {
-    atk: list.filter(([k,v])=> k === 'Атака')[0][1] || 0,
-    def: list.filter(([k,v])=> k === 'Защита')[0][1] || 0
+    atk: list.filter(([k,v])=> k === KW.ATK)[0][1] || 0,
+    def: list.filter(([k,v])=> k === KW.DEF)[0][1] || 0
   }
 }
 
