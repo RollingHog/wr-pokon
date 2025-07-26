@@ -227,6 +227,11 @@ function setShapeColor(color) {
     drawCanvas();
   }
 
+  drawInfoPanel(color)
+}
+
+function drawInfoPanel(color) {
+  if(!color) return
   const effs = userEffectsObj.sumEffects(playerByColor(color))
   // TODO add printing tech effects
   info_panel.querySelector('h3').innerText = playerByColor(color)
@@ -490,6 +495,8 @@ function drawCanvas() {
   elements.forEach(element => {
     drawElement(element)
   });
+
+  drawInfoPanel(selectedElement?.color)
 
   // lastPaint = Date.now()
 }
