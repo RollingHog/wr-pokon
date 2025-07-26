@@ -174,7 +174,7 @@ const EFFECT_LISTS = {
 
 const UNIT_UPKEEP = 3
 const UNDO_POP_USAGE = [POP_PROP, 1]
-const UNDO_UNIT_UPKEEP = ["Еда", 0.5]
+const UNDO_UNIT_UPKEEP = ["Еда", UNIT_UPKEEP]
 const DICT_COMMON = {
   _building_: [
     [POP_PROP, -1],

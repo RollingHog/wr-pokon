@@ -36,6 +36,8 @@ const mapList = document.getElementById('map-list');
 const shapeModal = document.getElementById('shape-modal');
 const modalShapesContainer = document.getElementById('modal-shapes-container');
 const turnDisplay = document.getElementById('turnDisplay');
+const info_panel = document.getElementById('info_panel');
+const info_panel_body = document.getElementById('info_panel_body');
 
 let scale = 1;
 let isDragging = false;
@@ -224,6 +226,12 @@ function setShapeColor(color) {
     selectedElement.color = color
     drawCanvas();
   }
+
+  const effs = userEffectsObj.sumEffects(playerByColor(color))
+  // TODO add printing tech effects
+  info_panel.querySelector('h3').innerText = playerByColor(color)
+  info_panel.querySelector('h3').style.color = color
+  info_panel_body.innerText = userEffectsObj.groupBySections(effs).toPrettyList()
 }
 
 function addListeners() {
@@ -307,7 +315,7 @@ function onEndTurn() {
   }
 
   elements.forEach(obj => {
-    const effects = userEffectsObj.getCachedEffects(obj.name, playerByColor(obj.color));
+    const effects = userEffectsObj.getCachedEffects(obj);
     if (!effects) return;
 
     const regenEffect = effects.find(effect => Array.isArray(effect) && effect[0] === KW.REGEN);
@@ -1081,13 +1089,19 @@ const lineActionsObj = {
 // TODO + sort + icons?
 const userEffectsObj = {
   effCache: {},
-  getCachedEffects(objName, username) {
-    const cacheKey = `${objName}-${username}`;
-    if (this.effCache[cacheKey]) {
-      return Object.entries(this.effCache[cacheKey]);
-    }
+  /**
+   * @param {elements[0]} obj 
+   */
+  getCachedEffects(obj) {
+    const username = playerByColor(obj.color)
 
-    const obj = {name: objName}
+    // // TODO cache doesn't save lvl data
+    // const cacheKey = `${objName}-${username}`;
+    // if (this.effCache[cacheKey]) {
+    //   return Object.entries(this.effCache[cacheKey]);
+    // }
+
+    // const obj = {name: objName}
     const list = [].concat([
       DICT_USER[username]?.[isBuilding(obj) ? '_building_' : '_unit_'],
       DICT_USER[username]?.[obj.name],
@@ -1117,11 +1131,13 @@ const userEffectsObj = {
         }
     }
 
-    this.effCache[cacheKey] = effectsDict
+    // this.effCache[cacheKey] = effectsDict
     return Object.entries(effectsDict)
   },
   groupBySections(obj) {
-    const result = {};
+    const result = {
+      _unique_: []
+    };
 
     // Инициализируем все секции пустыми массивами
     for (const section of Object.keys(EFFECT_LISTS)) {
@@ -1147,6 +1163,7 @@ const userEffectsObj = {
       }
       if(!matched) {
         console.warn('not matched:', key)
+        result._unique_.push([key, value])
       }
       // Если не подошёл ни к одной — можно игнорировать или добавить в "другие"
     }
@@ -1172,7 +1189,7 @@ const userEffectsObj = {
       userEffects = [].concat(
         userObjs.map(obj => {
           if(obj.disabled) return []
-          return userEffectsObj.getCachedEffects(obj.name, username)
+          return userEffectsObj.getCachedEffects(obj)
         }),
       )
         .flat()
@@ -1206,15 +1223,21 @@ const userEffectsObj = {
           }
         }
       }
-      console.log(effectsDict)
-      alert(`Игрок ${username}:\n` 
-        + (this.groupBySections(effectsDict).toPrettyList())
-        // + JSON.stringify(, 0, 2)
-      )
+      return effectsDict
   },
   effectsForSelectedUser() {
     const username = document.querySelector(`[data-color="${document.getElementById('shape-color').value}"]`).textContent
-    userEffectsObj.sumEffects(username)
+    const effectsDict = userEffectsObj.sumEffects(username)
+    let warns = ``
+    if(effectsDict[POP_PROP] < 0) {
+      warns += `МАЛО НАСЕЛЕНИЯ`
+    }
+    console.log(effectsDict)
+    alert(`Игрок ${username}:\n`
+      + (this.groupBySections(effectsDict).toPrettyList())
+      + '\n' + warns
+    // + JSON.stringify(, 0, 2)
+      )
   }
 }
 
@@ -1290,14 +1313,14 @@ function offsetUnitHp(obj, amount) {
   }
   drawCanvas(obj);
 
-  console.log(`${obj.name} изменился на ${amount} HP. Текущее HP: ${obj.curr_hp}`);
+  // console.log(`${obj.name} изменился на ${amount} HP. Текущее HP: ${obj.curr_hp}`);
 }
 
 /**
  * @param {typeof elements[0]} obj 
  */
 function getBattleParams(obj) {
-  const list = userEffectsObj.getCachedEffects(obj.name, playerByColor(obj.color))
+  const list = userEffectsObj.getCachedEffects(obj)
     .filter(e=>e) || []
   // ([]).
   return {

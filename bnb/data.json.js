@@ -1,8 +1,8 @@
-CURRENT_TURN=4;
+CURRENT_TURN=5;
 OTHER_SAVE_DATA={
-  "scale": 0.8935197849869643,
-  "dragStartX": 932,
-  "dragStartY": 225
+  "scale": 1.1077371642867748,
+  "canvasOffsetX": -1837.1332237487954,
+  "canvasOffsetY": -306.02603618633816
 };
 DEFAULT_DATA=[
   {
@@ -68,8 +68,8 @@ DEFAULT_DATA=[
     "name": "Зверь",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 1665.07,
-    "y": 726.26,
+    "x": 1627.05,
+    "y": 591.14,
     "width": 38,
     "height": 38,
     "src": "images/units/Зверь.png",
@@ -79,7 +79,7 @@ DEFAULT_DATA=[
   },
   {
     "type": "shape",
-    "name": "Зверь",
+    "name": "_могила",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 1742.35,
@@ -87,7 +87,7 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 38,
     "src": "images/units/Зверь.png",
-    "curr_hp": 2,
+    "curr_hp": -1.5,
     "disabled": false,
     "endedTurn": false
   },
@@ -376,14 +376,14 @@ DEFAULT_DATA=[
     "name": "Скот",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 2259.72,
-    "y": 555.57,
+    "x": 2188.25,
+    "y": 533.64,
     "width": 38,
     "height": 38,
     "src": "images/units/Скот.png",
     "curr_hp": 10,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "lvl": 1
   },
   {
@@ -398,7 +398,7 @@ DEFAULT_DATA=[
     "src": "images/units/Скот.png",
     "curr_hp": 10,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "lvl": 1
   },
   {
@@ -406,8 +406,8 @@ DEFAULT_DATA=[
     "name": "Скот",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 1608.05,
-    "y": 608.8,
+    "x": 1594.36,
+    "y": 611.73,
     "width": 38,
     "height": 38,
     "src": "images/units/Скот.png",
@@ -630,14 +630,14 @@ DEFAULT_DATA=[
     "name": "Скот",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 2250.46,
+    "x": 2104.97,
     "y": 486.08,
     "width": 38,
     "height": 38,
     "src": "images/units/Скот.png",
     "curr_hp": 10,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "lvl": 1
   },
   {
@@ -758,8 +758,8 @@ DEFAULT_DATA=[
     "name": "Пехота",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 2249.89,
-    "y": 336.11,
+    "x": 2243.67,
+    "y": 486.68,
     "width": 38,
     "height": 38,
     "src": "images/units/Пехота.png",
@@ -773,12 +773,12 @@ DEFAULT_DATA=[
     "name": "Пехота",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1838.01,
-    "y": 659.07,
+    "x": 1836.16,
+    "y": 659,
     "width": 38,
     "height": 38,
     "src": "images/units/Пехота.png",
-    "curr_hp": 8,
+    "curr_hp": 5.5,
     "disabled": false,
     "endedTurn": true,
     "lvl": 1
@@ -788,14 +788,14 @@ DEFAULT_DATA=[
     "name": "Корабль_1",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1918.15,
-    "y": 922.58,
+    "x": 1587.57,
+    "y": 847.97,
     "width": 38,
     "height": 38,
     "src": "images/units/Корабль_1.png",
     "curr_hp": 10,
     "disabled": false,
-    "endedTurn": false,
+    "endedTurn": true,
     "lvl": 1
   },
   {
@@ -1391,8 +1391,8 @@ DEFAULT_DATA=[
     "name": "Разведчики",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1957.99,
-    "y": 409.02,
+    "x": 1834.21,
+    "y": 290.15,
     "width": 38,
     "height": 38,
     "src": "images/units/Разведчики.png",
@@ -1428,7 +1428,7 @@ DEFAULT_DATA=[
     "src": "images/buildings/Ферма.png",
     "curr_hp": 10,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "lvl": 1
   },
   {
@@ -1443,7 +1443,7 @@ DEFAULT_DATA=[
     "src": "images/units/Инженеры.png",
     "curr_hp": 10,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "lvl": 1
   },
   {
@@ -1451,8 +1451,8 @@ DEFAULT_DATA=[
     "name": "Инженеры",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 2253.91,
-    "y": 417.96,
+    "x": 2313.55,
+    "y": 370.05,
     "width": 38,
     "height": 38,
     "src": "images/units/Инженеры.png",
@@ -1513,6 +1513,48 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 35.29,
     "src": "images/buildings/Железная_шахта.png",
+    "curr_hp": 10,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "type": "shape",
+    "name": "Аванпост",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 2246.11814210388,
+    "y": 419.0418951774339,
+    "width": 38,
+    "height": 35.29,
+    "src": "images/buildings/Аванпост.png",
+    "curr_hp": 10,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "type": "shape",
+    "name": "Ферма",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 2319.5962101645455,
+    "y": 448.4331224017002,
+    "width": 38,
+    "height": 35.29,
+    "src": "images/buildings/Ферма.png",
+    "curr_hp": 10,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "type": "shape",
+    "name": "Скот",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1959.48,
+    "y": 579.09,
+    "width": 38,
+    "height": 38,
+    "src": "images/units/Скот.png",
     "curr_hp": 10,
     "disabled": false,
     "endedTurn": false
