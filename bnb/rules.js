@@ -310,7 +310,7 @@ const DICT_COMMON = {
 };
 
 const DICT_USER = {
-  Красные: {
+  Нью_Лоуландс: {
     Столица:
       [
       ],

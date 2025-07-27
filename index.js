@@ -397,7 +397,7 @@ function onCustomImageLoad(filename, src) {
 
   preview.title = filename + costStr + effStr
     
-  preview.addEventListener('click', function () {
+  preview.addEventListener('click', function onSelectShape() {
       activeShapeType = 'custom';
       document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
       this.classList.add('active');
@@ -406,6 +406,8 @@ function onCustomImageLoad(filename, src) {
         selectedElement.name = this.dataset.filename
         selectedElement.src = this.style.backgroundImage.replace(/(^url\(|\)$|")/g,'')
         drawCanvas();
+      } else {
+        placeShape(true)
       }
   });
 
@@ -949,12 +951,12 @@ function cloneShape() {
   placeShape()
 }
 
-function placeShape() {
+function placeShape(spawnNearMenu = false) {
   if (currentMapIndex === -1) {
-      alert('Сначала загрузите карту');
+      // console.warn('Сначала загрузите карту');
       return;
   }
-  
+
   const color = document.getElementById('shape-color').value;
   const size = parseInt(document.getElementById('shape-size').value);
   
@@ -984,13 +986,22 @@ function placeShape() {
       }
   }
   
+  const isMenu = typeof spawnNearMenu === 'boolean' && spawnNearMenu
+  const x = isMenu
+    ? (-canvasOffsetX + canvas.width * 0.05 - width*scale/2) / scale
+    : (-canvasOffsetX + canvas.width/2 - width*scale/2) / scale
+
+  const y = isMenu
+    ? (-canvasOffsetY + canvas.height/5 - height*scale/2) / scale
+    : (-canvasOffsetY + canvas.height/2 - height*scale/2) / scale
+
   const shape = {
       type: 'shape',
       name: activePreview.dataset.filename,
       shape: activeShapeType,
       color: color,
-      x: (-canvasOffsetX + canvas.width/2 - width*scale/2) / scale,
-      y: (-canvasOffsetY + canvas.height/2 - height*scale/2) / scale,
+      x,
+      y,
       width: width,
       height: height,
       src: src,
