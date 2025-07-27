@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 1.1157709819180364,
-  "canvasOffsetX": -999.7435729584008,
-  "canvasOffsetY": -2378.3643397105016
+  "scale": 0.8760303603720551,
+  "canvasOffsetX": -1374.438535902989,
+  "canvasOffsetY": -104.9028489310623
 };
 DEFAULT_DATA=[
   {
@@ -315,14 +315,14 @@ DEFAULT_DATA=[
   },
   {
     "type": "shape",
-    "name": "Скот",
+    "name": "Кони",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2273.31,
-    "y": 575.26,
+    "x": 2334.95,
+    "y": 361.8,
     "width": 38,
     "height": 38,
-    "src": "images/units/Скот.png",
+    "src": "images/units/Кони.png",
     "curr_hp": 10,
     "disabled": false,
     "endedTurn": false
@@ -738,8 +738,8 @@ DEFAULT_DATA=[
     "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 1843.5352178484466,
-    "y": 359.5652845541589,
+    "x": 1837.74,
+    "y": 332.92,
     "width": 38,
     "height": 35.29,
     "src": "images/buildings/_unknown_bonus.png",
@@ -1439,8 +1439,8 @@ DEFAULT_DATA=[
     "name": "Пехота",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1339.206815678135,
-    "y": 2423.3911379093634,
+    "x": 1308.82,
+    "y": 2459.86,
     "width": 38,
     "height": 38,
     "src": "images/units/Пехота.png",
@@ -1453,8 +1453,8 @@ DEFAULT_DATA=[
     "name": "Разведчики",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1259.93,
-    "y": 2503.76,
+    "x": 1248.53,
+    "y": 2503,
     "width": 38,
     "height": 38,
     "src": "images/units/Разведчики.png",
