@@ -283,6 +283,7 @@ const DICT_COMMON = {
 
   Скот: [
     UNDO_UNIT_UPKEEP,
+    ['Еда', 1.5],
     [KW.REGEN, 1],
   ],
   Зверь: [
