@@ -118,6 +118,7 @@ const OBJ_CATEGORIES = {
       KW.WRECK_UNIT,
       '_unknown_bonus',
       '_Маркер_недовольства',
+      // 'Дорога',
     ],
     _default_: [
 

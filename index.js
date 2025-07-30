@@ -126,7 +126,7 @@ function init() {
   // Предпросмотр фигур
   const shapePreviews = document.querySelectorAll('.shape-preview');
   shapePreviews.forEach(preview => {
-      preview.addEventListener('click', function() {
+      preview.addEventListener('click', function onShapePreview() {
           activeShapeType = this.dataset.shape;
           // document.getElementById('shape-size').value = 50;
           // Добавляем класс active к выбранной фигуре
@@ -397,7 +397,7 @@ function onCustomImageLoad(filename, src) {
 
   preview.title = filename + costStr + effStr
     
-  preview.addEventListener('click', function onSelectShape() {
+  preview.addEventListener('click', function onShapeSelect() {
       activeShapeType = 'custom';
       document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
       this.classList.add('active');
@@ -407,7 +407,7 @@ function onCustomImageLoad(filename, src) {
         selectedElement.src = this.style.backgroundImage.replace(/(^url\(|\)$|")/g,'')
         drawCanvas();
       } else {
-        placeShape(true)
+        // placeShape(true)
       }
   });
 
