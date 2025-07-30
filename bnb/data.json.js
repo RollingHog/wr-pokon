@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 0.8760303603720551,
-  "canvasOffsetX": -1374.438535902989,
-  "canvasOffsetY": -104.9028489310623
+  "scale": 1.0522531800000003,
+  "canvasOffsetX": -1018.0187116868324,
+  "canvasOffsetY": -2288.391094094238
 };
 DEFAULT_DATA=[
   {
@@ -1425,8 +1425,8 @@ DEFAULT_DATA=[
     "name": "Пехота",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1355.8846868295916,
-    "y": 2378.9168148388126,
+    "x": 1332.12,
+    "y": 2349.46,
     "width": 38,
     "height": 38,
     "src": "images/units/Пехота.png",
@@ -1439,8 +1439,8 @@ DEFAULT_DATA=[
     "name": "Пехота",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1308.82,
-    "y": 2459.86,
+    "x": 1344.82,
+    "y": 2436.36,
     "width": 38,
     "height": 38,
     "src": "images/units/Пехота.png",
@@ -1453,11 +1453,25 @@ DEFAULT_DATA=[
     "name": "Разведчики",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1248.53,
-    "y": 2503,
+    "x": 1309.03,
+    "y": 2461,
     "width": 38,
     "height": 38,
     "src": "images/units/Разведчики.png",
+    "curr_hp": 10,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "type": "shape",
+    "name": "Кузница",
+    "shape": "custom",
+    "color": "#4cbb17",
+    "x": 1347.13,
+    "y": 2397.06,
+    "width": 38,
+    "height": 35.29,
+    "src": "images/buildings/Кузница.png",
     "curr_hp": 10,
     "disabled": false,
     "endedTurn": false

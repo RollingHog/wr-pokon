@@ -1343,9 +1343,9 @@ function getBattleParams(obj) {
     .filter(e=>e) || []
   // ([]).
   return {
-    atk: list.filter(([k,_])=> k === KW.ATK)[0][1] || 0,
-    def: list.filter(([k,_])=> k === KW.DEF)[0][1] || 0,
-    dist: list.filter(([k,_])=> k === KW.DIST)[0][1] || 0,
+    atk: list.filter(([k,_])=> k === KW.ATK)[0]?.[1] || 0,
+    def: list.filter(([k,_])=> k === KW.DEF)[0]?.[1] || 0,
+    dist: list.filter(([k,_])=> k === KW.DIST)[0]?.[1] || 0,
   }
 }
 
@@ -1358,12 +1358,12 @@ function attackObj(atkObj, defObj) {
   const def = getBattleParams(defObj)
   const res = `${atkObj.name} атакует ${defObj.name}:
 Атака ##1d${atk.atk}## + ##1d3## 
-Защита ##1d${def.def}##
-
-${defObj.name} контратакует:
+Защита ##1d${def.def}##` +
+    def.atk > 0 ?
+`\n${defObj.name} контратакует:
 Атака ##1d${def.atk}## + ##1d3## 
 Защита ##1d${atk.def}##
-`
+` : ''
   console.log(res)
 }
 
@@ -1542,7 +1542,7 @@ function saveGame() {
   saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
 OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
 DEFAULT_DATA=` 
-    + JSON.stringify(elements, 0, 2)
+    + JSON.stringify(elements.filter(e => e.y), 0, 2)
   )
 }
 
