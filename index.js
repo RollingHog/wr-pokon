@@ -505,21 +505,25 @@ function drawCanvas() {
     drawElement(element)
   });
 
-  applyFogOfWar(colorFromUsername('Синие'));
+  applyFogOfWar(document.getElementById('shape-color').value);
 
   drawInfoPanel(selectedElement?.color)
 
   // lastPaint = Date.now()
 }
 
-
+const fogCheckbox = document.getElementById('ch_fog')
 const visionRadius = 100
 function applyFogOfWar(playerColor) {
+  
   const localCtx = fogCtx
-
+  
   const fogColor = 'rgba(0, 0, 0, 0.3)'; // тёмно-серый непрозрачный туман
-
+  
   localCtx.clearRect(0,0, canvas.width, canvas.height);
+  if(!fogCheckbox.checked) {
+    return
+  }
   localCtx.save();
 
   // Заливаем весь canvas туманом
