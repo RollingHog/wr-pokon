@@ -513,12 +513,12 @@ function drawCanvas() {
 }
 
 const fogCheckbox = document.getElementById('ch_fog')
-const visionRadius = 100
+const visionRadius = 160
 function applyFogOfWar(playerColor) {
   
   const localCtx = fogCtx
   
-  const fogColor = 'rgba(0, 0, 0, 0.3)'; // тёмно-серый непрозрачный туман
+  const fogColor = 'rgba(100, 100, 100, 1)'; // тёмно-серый непрозрачный туман
   
   localCtx.clearRect(0,0, canvas.width, canvas.height);
   if(!fogCheckbox.checked) {
@@ -548,7 +548,7 @@ function applyFogOfWar(playerColor) {
       const x = el.x * scale + canvasOffsetX;
       const y = el.y * scale + canvasOffsetY;
 
-      localCtx.clearRect(x - radius, y - radius, radius * 2, radius * 2);
+      localCtx.clearRect(x - radius + 38/2, y - radius + 38/2, radius * 2, radius * 2);
     
   });
 
