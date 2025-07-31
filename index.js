@@ -27,6 +27,8 @@ onOutputClick
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById('map-canvas');
 const ctx = canvas.getContext('2d');
+const fogCanvas = document.getElementById('fog-canvas');
+const fogCtx = fogCanvas.getContext('2d');
 const canvasContainer = document.getElementById('canvas-container');
 const scaleValue = document.getElementById('scale-value');
 const scaleSlider = document.getElementById('scale-slider');
@@ -242,12 +244,12 @@ function drawInfoPanel(color) {
 
 function addListeners() {
   // События мыши/касания
-  canvas.addEventListener('mousedown', handleMouseDown);
-  canvas.addEventListener('mousemove', handleMouseMove);
-  canvas.addEventListener('mouseup', handleMouseUp);
+  fogCanvas.addEventListener('mousedown', handleMouseDown);
+  fogCanvas.addEventListener('mousemove', handleMouseMove);
+  fogCanvas.addEventListener('mouseup', handleMouseUp);
   canvas.addEventListener('contextmenu', lineActionsObj.finishLineDrawing);
 
-  canvas.addEventListener('wheel', handleWheel, { passive: false });
+  fogCanvas.addEventListener('wheel', handleWheel, { passive: false });
   
   // События касания для мобильных устройств
   canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -464,6 +466,10 @@ function loadDefaultCustomImages() {
 function resizeCanvas() {
   canvas.width = canvasContainer.clientWidth;
   canvas.height = canvasContainer.clientHeight;
+  
+  fogCanvas.width = canvasContainer.clientWidth;
+  fogCanvas.height = canvasContainer.clientHeight;
+
   drawCanvas();
 }
 
@@ -499,9 +505,51 @@ function drawCanvas() {
     drawElement(element)
   });
 
+  applyFogOfWar(colorFromUsername('Синие'));
+
   drawInfoPanel(selectedElement?.color)
 
   // lastPaint = Date.now()
+}
+
+
+const visionRadius = 100
+function applyFogOfWar(playerColor) {
+  const localCtx = fogCtx
+
+  const fogColor = 'rgba(0, 0, 0, 0.3)'; // тёмно-серый непрозрачный туман
+
+  localCtx.clearRect(0,0, canvas.width, canvas.height);
+  localCtx.save();
+
+  // Заливаем весь canvas туманом
+  localCtx.fillStyle = fogColor;
+  localCtx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // localCtx.fillStyle = 'rgba(0, 0, 0, 1)';
+  // Меняем режим композиции: следующие рисунки будут "вырезать" (стирать) туман
+  // localCtx.globalCompositeOperation = 'destination-out';
+  
+  // Собираем все юниты своей фракции с visionRadius
+  const visibleUnits = elements.filter(el =>
+    el.color === playerColor
+  );
+
+  //   ctx.translate(shape.x * scale + canvasOffsetX, shape.y * scale + canvasOffsetY);
+  // ctx.scale(scale, scale);
+
+  // Для каждого юнита рисуем круг видимости (в локальных координатах)
+  visibleUnits.forEach(el => {
+      const radius = visionRadius * scale;
+      const x = el.x * scale + canvasOffsetX;
+      const y = el.y * scale + canvasOffsetY;
+
+      ctx.clearRect(x - radius, y - radius, radius * 2, radius * 2);
+    
+  });
+
+  // Восстанавливаем стандартный режим композиции
+  localCtx.restore();
 }
 
 function drawElement(element) {

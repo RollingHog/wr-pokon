@@ -51,11 +51,14 @@ h3 {
   touch-action: none;
 }
 
-#map-canvas {
+#map-canvas, #fog-canvas {
   position: absolute;
-  background-color: white;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   touch-action: none;
+}
+
+#map-canvas {
+  background-color: white;
 }
 
 .shape {
