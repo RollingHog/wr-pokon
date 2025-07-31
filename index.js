@@ -544,7 +544,7 @@ function applyFogOfWar(playerColor) {
       const x = el.x * scale + canvasOffsetX;
       const y = el.y * scale + canvasOffsetY;
 
-      ctx.clearRect(x - radius, y - radius, radius * 2, radius * 2);
+      localCtx.clearRect(x - radius, y - radius, radius * 2, radius * 2);
     
   });
 
