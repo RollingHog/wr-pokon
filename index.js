@@ -532,10 +532,12 @@ function applyFogOfWar() {
   localCtx.save();
 
   const map = getCurrentMap()
+  if(!map) return
+
   const screenX = 0 * scale + canvasOffsetX;
   const screenY = 0 * scale + canvasOffsetY;
-  const screenWidth = map.image.width * scale;
-  const screenHeight = map.image.height * scale;
+  const screenWidth = map?.image?.width * scale;
+  const screenHeight = map?.image?.height * scale;
 
   // Заливаем весь canvas туманом
   localCtx.fillStyle = fogColor;
@@ -557,7 +559,7 @@ function applyFogOfWar() {
   visibleUnits.forEach(el => {
     const isCapital = el.name === KW.CAPITAL
     const radius = isCapital 
-      ? CURRENT_TURN * visionRadius * 0.5 * scale
+      ? CURRENT_TURN * visionRadius * 0.4 * scale
       : visionRadius * scale;
     const x = el.x * scale + canvasOffsetX;
     const y = el.y * scale + canvasOffsetY;
@@ -1046,6 +1048,10 @@ function placeShape(spawnNearMenu = false) {
               const img = new Image();
               img.src = src;
               const ratio = img.width / img.height;
+              if(!ratio) {
+                // TODO there is some strange bug here
+                console.warn('ratio bad!!!', customShape, img);
+              }
               width = size;
               height = +((size / ratio).toFixed(2));
           }
