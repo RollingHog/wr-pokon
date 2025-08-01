@@ -155,6 +155,7 @@ const EFFECT_LISTS = {
     'build_count',
     'Население',
     'Недовольство',
+    'Рабочие',
   ],
   // добывается, фактически показывает прибыль ресурса
   resources: [
@@ -178,7 +179,7 @@ const UNDO_POP_USAGE = [POP_PROP, 1]
 const UNDO_UNIT_UPKEEP = ["Еда", UNIT_UPKEEP]
 const DICT_COMMON = {
   _building_: [
-    [POP_PROP, -1],
+    ['Рабочие', -1],
     [KW.REGEN, 2],
   ],
   _unit_: [
