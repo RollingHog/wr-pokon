@@ -122,7 +122,7 @@ const OBJ_CATEGORIES = {
     ],
     _default_: [
 
-      'Столица',
+      KW.CAPITAL,
 
       // 'Дороги',
       'Стена',
@@ -190,7 +190,7 @@ const DICT_COMMON = {
   _pop_: [
     ["Еда", -0.5],
   ],
-  Столица:
+  [KW.CAPITAL]:
     [
       // компенсация
       [POP_PROP, 1],
@@ -312,13 +312,13 @@ const DICT_COMMON = {
 
 const DICT_USER = {
   Нью_Лоуландс: {
-    Столица:
+    [KW.CAPITAL]:
       [
       ],
   },
 
   Синие: {
-    Столица:
+    [KW.CAPITAL]:
       [
       ],
   },

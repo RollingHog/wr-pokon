@@ -45,6 +45,10 @@
                 <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разместить</button>
                 <button id="clone-shape-btn" hotkey="C" title="Копировать фигуру" hidden>Копия</button>
                 <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
+                <label for="ch_fog" title="Туман Войны">
+                  <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()">
+                  Т.В.
+                </label>
             </div>
             <hr>
             <div id="text-panel">
@@ -75,10 +79,6 @@
                 <input type="range" id="scale-slider" min="25" max="200" value="100">
                 <span id="scale-value">100%</span>
             </div>
-            <label for="ch_fog">
-              <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()">
-              Туман войны
-            </label>
         </div>
         <button id="help-btn" title="" hotkey="F1">Помощь</button>
         <a href="src/countRaceEffects.html" style="color: white; text-align: center;">Калькулятор характеристик расы</a>

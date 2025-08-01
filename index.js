@@ -226,8 +226,8 @@ function setShapeColor(color) {
   document.getElementById('text-color').value=color
   if(typeof selectedElement !== 'undefined' && selectedElement) {
     selectedElement.color = color
-    drawCanvas();
   }
+  drawCanvas();
 
   info_panel.style.display = ''
   drawInfoPanel(color)
@@ -343,10 +343,9 @@ function onEndTurn() {
     }
   });
 
-  drawCanvas()
-
   // eslint-disable-next-line no-global-assign
   CURRENT_TURN++;
+  drawCanvas()
   drawTurnDisplay();
 }
 
@@ -462,6 +461,11 @@ function loadDefaultCustomImages() {
   }
 }
 
+function getCurrentMap() {
+  if(currentMapIndex >= 0 && maps[currentMapIndex])
+    return maps[currentMapIndex]
+}
+
 // Функции отрисовки
 function resizeCanvas() {
   canvas.width = canvasContainer.clientWidth;
@@ -505,7 +509,7 @@ function drawCanvas() {
     drawElement(element)
   });
 
-  applyFogOfWar(document.getElementById('shape-color').value);
+  applyFogOfWar();
 
   drawInfoPanel(selectedElement?.color)
 
@@ -514,7 +518,8 @@ function drawCanvas() {
 
 const fogCheckbox = document.getElementById('ch_fog')
 const visionRadius = 160
-function applyFogOfWar(playerColor) {
+function applyFogOfWar() {
+  const playerColor = document.getElementById('shape-color').value
   
   const localCtx = fogCtx
   
@@ -526,9 +531,15 @@ function applyFogOfWar(playerColor) {
   }
   localCtx.save();
 
+  const map = getCurrentMap()
+  const screenX = 0 * scale + canvasOffsetX;
+  const screenY = 0 * scale + canvasOffsetY;
+  const screenWidth = map.image.width * scale;
+  const screenHeight = map.image.height * scale;
+
   // Заливаем весь canvas туманом
   localCtx.fillStyle = fogColor;
-  localCtx.fillRect(0, 0, canvas.width, canvas.height);
+  localCtx.fillRect(screenX, screenY, screenWidth, screenHeight);
   
   // localCtx.fillStyle = 'rgba(0, 0, 0, 1)';
   // Меняем режим композиции: следующие рисунки будут "вырезать" (стирать) туман
@@ -544,12 +555,15 @@ function applyFogOfWar(playerColor) {
 
   // Для каждого юнита рисуем круг видимости (в локальных координатах)
   visibleUnits.forEach(el => {
-      const radius = visionRadius * scale;
-      const x = el.x * scale + canvasOffsetX;
-      const y = el.y * scale + canvasOffsetY;
+    const isCapital = el.name === KW.CAPITAL
+    const radius = isCapital 
+      ? CURRENT_TURN * visionRadius * 0.5 * scale
+      : visionRadius * scale;
+    const x = el.x * scale + canvasOffsetX;
+    const y = el.y * scale + canvasOffsetY;
 
-      localCtx.clearRect(x - radius + 38/2, y - radius + 38/2, radius * 2, radius * 2);
-    
+    const delta = 38 / 2 * scale;
+    localCtx.clearRect(x - radius + delta, y - radius + delta, radius * 2, radius * 2);
   });
 
   // Восстанавливаем стандартный режим композиции
