@@ -175,7 +175,7 @@ const EFFECT_LISTS = {
 }
 
 const UNIT_UPKEEP = 3
-const UNDO_POP_USAGE = [POP_PROP, 1]
+const UNDO_POP_USAGE = ['Рабочие', 1]
 const UNDO_UNIT_UPKEEP = ["Еда", UNIT_UPKEEP]
 const DICT_COMMON = {
   _building_: [
@@ -193,8 +193,7 @@ const DICT_COMMON = {
   ],
   [KW.CAPITAL]:
     [
-      // компенсация
-      [POP_PROP, 1],
+      UNDO_POP_USAGE,
       [POP_PROP, '+ЛВЛ'],
       ["Еда", 20],
       ["Дерево", 3],
@@ -202,20 +201,18 @@ const DICT_COMMON = {
 
   Город:
     [
-      [POP_PROP, 1],
+      UNDO_POP_USAGE,
       [POP_PROP, '+ЛВЛ'],
     ],
 
   Аванпост:
     [
-      // он больше обычного здания и требует людей для обслуживания
-      [POP_PROP, -1],
       [POP_PROP, '+ЛВЛ'],
     ],
 
   _Маркер_недовольства:
     [
-      [POP_PROP, 1],
+      UNDO_POP_USAGE,
       ['Недовольство', '+ЛВЛ'],
       [KW.LVL_DRIFT, -1],
     ],
@@ -228,7 +225,6 @@ const DICT_COMMON = {
 
   Лесопилка:
     [
-      UNDO_POP_USAGE,
       ["Дерево", 3],
     ],
 
