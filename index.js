@@ -1431,11 +1431,11 @@ function attackObj(atkObj, defObj) {
   const res = `${atkObj.name} атакует ${defObj.name}:
 Атака ##1d${atk.atk}## + ##1d3## 
 Защита ##1d${def.def}##` +
-    def.atk > 0 ?
+    (def.atk > 0 ?
 `\n${defObj.name} контратакует:
 Атака ##1d${def.atk}## + ##1d3## 
 Защита ##1d${atk.def}##
-` : ''
+` : '')
   console.log(res)
 }
 
