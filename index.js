@@ -1247,7 +1247,7 @@ const userEffectsObj = {
       let matched = false;
       for (const section of Object.keys(lookup)) {
         if (lookup[section].has(key)) {
-          result[section].push([key, value]);
+          result[section].push([key, (+value).toFixed(1).replace('.0','')]);
           matched = true;
           break;
         }

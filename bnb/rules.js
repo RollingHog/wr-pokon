@@ -196,7 +196,7 @@ const DICT_COMMON = {
     [
       UNDO_POP_USAGE,
       [POP_PROP, '+ЛВЛ'],
-      ["Еда", 20],
+      ["Еда", 25],
       ["Дерево", 3],
     ],
 
@@ -271,11 +271,13 @@ const DICT_COMMON = {
   ],
 
   Баллиста: [
+    UNDO_UNIT_UPKEEP,
     [KW.ATK, 3],
     [KW.DEF, 1],
     [KW.DIST, 2],
   ],
   Катапульта: [
+    UNDO_UNIT_UPKEEP,
     [KW.ATK, 0],
     [KW.DEF, 0],
   ],
