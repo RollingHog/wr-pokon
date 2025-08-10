@@ -1,8 +1,8 @@
 CURRENT_TURN=3;
 OTHER_SAVE_DATA={
-  "scale": 0.9375575833800004,
-  "canvasOffsetX": -463.8506676982396,
-  "canvasOffsetY": -1558.372912278176
+  "scale": 1.8448693687199964,
+  "canvasOffsetX": -2105.425719723474,
+  "canvasOffsetY": -4143.743208455088
 };
 DEFAULT_DATA=[
   {
@@ -1360,8 +1360,8 @@ DEFAULT_DATA=[
     "name": "Столица",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1297.62,
-    "y": 2392.01,
+    "x": 1315.12,
+    "y": 2372.51,
     "width": 38,
     "height": 35.29,
     "src": "images/buildings/Столица.png",
@@ -1389,8 +1389,8 @@ DEFAULT_DATA=[
     "name": "Пехота",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1323.54,
-    "y": 2332.23,
+    "x": 1338.31,
+    "y": 2270.33,
     "width": 38,
     "height": 38,
     "src": "images/units/Пехота.png",
@@ -1403,8 +1403,8 @@ DEFAULT_DATA=[
     "name": "Пехота",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1344.8,
-    "y": 2348.35,
+    "x": 1339.3,
+    "y": 2345.85,
     "width": 38,
     "height": 38,
     "src": "images/units/Пехота.png",
@@ -1853,8 +1853,8 @@ DEFAULT_DATA=[
     "name": "Лесопилка",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1241.23,
-    "y": 2441.32,
+    "x": 1234.9,
+    "y": 2438.51,
     "width": 38,
     "height": 35.29,
     "src": "images/buildings/Лесопилка.png",
@@ -1966,8 +1966,8 @@ DEFAULT_DATA=[
     "name": "Инженеры",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1307.97,
-    "y": 2356.83,
+    "x": 1280.97,
+    "y": 2359.83,
     "width": 38,
     "height": 38,
     "src": "images/units/Инженеры.png",
@@ -2018,5 +2018,33 @@ DEFAULT_DATA=[
     "disabled": false,
     "endedTurn": false,
     "lvl": 1
+  },
+  {
+    "type": "shape",
+    "name": "Аванпост",
+    "shape": "custom",
+    "color": "#4cbb17",
+    "x": 1339.8686560929548,
+    "y": 2312.6629655943248,
+    "width": 38,
+    "height": 35.29,
+    "src": "images/buildings/Аванпост.png",
+    "curr_hp": 10,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "type": "shape",
+    "name": "Стена",
+    "shape": "custom",
+    "color": "#4cbb17",
+    "x": 1302.87,
+    "y": 2404.31,
+    "width": 38,
+    "height": 38,
+    "src": "images/buildings/Стена.png",
+    "curr_hp": 10,
+    "disabled": false,
+    "endedTurn": false
   }
 ]
