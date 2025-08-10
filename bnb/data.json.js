@@ -1,8 +1,8 @@
 CURRENT_TURN=3;
 OTHER_SAVE_DATA={
-  "scale": 1.8448693687199964,
-  "canvasOffsetX": -2105.425719723474,
-  "canvasOffsetY": -4143.743208455088
+  "scale": 1.123100229130903,
+  "canvasOffsetX": -964.4108356788176,
+  "canvasOffsetY": -2276.1409761496125
 };
 DEFAULT_DATA=[
   {
@@ -1368,7 +1368,7 @@ DEFAULT_DATA=[
     "curr_hp": 10,
     "disabled": false,
     "endedTurn": false,
-    "lvl": 11
+    "lvl": 14
   },
   {
     "type": "shape",
@@ -2038,8 +2038,8 @@ DEFAULT_DATA=[
     "name": "Стена",
     "shape": "custom",
     "color": "#4cbb17",
-    "x": 1302.87,
-    "y": 2404.31,
+    "x": 1304.13,
+    "y": 2406.83,
     "width": 38,
     "height": 38,
     "src": "images/buildings/Стена.png",
