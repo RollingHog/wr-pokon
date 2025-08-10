@@ -1194,12 +1194,27 @@ const userEffectsObj = {
     // }
 
     // const obj = {name: objName}
-    const list = [].concat([
-      DICT_USER[username]?.[isBuilding(obj) ? '_building_' : '_unit_'],
-      DICT_USER[username]?.[obj.name],
-      DICT_COMMON?.[isBuilding(obj) ? '_building_' : '_unit_'],
-      DICT_COMMON?.[obj.name]
-    ])
+    const typeKey = isBuilding(obj) ? '_building_' : '_unit_'
+    let list = [].concat([
+        DICT_COMMON?.[typeKey],
+        DICT_USER[username]?.[typeKey],
+        DICT_COMMON?.[obj.name],
+        DICT_USER[username]?.[obj.name],
+      ]
+    )
+    const noHealth = DEFAULT.noHealth.includes(obj.name)
+    
+    if (
+      !DEFAULT.noUpkeep.includes(obj.name)
+      && !noHealth
+    ) {
+      list = list.concat([
+        DICT_USER[username]?._upkeep_?.[typeKey],
+        DICT_COMMON?._upkeep_?.[typeKey],
+      ])
+    }
+    // TODO
+    // console.log(obj.name, JSON.stringify(list))
     if (!list) return []
     const res = list.flat().map((el) => {
       if (!el) return el
@@ -1288,7 +1303,13 @@ const userEffectsObj = {
         .filter(e => e)
       const effectsDict = {
         unit_count: userUnits.length,
+        unit_to_upkeep: userUnits.filter(
+          obj => !DEFAULT.noUpkeep.includes(obj.name)
+        ).length,
         build_count: userBuildings.length,
+        build_to_upkeep: userBuildings.filter(
+          obj => !DEFAULT.noUpkeep.includes(obj.name)
+        ).length,
       }
       //       
       for(let [k,v] of userEffects) {

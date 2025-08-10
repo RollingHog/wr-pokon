@@ -26,7 +26,7 @@ const DEFAULT = {
     'build_slot',
     KW.GRAVE_UNIT,
     KW.WRECK_UNIT,
-    'unknown_bonus',
+    '_unknown_bonus',
     '_Маркер_недовольства',
   ],
   wreckUnit: [
@@ -39,8 +39,14 @@ const DEFAULT = {
   ],
   noGrave: [
   ],
-  // noEat: [
-  // ],
+  noUpkeep: [
+    'Скот',
+    'Баллиста',
+    'Катапульта',
+
+    KW.CAPITAL,
+    'Стена',
+  ],
 }
 
 const WEATHER_EFF = {}
@@ -154,6 +160,9 @@ const EFFECT_LISTS = {
     // 'Лимит населения',
     'unit_count',
     'build_count',
+    'unit_to_upkeep',
+    'build_to_upkeep',
+
     'Население',
     'Недовольство',
     'Рабочие',
@@ -177,15 +186,19 @@ const EFFECT_LISTS = {
 
 const UNIT_UPKEEP = 3
 const UNDO_POP_USAGE = ['Рабочие', 1]
-const UNDO_UNIT_UPKEEP = ["Еда", UNIT_UPKEEP]
 const DICT_COMMON = {
+  _upkeep_: {
+    _building_: [
+      ['Рабочие', -1],
+    ],
+    _unit_: [
+      ["Еда", -UNIT_UPKEEP],
+    ],
+  },
   _building_: [
-    ['Рабочие', -1],
     [KW.REGEN, 2],
   ],
   _unit_: [
-    ["Еда", -UNIT_UPKEEP],
-
     [KW.ATK, 0],
     [KW.DEF, 0],
   ],
@@ -194,7 +207,6 @@ const DICT_COMMON = {
   ],
   [KW.CAPITAL]:
     [
-      UNDO_POP_USAGE,
       [POP_PROP, '+ЛВЛ'],
       ["Еда", 25],
       ["Дерево", 3],
@@ -209,6 +221,10 @@ const DICT_COMMON = {
   Аванпост:
     [
       [POP_PROP, '+ЛВЛ'],
+    ],
+
+  Стена:
+    [
     ],
 
   _Маркер_недовольства:
@@ -271,19 +287,16 @@ const DICT_COMMON = {
   ],
 
   Баллиста: [
-    UNDO_UNIT_UPKEEP,
     [KW.ATK, 3],
     [KW.DEF, 1],
     [KW.DIST, 2],
   ],
   Катапульта: [
-    UNDO_UNIT_UPKEEP,
     [KW.ATK, 0],
     [KW.DEF, 0],
   ],
 
   Скот: [
-    UNDO_UNIT_UPKEEP,
     ['Еда', 1.6],
     [KW.REGEN, 1],
   ],
