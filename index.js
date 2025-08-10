@@ -379,21 +379,22 @@ function onCustomImageLoad(filename, src) {
   if(!DEFAULT.noHealth.includes(filename)) {
     costStr = '\nЦЕНА:\n'
     let categoryPrice = null
-    if(isUnit({name: filename})&& !OBJ_CATEGORIES.UNITS._none_.includes(filename)) {
-      for(let category in OBJ_CATEGORIES.UNITS) {
-        if(OBJ_CATEGORIES.UNITS[category].includes(filename)) {
-          categoryPrice = CATEGORY_PRICES.UNITS[category]
+    const typeKey = isUnit({name: filename}) ? 'UNITS' : 'BUILDINGS'
+    if(!OBJ_CATEGORIES[typeKey]._none_.includes(filename)) {
+      for(let category in OBJ_CATEGORIES[typeKey]) {
+        if(OBJ_CATEGORIES[typeKey][category].includes(filename)) {
+          categoryPrice = CATEGORY_PRICES[typeKey][category]
         }
       }
       if(!categoryPrice) {
-        categoryPrice = CATEGORY_PRICES.UNITS._default_
+        categoryPrice = CATEGORY_PRICES[typeKey]._default_
       }
       costStr += effArrToStr(categoryPrice)
     }
   } 
 
   const effStr = typeof DICT_COMMON[filename] !== 'undefined'
-    ? '\nЭФФЕКТЫ:\n' + effArrToStr(DICT_COMMON[filename])
+    ? '\n\nЭФФЕКТЫ:\n' + effArrToStr(DICT_COMMON[filename])
     : ''
 
   preview.title = filename + costStr + effStr
