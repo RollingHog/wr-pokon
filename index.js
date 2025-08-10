@@ -1280,6 +1280,7 @@ const userEffectsObj = {
       result,
       toObj() { return result },
       toPrettyList() {
+        delete result.local
         return Object.entries(result)
           .map(([section, eff]) =>
             (`==${section}==\n ${eff.map((arr) => arr.join(': ')).join('\n')}\n`)
