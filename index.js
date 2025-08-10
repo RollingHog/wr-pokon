@@ -16,7 +16,8 @@ KW
 DICT_COMMON DICT_USER
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
-MAX_UNIT_HP MAP_PATH POP_PROP
+MAX_UNIT_HP MAP_PATH POP_PROP 
+TECH_EFFECTS USER_TECH_LVLS
 */
 
 /* exported
@@ -1242,14 +1243,14 @@ const userEffectsObj = {
     return Object.entries(effectsDict)
   },
   groupBySections(obj) {
-    const result = {
-      _unique_: []
-    };
+    const result = {};
 
     // Инициализируем все секции пустыми массивами
     for (const section of Object.keys(EFFECT_LISTS)) {
       result[section] = [];
     }
+
+    result._unique_ = []
 
     // Преобразуем списки свойств в Set для быстрого поиска
     const lookup = {};
@@ -1289,54 +1290,58 @@ const userEffectsObj = {
 
   sumEffects(username) {
     const userColor = colorFromUsername(username)
+
+    const techEffects = TechUtils.processSpecialTechEffects(username)
+
     let userEffects = []
-      const userObjs = elements.filter(obj => obj.color === userColor && !isNoHealth(obj))
-      const userBuildings = userObjs.filter(obj => isBuilding(obj))
-      const userUnits = userObjs.filter(obj => isUnit(obj))
-      userEffects = [].concat(
-        userObjs.map(obj => {
-          if(obj.disabled) return []
-          return userEffectsObj.getCachedEffects(obj)
-        }),
-      )
-        .flat()
-        .filter(e => e)
-      const effectsDict = {
-        unit_count: userUnits.length,
-        unit_to_upkeep: userUnits.filter(
-          obj => !DEFAULT.noUpkeep.includes(obj.name)
-        ).length,
-        build_count: userBuildings.length,
-        build_to_upkeep: userBuildings.filter(
-          obj => !DEFAULT.noUpkeep.includes(obj.name)
-        ).length,
+    const userObjs = elements.filter(obj => obj.color === userColor && !isNoHealth(obj))
+    const userBuildings = userObjs.filter(obj => isBuilding(obj))
+    const userUnits = userObjs.filter(obj => isUnit(obj))
+    userEffects = [].concat(
+      userObjs.map(obj => {
+        if (obj.disabled) return []
+        return userEffectsObj.getCachedEffects(obj)
+      }),
+      [techEffects],
+    )
+      .flat()
+      .filter(e => e)
+    const effectsDict = {
+      unit_count: userUnits.length,
+      unit_to_upkeep: userUnits.filter(
+        obj => !DEFAULT.noUpkeep.includes(obj.name)
+      ).length,
+      build_count: userBuildings.length,
+      build_to_upkeep: userBuildings.filter(
+        obj => !DEFAULT.noUpkeep.includes(obj.name)
+      ).length,
+    }
+    //       
+    for (let [k, v] of userEffects) {
+      if (!k) continue
+      if (EFFECT_LISTS.local.includes(k)) continue
+      if (effectsDict[k]) {
+        effectsDict[k] += +v
+      } else {
+        effectsDict[k] = +v
       }
-      //       
-      for(let [k,v] of userEffects) {
-        if(!k) continue
-        if(EFFECT_LISTS.local.includes(k)) continue
-        if(effectsDict[k]) {
-          effectsDict[k] += +v
+    }
+    if (POP_PROP) {
+      const popEff = [].concat(
+        DICT_USER[username]?._pop_,
+        DICT_COMMON?._pop_
+      ).filter(e => e)
+      for (let [k, v] of popEff) {
+        if (!k) continue
+        if (EFFECT_LISTS.local.includes(k)) continue
+        if (effectsDict[k]) {
+          effectsDict[k] += +v * (effectsDict[POP_PROP] || 0)
         } else {
-          effectsDict[k] = +v
+          effectsDict[k] = +v * (effectsDict[POP_PROP] || 0)
         }
       }
-      if (POP_PROP) {
-        const popEff = [].concat(
-          DICT_USER[username]?._pop_,
-          DICT_COMMON?._pop_
-        ).filter(e => e)
-        for (let [k, v] of popEff) {
-          if (!k) continue
-          if (EFFECT_LISTS.local.includes(k)) continue
-          if (effectsDict[k]) {
-            effectsDict[k] += +v * (effectsDict[POP_PROP] || 0)
-          } else {
-            effectsDict[k] = +v * (effectsDict[POP_PROP] || 0)
-          }
-        }
-      }
-      return effectsDict
+    }
+    return effectsDict
   },
   effectsForSelectedUser() {
     const username = document.querySelector(`[data-color="${document.getElementById('shape-color').value}"]`).textContent
@@ -1478,6 +1483,131 @@ function updateScale() {
   scale = parseInt(scaleSlider.value) / 100;
   scaleValue.textContent = `${scaleSlider.value}%`;
   drawCanvas();
+}
+
+const TechUtils = {
+  parseTechTree(text) {
+    const result = {};
+    const sections = text.trim().split(/\+\+([A-ZА-Я]+)\+\+/).filter(Boolean);
+
+    // Разбиваем на пары: [название, содержимое]
+    for (let i = 0; i < sections.length; i += 2) {
+      const name = sections[i].trim();
+      const content = sections[i + 1] || '';
+      const tree = { 1: [], 2: [], 3: [] };
+      let currentLevel = null;
+
+      const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+
+      for (const line of lines) {
+        // Проверяем, не цена ли это
+        if (line.startsWith('Цена:')) continue;
+
+        // Определяем уровень
+        const levelMatch = line.match(/Уровень\s+(\d)/);
+        if (levelMatch) {
+          currentLevel = parseInt(levelMatch[1], 10);
+          continue;
+        }
+
+        // Если нет явного уровня, пытаемся определить по формату
+        if (!currentLevel && line.startsWith('Уровень')) {
+          continue; // Пропускаем строки вроде "Уровень 2 ()" без номера
+        }
+
+        // Эффекты начинаются с ":"
+        if (line.startsWith(':')) {
+          if (currentLevel) {
+            tree[currentLevel].push(line.trim());
+          }
+          continue;
+        }
+
+        // Здание / Юнит / Прочее
+        if (line.startsWith('Здание:') || line.startsWith('Юнит:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?')) {
+          if (currentLevel) {
+            tree[currentLevel].push(line.trim());
+          }
+          continue;
+        }
+
+        // Если строка просто текст — возможно, это эффект без ":"
+        if (currentLevel && line) {
+          tree[currentLevel].push(line);
+        }
+
+
+        // Иногда уровень без двоеточия: "Уровень 2 ()"
+        const bareLevel = line.match(/Уровень\s+(\d)/);
+        if (bareLevel) {
+          currentLevel = parseInt(bareLevel[1], 10);
+          continue;
+        }
+      }
+
+      result[name] = tree;
+    }
+
+    return JSON.stringify(result, 0, 2);
+  },
+
+  /**
+   * Получить все эффекты технологии до указанного уровня включительно
+   * @param {string} techName - Название технологии (например, "ЛЕС")
+   * @param {number} level - Уровень (1, 2 или 3)
+   * @returns {Array} Массив всех эффектов от уровня 1 до указанного
+   */
+  getTechEffectsUpToLevel(techName, level) {
+    const tech = TECH_EFFECTS[techName];
+    if (!tech) {
+      console.warn(`Технология "${techName}" не найдена`);
+      return [];
+    }
+
+    if(level === 0) {
+      return []
+    }
+
+    if (![1, 2, 3].includes(level)) {
+      console.warn(`Уровень должен быть 1, 2 или 3, получено: ${level}`);
+      return [];
+    }
+
+    const effects = [];
+    for (let lvl = 1; lvl <= level; lvl++) {
+      if (Array.isArray(tech[lvl])) {
+        effects.push(...tech[lvl]);
+      }
+    }
+
+    return effects;
+  },
+
+  /**
+   * 
+   * @param {*} username 
+   * @returns {[string, null][]} - effects arr-dict
+   */
+  processSpecialTechEffects(username) {
+    if(['Варвары','Нейтралы'].includes(username)) return []
+    const techLvlsObj = USER_TECH_LVLS[username]
+    if(!techLvlsObj) {
+      console.warn('processSpecialTechEffects() wtf:', techLvlsObj)
+      return
+    }
+
+    let acc = []
+    for(let [k,v] of Object.entries(techLvlsObj)) {
+      acc = acc.concat(TechUtils.getTechEffectsUpToLevel(k, v))
+    }
+    const res = acc
+      .filter(line => 
+        !(line.startsWith('Здание:') || line.startsWith('Юнит:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?'))
+      )
+      .map( str => [str, null])
+    console.log(res)
+    return res
+  }
 }
 
 // Работа с картами
