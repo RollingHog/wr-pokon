@@ -273,6 +273,7 @@ function addListeners() {
   document.getElementById('load-objects-file').addEventListener('change', loadGame);
   document.getElementById('help-btn').addEventListener('click', showHelp);
   document.getElementById('user-effects-btn').addEventListener('click', userEffectsObj.effectsForSelectedUser);
+  document.getElementById('count-food-btn').addEventListener('click', calcPopGrowth);
   
   
   // document.getElementById('add-shape-btn').addEventListener('click', showShapePanel);
@@ -316,18 +317,8 @@ let turnEndChecked = false
 function onEndTurn() {
 
   if(!turnEndChecked) {
-    alert('Конец хода, рассчитайте эффекты игроков')
+    alert('Конец хода, рассчитайте эффекты игроков (и варваров)')
     turnEndChecked = true
-
-    for (let playerEl of Array.from(document.querySelectorAll('.player-btn'))) {
-      const playerName = playerEl.textContent
-      if (NPCPlayers.includes(playerName)) continue
-      const foodCount = prompt(`Текущее кол-во Еды у ${playerName}:`)
-      if (foodCount) {
-        alert(`Скопируйте: потрачено ${(foodCount / 3).toFixed(1)} ед. Еды, прирост ${(foodCount / 3 / 2).toFixed(1)} ед. ${POP_PROP}`)
-      }
-    }
-
     return
   }
   turnEndChecked = false
@@ -1026,6 +1017,13 @@ function showShapePanel() {
 function showTextPanel() {
   document.getElementById('text-panel').style.display = 'block';
   document.getElementById('shape-panel').style.display = 'none';
+}
+
+function calcPopGrowth() {
+  const foodCount = prompt(`Введите текущее кол-во Еды:`)
+  if (foodCount) {
+    alert(`Скопируйте: новое значение Еды ${(foodCount - foodCount / 3).toFixed(1)} ед., прирост ${(foodCount / 3 / 2).toFixed(1)} ед. ${POP_PROP}`)
+  }
 }
 
 function cloneShape() {
