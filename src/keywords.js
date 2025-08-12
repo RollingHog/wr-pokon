@@ -10,6 +10,8 @@ const KW = /** @type {const} */ ({
 
   ATK: "Атака",
   DEF: 'Защита',
+  /** action points */
+  AP: 'АР',
   DIST: 'Дистанция',
   REGEN: 'Регенерация',
 

@@ -67,7 +67,8 @@ const CATEGORY_PRICES = {
       ['Железо', 'ЛВЛ'],
     ],
     Осадная_машина: [
-
+      ['Дерево', 4],
+      ['Железо', 2],
     ],
   },
   BUILDINGS: {
@@ -181,6 +182,7 @@ const EFFECT_LISTS = {
   local: [
     KW.ATK,
     KW.DEF,
+    KW.AP,
     KW.DIST,
     "ХП",
     KW.REGEN,
@@ -269,29 +271,36 @@ const DICT_COMMON = {
   Пехота: [
     [KW.ATK, 2],
     [KW.DEF, 2],
+    [KW.AP, 2],
   ],
   Стрелки: [
     [KW.ATK, 2],
     [KW.DEF, 1],
+    [KW.AP, 2],
     [KW.DIST, 1],
   ],
   Щитовик: [
     [KW.ATK, 2],
     [KW.DEF, 3],
+    [KW.AP, 1],
   ],
   Разведчики: [
     [KW.ATK, 1],
     [KW.DEF, 0],
+    [KW.AP, 3],
     [KW.DIST, 1],
   ],
   Инженеры: [
     [KW.ATK, 1],
     [KW.DEF, 0],
+    [KW.AP, 2],
   ],
 
+  // машины
   Баллиста: [
     [KW.ATK, 3],
     [KW.DEF, 1],
+    [KW.AP, 1],
     [KW.DIST, 2],
   ],
   Катапульта: [
@@ -299,28 +308,42 @@ const DICT_COMMON = {
     [KW.DEF, 0],
   ],
 
+  // звери
   Скот: [
+    [KW.AP, 1],
     ['Еда', 1.6],
+    [KW.REGEN, 1],
+  ],
+  Кони: [
+    [KW.ATK, 1],
+    [KW.DEF, 1],
+    [KW.AP, 3],
     [KW.REGEN, 1],
   ],
   Зверь: [
     [KW.ATK, 2],
     [KW.DEF, 0],
+    [KW.AP, 3],
     [KW.REGEN, 1],
   ],
 
+  // корабли
   Корабль_1: [
     [KW.ATK, 2],
     [KW.DEF, 2],
+    [KW.AP, 3],
+    [KW.DIST, 0],
   ],
   Корабль_2: [
     [KW.ATK, 3],
     [KW.DEF, 3],
+    [KW.AP, 2],
     [KW.DIST, 1],
   ],
   Корабль_3: [
     [KW.ATK, 4],
     [KW.DEF, 4],
+    [KW.AP, 1],
     [KW.DIST, 2],
   ],
 

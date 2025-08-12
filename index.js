@@ -13,11 +13,16 @@ KW
 
 /// <reference path="./src/rules.js"/>
 /* global
-DICT_COMMON DICT_USER
+DICT_COMMON 
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
-TECH_EFFECTS USER_TECH_LVLS
+TECH_EFFECTS 
+*/
+
+/// <reference path="./bnb/userParams.js"/>
+/* global
+DICT_USER USER_TECH_LVLS
 */
 
 /* exported
@@ -302,7 +307,6 @@ function addListeners() {
       }
   });
 
-  
   // Обработчик клика по индикатору хода
   turnDisplay.addEventListener('click', onEndTurn);
 }
@@ -314,6 +318,16 @@ function onEndTurn() {
   if(!turnEndChecked) {
     alert('Конец хода, рассчитайте эффекты игроков')
     turnEndChecked = true
+
+    for (let playerEl of Array.from(document.querySelectorAll('.player-btn'))) {
+      const playerName = playerEl.textContent
+      if (NPCPlayers.includes(playerName)) continue
+      const foodCount = prompt(`Текущее кол-во Еды у ${playerName}:`)
+      if (foodCount) {
+        alert(`Скопируйте: потрачено ${(foodCount / 3).toFixed(1)} ед. Еды, прирост ${(foodCount / 3 / 2).toFixed(1)} ед. ${POP_PROP}`)
+      }
+    }
+
     return
   }
   turnEndChecked = false
@@ -1383,11 +1397,7 @@ function offsetObjLvl(obj, amount) {
   const curr = obj.lvl
   let res = curr + amount
   if (res <= 0) {
-    if (DEFAULT.noGrave.includes(obj.name)) {
-      selection.delete()
-    } else {
-      obj.name = KW.WRECK_UNIT
-    }
+    obj = killObj(obj)
   } else {
     obj.lvl = res
   }
@@ -1412,27 +1422,33 @@ function offsetUnitHp(obj, amount) {
   obj.curr_hp = res
 
   if (obj.curr_hp <= 0) {
-    obj.disabled = false
-    if (isBuilding(obj)) {
-      obj.name = KW.WRECK_UNIT
-      drawCanvas(obj);
-      return
-    }
-    if (isUnit(obj)) {
-      if (DEFAULT.noGrave.includes(obj.name)) {
-        selection.delete()
-        return
-      }
-      if (DEFAULT.wreckUnit.includes(obj.name)) {
-        obj.name = KW.WRECK_UNIT
-      } else {
-        obj.name = KW.GRAVE_UNIT
-      }
-    }
+    obj = killObj(obj)
   }
   drawCanvas(obj);
+}
 
-  // console.log(`${obj.name} изменился на ${amount} HP. Текущее HP: ${obj.curr_hp}`);
+/**
+ * @param {typeof elements[0]} obj 
+ */
+function killObj(obj) {
+  obj.disabled = false
+
+  if (DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj.name)) {
+    selection.delete()
+    return
+  }
+
+  if (isUnit(obj)) {
+    if (DEFAULT.wreckUnit.includes(obj.name)) {
+      obj.name = KW.WRECK_UNIT
+    } else {
+      obj.name = KW.GRAVE_UNIT
+    }
+  } else if (isBuilding(obj)) {
+    obj.name = KW.WRECK_UNIT
+  }
+
+  return obj
 }
 
 /**
@@ -1485,6 +1501,8 @@ function updateScale() {
   scaleValue.textContent = `${scaleSlider.value}%`;
   drawCanvas();
 }
+
+const NPCPlayers = ['Варвары','Нейтралы']
 
 const TechUtils = {
   parseTechTree(text) {
@@ -1590,7 +1608,7 @@ const TechUtils = {
    * @returns {[string, null][]} - effects arr-dict
    */
   processSpecialTechEffects(username) {
-    if(['Варвары','Нейтралы'].includes(username)) return []
+    if(NPCPlayers.includes(username)) return []
     const techLvlsObj = USER_TECH_LVLS[username]
     if(!techLvlsObj) {
       console.warn('processSpecialTechEffects() wtf:', techLvlsObj)
