@@ -87,7 +87,9 @@ const CATEGORY_PRICES = {
 
 const OBJ_CATEGORIES = {
   UNITS: {
-    _none_: ['default_unit',],
+    _none_: [
+      'default_unit',
+    ],
     _default_: [
 
       'Пехота',
