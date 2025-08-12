@@ -45,6 +45,10 @@
                 <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разместить</button>
                 <button id="clone-shape-btn" hotkey="C" title="Копировать фигуру" hidden>Копия</button>
                 <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
+                <label for="ch_fog" title="Туман Войны">
+                  <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()" checked>
+                  Т.В.
+                </label>
             </div>
             <hr>
             <div id="text-panel">
@@ -89,9 +93,9 @@
 
     <!-- блок выбранного объекта -->
     <div id="edit-panel">
-        <!-- <button id="edit-delete-btn">Del</button> -->
-        <!-- <button id="edit-close-btn">Закрыть</button> -->
-        <!-- <br> -->
+        <button id="edit-delete-btn" class="mobile-only">Del</button>
+        <button id="edit-atk-btn">Атк</button>
+        <br>
         <input id="edit-obj-name" list="obj-names-list" disabled></input>
         <datalist id="obj-names-list"></datalist>
         <div class="color-picker">
@@ -113,6 +117,12 @@
             <div class="lock-top"></div>
             <div class="lock-body"></div>
         </div>
+    </div>
+
+    <!-- панель информации справа внизу -->
+    <div id="info_panel" style="display: none;" onclick="this.style.display = 'none'" title="Click to hide">
+      <h3>_</h3>
+      <div id="info_panel_body"></div>
     </div>
 
     <!-- Индикатор хода -->

@@ -1,9 +1,9 @@
 /* exported 
-DICT_COMMON DICT_USER
+DICT_COMMON 
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
-TECH_EFFECTS USER_TECH_LVLS
+TECH_EFFECTS
 */
 
 /// <reference path="../src/keywords.js"/>
@@ -325,36 +325,6 @@ const DICT_COMMON = {
   ],
 
 };
-
-const DICT_USER = {
-  Нью_Лоуландс: {
-    [KW.CAPITAL]:
-      [
-      ],
-  },
-
-  Синие: {
-    [KW.CAPITAL]:
-      [
-      ],
-  },
-
-};
-
-const USER_TECH_LVLS = {
-  Нью_Лоуландс: {
-    ЛЕС: 1,
-    СТРОИТЕЛЬСТВО: 1,
-    МОРЕ: 1,
-    ГОСУДАРСТВО: 0,
-  },
-  Синие: {
-    ЛЕС: 1,
-    СТРОИТЕЛЬСТВО: 2,
-    МОРЕ: 0,
-    ГОСУДАРСТВО: 0,
-  },
-}
 
 const TECH_EFFECTS = {
   "ЛЕС": {
