@@ -1,8 +1,8 @@
 CURRENT_TURN=5;
 OTHER_SAVE_DATA={
   "scale": 0.751414580674793,
-  "canvasOffsetX": -427.1297528721002,
-  "canvasOffsetY": -1530.8753729056366
+  "canvasOffsetX": -626,
+  "canvasOffsetY": -1428
 };
 DEFAULT_DATA=[
   {
@@ -2125,6 +2125,20 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 35.29,
     "src": "images/buildings/Ферма.png",
+    "curr_hp": 10,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "type": "shape",
+    "name": "Аванпост",
+    "shape": "custom",
+    "color": "#4cbb17",
+    "x": 1343.76,
+    "y": 2307.97,
+    "width": 38,
+    "height": 35.29,
+    "src": "images/buildings/Аванпост.png",
     "curr_hp": 10,
     "disabled": false,
     "endedTurn": false
