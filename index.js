@@ -513,10 +513,10 @@ function drawCanvas() {
   
   // Рисуем все элементы
   elements.forEach(element => {
-    drawElement(element)
+    draw.element(element)
   });
 
-  applyFogOfWar();
+  draw.fogOfWar();
 
   drawInfoPanel(selectedElement?.color)
 
@@ -525,138 +525,190 @@ function drawCanvas() {
 
 const fogCheckbox = document.getElementById('ch_fog')
 const visionRadius = 160
-function applyFogOfWar() {
-  const playerColor = document.getElementById('shape-color').value
-  
-  const localCtx = fogCtx
-  
-  const fogColor = 'rgba(100, 100, 100, 1)'; // тёмно-серый непрозрачный туман
-  
-  localCtx.clearRect(0,0, canvas.width, canvas.height);
-  if(!fogCheckbox.checked) {
-    return
-  }
-  localCtx.save();
-
-  const map = getCurrentMap()
-  if(!map) return
-
-  const screenX = 0 * scale + canvasOffsetX;
-  const screenY = 0 * scale + canvasOffsetY;
-  const screenWidth = map?.image?.width * scale;
-  const screenHeight = map?.image?.height * scale;
-
-  // Заливаем весь canvas туманом
-  localCtx.fillStyle = fogColor;
-  localCtx.fillRect(screenX, screenY, screenWidth, screenHeight);
-  
-  // localCtx.fillStyle = 'rgba(0, 0, 0, 1)';
-  // Меняем режим композиции: следующие рисунки будут "вырезать" (стирать) туман
-  // localCtx.globalCompositeOperation = 'destination-out';
-  
-  // Собираем все юниты своей фракции с visionRadius
-  const visibleUnits = elements.filter(el =>
-    el.color === playerColor
-  );
-
-  //   ctx.translate(shape.x * scale + canvasOffsetX, shape.y * scale + canvasOffsetY);
-  // ctx.scale(scale, scale);
-
-  // Для каждого юнита рисуем круг видимости (в локальных координатах)
-  visibleUnits.forEach(el => {
-    const isCapital = el.name === KW.CAPITAL
-    const radius = isCapital 
-      ? CURRENT_TURN * visionRadius * 0.4 * scale
-      : visionRadius * scale;
-    const x = el.x * scale + canvasOffsetX;
-    const y = el.y * scale + canvasOffsetY;
-
-    const delta = 38 / 2 * scale;
-    localCtx.clearRect(x - radius + delta, y - radius + delta, radius * 2, radius * 2);
-  });
-
-  // Восстанавливаем стандартный режим композиции
-  localCtx.restore();
-}
-
-function drawElement(element) {
-  if (element.type === 'shape') {
-      drawShape(element);
-  } else if (element.type === 'text') {
-      drawText(element);
-  }
-}
 
 const lvlTextSize = 20
 
-/**
+const draw = {
+  fogOfWar() {
+    const playerColor = document.getElementById('shape-color').value
+    
+    const localCtx = fogCtx
+    
+    const fogColor = 'rgba(100, 100, 100, 1)'; // тёмно-серый непрозрачный туман
+    
+    localCtx.clearRect(0,0, canvas.width, canvas.height);
+    if(!fogCheckbox.checked) {
+      return
+    }
+    localCtx.save();
+
+    const map = getCurrentMap()
+    if(!map) return
+
+    const screenX = 0 * scale + canvasOffsetX;
+    const screenY = 0 * scale + canvasOffsetY;
+    const screenWidth = map?.image?.width * scale;
+    const screenHeight = map?.image?.height * scale;
+
+    // Заливаем весь canvas туманом
+    localCtx.fillStyle = fogColor;
+    localCtx.fillRect(screenX, screenY, screenWidth, screenHeight);
+    
+    // localCtx.fillStyle = 'rgba(0, 0, 0, 1)';
+    // Меняем режим композиции: следующие рисунки будут "вырезать" (стирать) туман
+    // localCtx.globalCompositeOperation = 'destination-out';
+    
+    // Собираем все юниты своей фракции с visionRadius
+    const visibleUnits = elements.filter(el =>
+      el.color === playerColor
+    );
+
+    //   ctx.translate(shape.x * scale + canvasOffsetX, shape.y * scale + canvasOffsetY);
+    // ctx.scale(scale, scale);
+
+    // Для каждого юнита рисуем круг видимости (в локальных координатах)
+    visibleUnits.forEach(el => {
+      const isCapital = el.name === KW.CAPITAL
+      const radius = isCapital 
+        ? CURRENT_TURN * visionRadius * 0.4 * scale
+        : visionRadius * scale;
+      const x = el.x * scale + canvasOffsetX;
+      const y = el.y * scale + canvasOffsetY;
+
+      const delta = 38 / 2 * scale;
+      localCtx.clearRect(x - radius + delta, y - radius + delta, radius * 2, radius * 2);
+    });
+
+    // Восстанавливаем стандартный режим композиции
+    localCtx.restore();
+  },
+
+  element(element) {
+    if (element.type === 'shape') {
+      drawShape(element);
+    } else if (element.type === 'text') {
+      drawText(element);
+    }
+  },
+
+  /**
  * @param {CanvasRenderingContext2D | null} ctx 
  * @param {typeof elements[0]} el 
  * @param {*} x 
  * @param {*} y 
  */
-function drawCustomObj(ctx, el, x, y) {
-  // обозначаем принадлежность
-  ctx.fillStyle = el.color;
-  if (isBuilding(el)) {
-    ctx.beginPath();
-    ctx.arc(
-      x + el.width / 2, y + el.height / 2,
-      el.width / 2, 0, Math.PI * 2
-    );
-    ctx.fill();
-  } else {
-    // unit
-    ctx.beginPath();
-    ctx.moveTo(x + el.width / 2, y);
-    ctx.lineTo(x + el.width, y + el.height);
-    ctx.lineTo(x, y + el.height);
-    ctx.closePath();
-    ctx.fill();
-  }
+  customObj(ctx, el, x, y) {
+    // обозначаем принадлежность
+    ctx.fillStyle = el.color;
+    if (isBuilding(el)) {
+      ctx.beginPath();
+      ctx.arc(
+        x + el.width / 2, y + el.height / 2,
+        el.width / 2, 0, Math.PI * 2
+      );
+      ctx.fill();
+    } else {
+      // unit
+      ctx.beginPath();
+      ctx.moveTo(x + el.width / 2, y);
+      ctx.lineTo(x + el.width, y + el.height);
+      ctx.lineTo(x, y + el.height);
+      ctx.closePath();
+      ctx.fill();
+    }
 
-  const img = imageObjByObjName(el.name)
-  ctx.drawImage(img, x, y, el.width, el.height);
-  ///
-  if((el.curr_hp < MAX_UNIT_HP) && !isNoHealth(el)) {
-    drawHealthBar(ctx, x, y + el.height, el.width, el.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
-  }
-  if(el.disabled) {
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 2 
-    
-    ctx.beginPath();
-    ctx.arc(x + el.width/2, y + el.height/2, el.width/2, 0, Math.PI * 2);
-    ctx.stroke();
-            
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + el.width, y + el.height);
-    ctx.closePath();
-    ctx.stroke();
-  } else if(el.endedTurn) {
-    ctx.strokeStyle = 'green';
-    ctx.lineWidth = 5
+    const img = imageObjByObjName(el.name)
+    ctx.drawImage(img, x, y, el.width, el.height);
+    ///
+    if ((el.curr_hp < MAX_UNIT_HP) && !isNoHealth(el)) {
+      draw.healthBar(ctx, x, y + el.height, el.width, el.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
+    }
+    if (el.disabled) {
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2
 
-    ctx.beginPath();
-    ctx.arc(x + el.width/2, y + el.height/2, el.width/2, 0, Math.PI * 2);
-    ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x + el.width / 2, y + el.height / 2, el.width / 2, 0, Math.PI * 2);
+      ctx.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(x + 5, y + el.height/2);
-    ctx.lineTo(x + el.width/2, y + el.height - 5);
-    ctx.lineTo(x + el.width, y);
-    // ctx.closePath();
-    ctx.stroke();
-  }
-  if(typeof el.lvl === 'number' && +el.lvl !== 1) {
-    ctx.font = `${lvlTextSize}px Arial`;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + el.width, y + el.height);
+      ctx.closePath();
+      ctx.stroke();
+    } else if (el.endedTurn) {
+      ctx.strokeStyle = 'green';
+      ctx.lineWidth = 5
 
-    ctx.strokeStyle = 'white';
-    ctx.fillStyle = 'black';
-    ctx.strokeText(el.lvl, x, y+5, lvlTextSize);
-    ctx.fillText(el.lvl, x, y+5, lvlTextSize);
-  }
+      ctx.beginPath();
+      ctx.arc(x + el.width / 2, y + el.height / 2, el.width / 2, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x + 5, y + el.height / 2);
+      ctx.lineTo(x + el.width / 2, y + el.height - 5);
+      ctx.lineTo(x + el.width, y);
+      // ctx.closePath();
+      ctx.stroke();
+    }
+    if (typeof el.lvl === 'number' && +el.lvl !== 1) {
+      ctx.font = `${lvlTextSize}px Arial`;
+
+      ctx.strokeStyle = 'white';
+      ctx.fillStyle = 'black';
+      ctx.strokeText(el.lvl, x, y + 5, lvlTextSize);
+      ctx.fillText(el.lvl, x, y + 5, lvlTextSize);
+    }
+  },
+
+  /**
+ * Рисует полоску здоровья под юнитом
+ * @param {CanvasRenderingContext2D} ctx - Контекст canvas
+ * @param {number} x - X-координата центра юнита
+ * @param {number} y - Y-координата низа юнита
+ * @param {number} width - Ширина полоски
+ * @param {number} hpCurrent - Текущее здоровье
+ * @param {number} hpMax - Максимальное здоровье
+ * @param {number} [height=5] - Высота полоски (по умолчанию 5px)
+ * @param {number} [offsetY=5] - Отступ от юнита (по умолчанию 5px)
+ */
+  healthBar(ctx, x, y, width, hpCurrent, hpMax, height = 5, offsetY = 5) {
+    // Рассчитываем процент здоровья
+    const healthPercent = hpCurrent / hpMax;
+
+    // Координаты левого края полоски (центрирование)
+    const barX = x;
+    const barY = y + offsetY;
+
+    // Цвета
+    const backgroundColor = '#333333';
+    const healthColor = healthPercent > 0.6 ? '#4CAF50' :  // Зеленый
+      healthPercent > 0.3 ? '#FFC107' :  // Желтый
+        '#F44336';                         // Красный
+
+    // Рисуем фон полоски
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(barX, barY, width, height);
+
+    // Рисуем текущее здоровье
+    ctx.fillStyle = healthColor;
+    ctx.fillRect(barX, barY, width * healthPercent, height);
+
+    // Обводка для красоты
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(barX, barY, width, height);
+
+    // Текст с текущим здоровьем
+    // ctx.fillStyle = '#FFFFFF';
+    // ctx.font = 'bold 10px Arial';
+    // ctx.textAlign = 'center';
+    // ctx.fillText(
+    //     `${hpCurrent}/${hpMax}`,
+    //     x + width / 2,
+    //     barY + height + 12  // Под полоской
+    // );
+  },
 }
 
 /** 
@@ -668,7 +720,7 @@ function drawShape(shape) {
   ctx.scale(scale, scale);
   
   if (shape.shape === 'custom') {
-    drawCustomObj(ctx, shape, 0, 0)
+    draw.customObj(ctx, shape, 0, 0)
 
       
       // TODO timed building
@@ -720,55 +772,6 @@ function drawShape(shape) {
   }
   
   ctx.restore();
-}
-
-/**
- * Рисует полоску здоровья под юнитом
- * @param {CanvasRenderingContext2D} ctx - Контекст canvas
- * @param {number} x - X-координата центра юнита
- * @param {number} y - Y-координата низа юнита
- * @param {number} width - Ширина полоски
- * @param {number} hpCurrent - Текущее здоровье
- * @param {number} hpMax - Максимальное здоровье
- * @param {number} [height=5] - Высота полоски (по умолчанию 5px)
- * @param {number} [offsetY=5] - Отступ от юнита (по умолчанию 5px)
- */
-function drawHealthBar(ctx, x, y, width, hpCurrent, hpMax, height = 5, offsetY = 5) {
-  // Рассчитываем процент здоровья
-  const healthPercent = hpCurrent / hpMax;
-  
-  // Координаты левого края полоски (центрирование)
-  const barX = x;
-  const barY = y + offsetY;
-  
-  // Цвета
-  const backgroundColor = '#333333';
-  const healthColor = healthPercent > 0.6 ? '#4CAF50' :  // Зеленый
-                     healthPercent > 0.3 ? '#FFC107' :  // Желтый
-                     '#F44336';                         // Красный
-  
-  // Рисуем фон полоски
-  ctx.fillStyle = backgroundColor;
-  ctx.fillRect(barX, barY, width, height);
-  
-  // Рисуем текущее здоровье
-  ctx.fillStyle = healthColor;
-  ctx.fillRect(barX, barY, width * healthPercent, height);
-  
-  // Обводка для красоты
-  ctx.strokeStyle = '#000000';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(barX, barY, width, height);
-
-  // Текст с текущим здоровьем
-  // ctx.fillStyle = '#FFFFFF';
-  // ctx.font = 'bold 10px Arial';
-  // ctx.textAlign = 'center';
-  // ctx.fillText(
-  //     `${hpCurrent}/${hpMax}`,
-  //     x + width / 2,
-  //     barY + height + 12  // Под полоской
-  // );
 }
 
 function drawText(text) {
@@ -1097,7 +1100,7 @@ function placeShape(spawnNearMenu = false) {
   };
   
   elements.push(shape);
-  drawElement(shape)
+  draw.element(shape)
 }
 
 function placeText() {
@@ -1131,7 +1134,7 @@ function placeText() {
   
   elements.push(text);
   document.getElementById('text-input').value = '';
-  drawElement(text);
+  draw.element(text);
 }
 
 const lineActionsObj = {
@@ -1194,6 +1197,9 @@ const lineActionsObj = {
 // TODO + sort + icons?
 const userEffectsObj = {
   effCache: {},
+  getCommonEffects(objName) {
+
+  },
   /**
    * @param {elements[0]} obj 
    */
@@ -1215,11 +1221,10 @@ const userEffectsObj = {
         DICT_USER[username]?.[obj.name],
       ]
     )
-    const noHealth = DEFAULT.noHealth.includes(obj.name)
     
     if (
       !DEFAULT.noUpkeep.includes(obj.name)
-      && !noHealth
+      && !isNoHealth(obj)
     ) {
       list = list.concat([
         DICT_USER[username]?._upkeep_?.[typeKey],
@@ -1745,7 +1750,7 @@ function saveMap() {
       
       if (element.type === 'shape') {
           if (element.shape === 'custom') {
-             drawCustomObj(tempCtx, element, element.x, element.y)
+             draw.customObj(tempCtx, element, element.x, element.y)
           } else {
               tempCtx.fillStyle = element.color;
               
