@@ -1475,13 +1475,13 @@ function getBattleParams(obj) {
 function attackObj(atkObj, defObj) {
   const atk = getBattleParams(atkObj)
   const def = getBattleParams(defObj)
-  const res = `${atkObj.name} атакует ${defObj.name}:
-Атака ##1d${atk.atk}## + ##1d3## 
-Защита ##1d${def.def}##` +
+  const res = `${playerByColor(atkObj.color)} ${atkObj.name} атакует ${playerByColor(defObj.color)} ${defObj.name}:
+Атака ${atkObj.name} ##1d${atk.atk}## + ##1d3## 
+Защита ${defObj.name} ##1d${def.def}##` +
     (def.atk > 0 ?
-`\n${defObj.name} контратакует:
-Атака ##1d${def.atk}## + ##1d3## 
-Защита ##1d${atk.def}##
+`\n${defObj.name} контратакует ${atkObj.name}:
+Атака ${defObj.name} ##1d${def.atk}## + ##1d3## 
+Защита ${atkObj.name} ##1d${atk.def}##
 ` : '')
   console.log(res)
 }

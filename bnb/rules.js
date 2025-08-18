@@ -228,6 +228,10 @@ const DICT_COMMON = {
   Аванпост:
     [
       // [POP_PROP, '+ЛВЛ'],
+      [KW.ATK, 2],
+      [KW.DEF, 3],
+      [KW.AP, 0],
+      [KW.DIST, 1],
     ],
 
   Стена:

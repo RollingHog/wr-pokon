@@ -1,8 +1,8 @@
 CURRENT_TURN=6;
 OTHER_SAVE_DATA={
-  "scale": 1.046802805799316,
-  "canvasOffsetX": -928.787416145414,
-  "canvasOffsetY": -2260.2696737910305
+  "scale": 1.1809800000000004,
+  "canvasOffsetX": -1197.252869931329,
+  "canvasOffsetY": -2604.7667480301566
 };
 DEFAULT_DATA=[
   {
@@ -1875,12 +1875,12 @@ DEFAULT_DATA=[
     "name": "Пехота",
     "shape": "custom",
     "color": "#930000",
-    "x": 1264.64,
-    "y": 2480.01,
+    "x": 1270.4,
+    "y": 2489.61,
     "width": 38,
     "height": 38,
     "src": "images/units/Пехота.png",
-    "curr_hp": 10,
+    "curr_hp": 9,
     "disabled": false,
     "endedTurn": false
   },
@@ -1894,7 +1894,7 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 38,
     "src": "images/units/Разведчики.png",
-    "curr_hp": 10,
+    "curr_hp": 8,
     "disabled": false,
     "endedTurn": false,
     "lvl": 1
@@ -2053,7 +2053,7 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 35.29,
     "src": "images/buildings/Аванпост.png",
-    "curr_hp": 10,
+    "curr_hp": 9,
     "disabled": false,
     "endedTurn": false
   },
