@@ -1,10 +1,18 @@
 /* exported 
-DICT_COMMON DICT_USER GRAVE_UNIT
-EFFECT_LISTS DEFAULT
-MAX_UNIT_HP MAP_PATH
+DICT_COMMON 
+CATEGORY_PRICES OBJ_CATEGORIES 
+EFFECT_LISTS DEFAULT 
+MAX_UNIT_HP MAP_PATH POP_PROP 
+TECH_EFFECTS
+*/
+
+/// <reference path="../src/keywords.js"/>
+/* global
+KW
 */
 
 const MAP_PATH = './map/map.png'
+
 const GRAVE_UNIT = 'grave'
 const MAX_UNIT_HP = 10
 

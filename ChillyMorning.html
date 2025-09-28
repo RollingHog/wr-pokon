@@ -42,7 +42,7 @@
                     <input type="range" id="shape-size" min="10" max="100" value="38" oninput="this.previousElementSibling.value = this.value">
 
                 </div>
-                <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разместить</button>
+                <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разм.</button>
                 <button id="clone-shape-btn" hotkey="C" title="Копировать фигуру" hidden>Копия</button>
                 <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
                 <label for="ch_fog" title="Туман Войны">
@@ -53,8 +53,8 @@
             <hr>
             <div id="text-panel">
                 <input type="text" id="text-input" placeholder="Введите текст" style="max-width: 200px;">
-                <div class="color-picker" style="display:inline;">
-<!--                     <span>Цвет:</span> -->
+                <div class="color-picker">
+                    <span>Цвет:</span>
                     <input type="color" id="text-color" value="#000000">
                 </div>
                 <div class="color-picker">
@@ -75,10 +75,10 @@
             <input type="file" id="load-objects-file" accept=".json.js" title="Загрузить объекты из файла .json.js" hotkey="L">
             <!-- <button id="load-objects-btn" title="Загрузить файл нарисованных объектов"></button> -->
             <div class="color-picker">
-                <span>Масштаб:</span>
+                <span>Масштаб</span>
                 <input type="range" id="scale-slider" min="25" max="200" value="100">
+                <span id="scale-value">100%</span>
             </div>
-            <span id="scale-value">100%</span>
         </div>
         <button id="help-btn" title="" hotkey="F1">Помощь</button>
         <a href="src/countRaceEffects.html" style="color: white; text-align: center;">Калькулятор характеристик расы</a>
@@ -88,6 +88,7 @@
     
     <div id="canvas-container">
         <canvas id="map-canvas" oncontextmenu="return false;"></canvas>
+        <canvas id="fog-canvas"  oncontextmenu="return false;"></canvas>
         <div id="tgt_el">+</div>
     </div>
 
@@ -99,7 +100,9 @@
         <input id="edit-obj-name" list="obj-names-list" disabled></input>
         <datalist id="obj-names-list"></datalist>
         <div class="color-picker">
-            <input type="color" title='Выбрать цвет' id="edit-color" style="width: 24px;">
+            <span>Ур.:</span>
+            <!-- <input type="color" id="edit-color" style="width: 24px;"> -->
+            <input type="text" id="obj-lvl" title="Уровень объекта" style="width: 40px;">
         </div>
     </div>
     
@@ -128,7 +131,9 @@
     <!-- Индикатор хода -->
     <div class="turn-indicator" id="turnDisplay" title="Нажатие увеличивает номер хода">Текущий ход: 1</div>
 
+    <script src="./src/keywords.js"></script>
     <script src="./src/rules.js"></script>
+    <!-- <script src="./data/userParams.js"></script> -->
     <script src="./data/data.json.js"></script>
     <script src="./index.js"></script>
 </body>
