@@ -13,7 +13,7 @@ KW
 
 /// <reference path="./src/rules.js"/>
 /* global
-DICT_COMMON 
+DICT_COMMON SETTINGS
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
@@ -96,6 +96,8 @@ const lineModeObj = {
 
 // Инициализация
 function init() {
+
+  processRuleFile()
 
   loadDefaultMap()
   loadDefaultData()
@@ -468,6 +470,18 @@ function loadDefaultCustomImages() {
   }
 }
 
+function processRuleFile() {
+  DEFAULT.units = Object.values(OBJ_CATEGORIES.UNITS).flat()
+  DEFAULT.buildings = Object.values(OBJ_CATEGORIES.BUILDINGS).flat()
+
+  EFFECT_LISTS.static.push(
+    'unit_count',
+    'build_count',
+    'unit_to_upkeep',
+    'build_to_upkeep',
+  )
+}
+
 function getCurrentMap() {
   if(currentMapIndex >= 0 && maps[currentMapIndex])
     return maps[currentMapIndex]
@@ -600,21 +614,38 @@ const draw = {
   customObj(ctx, el, x, y) {
     // обозначаем принадлежность
     ctx.fillStyle = el.color;
+    let bgFigure = ''
     if (isBuilding(el)) {
-      ctx.beginPath();
-      ctx.arc(
-        x + el.width / 2, y + el.height / 2,
-        el.width / 2, 0, Math.PI * 2
-      );
-      ctx.fill();
+      bgFigure = 'circle'
     } else {
       // unit
-      ctx.beginPath();
-      ctx.moveTo(x + el.width / 2, y);
-      ctx.lineTo(x + el.width, y + el.height);
-      ctx.lineTo(x, y + el.height);
-      ctx.closePath();
-      ctx.fill();
+      bgFigure = 'triangle'
+    }
+
+    if(SETTINGS.DEFAULT_FIGURE_BG) {
+      bgFigure = SETTINGS.DEFAULT_FIGURE_BG
+    }
+
+    switch (bgFigure) {
+      case 'circle':
+        ctx.beginPath();
+        ctx.arc(
+          x + el.width / 2, y + el.height / 2,
+          el.width / 2, 0, Math.PI * 2
+        );
+        ctx.fill();
+        break;
+      case 'triangle':
+        ctx.beginPath();
+        ctx.moveTo(x + el.width / 2, y);
+        ctx.lineTo(x + el.width, y + el.height);
+        ctx.lineTo(x, y + el.height);
+        ctx.closePath();
+        ctx.fill();
+        break;
+      default:
+        alert('wtf')
+        break;
     }
 
     const img = imageObjByObjName(el.name)
@@ -1071,6 +1102,7 @@ function placeShape(spawnNearMenu = false) {
               }
               width = size;
               height = +((size / ratio).toFixed(2));
+              // FIXME ratio checker
           }
       }
   }
@@ -1806,6 +1838,8 @@ function loadGame(e) {
   reader.readAsText(file);
 }
 
+// eslint-disable-next-line no-global-assign
+if(typeof CURRENT_TURN === 'undefined') CURRENT_TURN = 1
 // Функция для обновления отображения хода
 function drawTurnDisplay() {
     turnDisplay.textContent = `Текущий ход: ${CURRENT_TURN}`;

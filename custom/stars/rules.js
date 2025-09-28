@@ -1,5 +1,5 @@
 /* exported 
-DICT_COMMON 
+DICT_COMMON SETTINGS
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
@@ -12,7 +12,7 @@ KW
 */
 
 const SETTINGS = {
-  
+  DEFAULT_FIGURE_BG: 'circle',
 } 
 
 const MAP_PATH = './map/stars/map.png'
