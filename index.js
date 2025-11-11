@@ -673,7 +673,7 @@ const draw = {
     let img 
     if(EMOJI_IMAGES[el.name]) {
       const emojiFontSize = (el.width * 0.7).toString(10)
-      ctx.font = `bold ${emojiFontSize}px Arial`;
+      ctx.font = `bold ${emojiFontSize}px "Noto Color Emoji"`;
       ctx.textAlign = 'center';
       ctx.fillText(
        EMOJI_IMAGES[el.name],

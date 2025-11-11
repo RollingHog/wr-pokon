@@ -43,7 +43,7 @@ const DEFAULT = {
 }
 
 const EMOJI_IMAGES = {
-  'Царь_птица': '🐦'
+  'Царь_птица': '🪸'
 }
 
 const WEATHER_EFF = {}
