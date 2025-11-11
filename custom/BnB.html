@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stars! - Редактор карт</title>
-    <link rel="stylesheet" href="./src/main.css">
+    <title>Кровь и Бронза - Редактор карт</title>
+    <link rel="stylesheet" href="../src/main.css">
 </head>
 <body>
     <div id="toolbar">
@@ -33,7 +33,9 @@
                     <input type="color" id="shape-color" value="#ff0000" class="hidden2" style="width: 30px;">
                     <button class="player-btn" data-color="#d3d3d3" onclick="setShapeColor('#d3d3d3')">Нейтралы</button>
                     <button class="player-btn" data-color="#930000" onclick="setShapeColor('#930000')">Варвары</button>
+                    <button class="player-btn" data-color="#4cbb17" onclick="setShapeColor('#4cbb17')">Нью_Лоуландс</button>
                     <button class="player-btn" data-color="#0000ff" onclick="setShapeColor('#0000ff')">Синие</button>
+                    <!-- <button class="player-btn" data-color="#9acd32" onclick="setShapeColor('#9acd32')">Орки</button> -->
                 </div>
                 <div class="color-picker">
                     <span>Размер: </span><output onclick="onOutputClick('shape-size')">__</output>
@@ -45,7 +47,7 @@
                 <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
                 <button id="count-food-btn" title="Калькулятор прироста населения">Еда</button>
                 <label for="ch_fog" title="Туман Войны">
-                  <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()">
+                  <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()" checked>
                   Т.В.
                 </label>
             </div>
@@ -80,8 +82,8 @@
             </div>
         </div>
         <button id="help-btn" title="" hotkey="F1">Помощь</button>
-        <a href="src/countRaceEffects.html" style="color: white; text-align: center;">Калькулятор характеристик расы</a>
-        <a href="src/calc.html" style="color: white; text-align: center;">Калькулятор ресурсов</a>
+        <a href="../src/countRaceEffects.html" style="color: white; text-align: center;">Калькулятор характеристик расы</a>
+        <a href="../src/calc.html" style="color: white; text-align: center;">Калькулятор ресурсов</a>
         <a href="https://github.com/RollingHog/wr-pokon" style="color: white; text-align: center;">Github</a>
     </div>
     
@@ -129,10 +131,10 @@
     <!-- Индикатор хода -->
     <div class="turn-indicator" id="turnDisplay" title="Нажатие увеличивает номер хода">Текущий ход: 1</div>
 
-    <script src="./src/keywords.js"></script>
-    <script src="./custom/stars/rules.js"></script>
-    <script src="./custom/stars/userParams.js"></script>
-    <script src="./custom/stars/data.json.js"></script>
-    <script src="./index.js"></script>
+    <script src="../src/keywords.js"></script>
+    <script src="../bnb/rules.js"></script>
+    <script src="../bnb/userParams.js"></script>
+    <script src="../bnb/data.json.js"></script>
+    <script src="../index.js"></script>
 </body>
 </html>

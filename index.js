@@ -460,13 +460,15 @@ function loadDefaultMap() {
 }
 
 function loadDefaultCustomImages() {
+
+  const root = SETTINGS.IS_CUSTOM ? '..' : '.'
   
   for (const objName of DEFAULT.buildings) {
-      onCustomImageLoad(objName, `images/buildings/${objName}.png`)
+      onCustomImageLoad(objName, `${root}/images/buildings/${objName}.png`)
   }
   
   for (const objName of DEFAULT.units) {
-      onCustomImageLoad(objName, `images/units/${objName}.png`)
+      onCustomImageLoad(objName, `${root}/images/units/${objName}.png`)
   }
 }
 
@@ -543,6 +545,15 @@ const visionRadius = 160
 const lvlTextSize = 20
 
 const draw = {
+
+  // lol nope, it LAGS
+  cutCircle(context, x, y, radius){
+    context.globalCompositeOperation = 'destination-out'
+    context.arc(x, y, radius, 0, Math.PI*2, true);
+    context.fill();
+    context.globalCompositeOperation = ''
+  },
+
   fogOfWar() {
     const playerColor = document.getElementById('shape-color').value
     

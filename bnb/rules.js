@@ -1,5 +1,5 @@
 /* exported 
-DICT_COMMON 
+DICT_COMMON SETTINGS
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
@@ -11,7 +11,12 @@ TECH_EFFECTS
 KW
 */
 
-const MAP_PATH = './map/bnb/bnb.png'
+const SETTINGS = {
+  DEFAULT_FIGURE_BG: 'circle',
+  IS_CUSTOM: true,
+} 
+
+const MAP_PATH = '../map/bnb/bnb.png'
 
 const MAX_UNIT_HP = 10
 

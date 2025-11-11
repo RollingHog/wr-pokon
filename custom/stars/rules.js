@@ -13,9 +13,10 @@ KW
 
 const SETTINGS = {
   DEFAULT_FIGURE_BG: 'circle',
+  IS_CUSTOM: true,
 } 
 
-const MAP_PATH = './map/stars/map.png'
+const MAP_PATH = '../map/stars/map.png'
 
 const MAX_UNIT_HP = 10
 
