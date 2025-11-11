@@ -13,7 +13,7 @@ KW
 
 /// <reference path="./src/rules.js"/>
 /* global
-DICT_COMMON SETTINGS
+DICT_COMMON SETTINGS EMOJI_IMAGES
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
@@ -362,21 +362,32 @@ function imageObjByObjName(filename) {
 }
 
 function onCustomImageLoad(filename, src) {
-  const imageObj = new Image();
-  imageObj.src = src;
-
   const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
-  customShapes.push({
-      id: shapeId,
-      name: filename,
-      src: src,
-      imageObj,
-  });
+
+  const emojiName = EMOJI_IMAGES[filename]
+
+  if(!emojiName) {
+    const imageObj = new Image();
+    imageObj.src = src;
+  
+    customShapes.push({
+        id: shapeId,
+        name: filename,
+        src: src,
+        imageObj,
+    });
+  } else {
+
+  }
 
   // Создаем превью для пользовательской фигуры
   const preview = document.createElement('div');
   preview.className = 'shape-preview';
-  preview.style.backgroundImage = `url(${src})`;
+  if(!emojiName) {
+    preview.style.backgroundImage = `url(${src})`;
+  } else {
+    preview.innerHTML = emojiName
+  }
   preview.dataset.shape = 'custom';
   preview.dataset.shapeId = shapeId;
   preview.dataset.filename = filename;
@@ -659,8 +670,20 @@ const draw = {
         break;
     }
 
-    const img = imageObjByObjName(el.name)
-    ctx.drawImage(img, x, y, el.width, el.height);
+    let img 
+    if(EMOJI_IMAGES[el.name]) {
+      const emojiFontSize = (el.width * 0.7).toString(10)
+      ctx.font = `bold ${emojiFontSize}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillText(
+       EMOJI_IMAGES[el.name],
+        x + el.width / 2,
+        y + emojiFontSize
+      );
+    } else {
+      img = imageObjByObjName(el.name)
+      ctx.drawImage(img, x, y, el.width, el.height);
+    }
     ///
     if ((el.curr_hp < MAX_UNIT_HP) && !isNoHealth(el)) {
       draw.healthBar(ctx, x, y + el.height, el.width, el.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)

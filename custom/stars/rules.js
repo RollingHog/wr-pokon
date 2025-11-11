@@ -1,5 +1,5 @@
 /* exported 
-DICT_COMMON SETTINGS
+DICT_COMMON SETTINGS EMOJI_IMAGES
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
@@ -40,6 +40,10 @@ const DEFAULT = {
   ],
   noUpkeep: [
   ],
+}
+
+const EMOJI_IMAGES = {
+  'Царь_птица': '🐦'
 }
 
 const WEATHER_EFF = {}

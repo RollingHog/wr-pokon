@@ -93,6 +93,7 @@ h3 {
   background-repeat: no-repeat;
   background-position: center;
   background-color: white;
+  font-size: 1.5em;
 }
 
 .shape-preview.active {
