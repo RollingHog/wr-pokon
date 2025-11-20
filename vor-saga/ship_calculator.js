@@ -1,6 +1,6 @@
 /* 
 exported
- 
+calculateShipStats
 */ 
 
 // Пример структуры объекта Ship
@@ -77,14 +77,14 @@ const techModifiers = {
 function validateShipConfiguration(shipData) {
     // 1. Проверка, что все необходимые поля заполнены
     if (!shipData.class_type || shipData.mass <= 0) {
-        alert("Ошибка: Необходимо указать класс корабля и положительную массу.");
+        console.warn("Ошибка: Необходимо указать класс корабля и положительную массу.");
         return false;
     }
 
     // 2. Определение требований на основе класса
     const req = requirements[shipData.class_type];
     if (!req) {
-        alert("Ошибка: Неизвестный класс корабля.");
+        console.warn("Ошибка: Неизвестный класс корабля.");
         return false;
     }
 
@@ -101,34 +101,34 @@ function validateShipConfiguration(shipData) {
     // 4. Проверка минимального процента двигателей
     const minEngineCells = Math.ceil((req.min_engine_percentage / 100) * totalCells);
     if (shipData.engine_cells < minEngineCells) {
-        alert(`Ошибка: Недостаточно клеток под двигатели. Минимум требуется: ${minEngineCells} (на основе ${req.min_engine_percentage}% от ${totalCells} клеток). Введено: ${shipData.engine_cells}.`);
+        console.warn(`Ошибка: Недостаточно клеток под двигатели. Минимум требуется: ${minEngineCells} (на основе ${req.min_engine_percentage}% от ${totalCells} клеток). Введено: ${shipData.engine_cells}.`);
         return false;
     }
 
     // 5. Проверка минимального процента топлива
     const minFuelCells = Math.ceil((req.min_fuel_percentage / 100) * totalCells);
     if (shipData.fuel_cells < minFuelCells) {
-        alert(`Ошибка: Недостаточно клеток под топливо. Минимум требуется: ${minFuelCells} (на основе ${req.min_fuel_percentage}% от ${totalCells} клеток). Введено: ${shipData.fuel_cells}.`);
+        console.warn(`Ошибка: Недостаточно клеток под топливо. Минимум требуется: ${minFuelCells} (на основе ${req.min_fuel_percentage}% от ${totalCells} клеток). Введено: ${shipData.fuel_cells}.`);
         return false;
     }
 
     // 6. Проверка минимального процента борт. систем
     const minSystemsCells = Math.ceil((req.min_systems_percentage / 100) * totalCells);
     if (shipData.systems_cells < minSystemsCells) {
-        alert(`Ошибка: Недостаточно клеток под бортовые системы. Минимум требуется: ${minSystemsCells} (на основе ${req.min_systems_percentage}% от ${totalCells} клеток). Введено: ${shipData.systems_cells}.`);
+        console.warn(`Ошибка: Недостаточно клеток под бортовые системы. Минимум требуется: ${minSystemsCells} (на основе ${req.min_systems_percentage}% от ${totalCells} клеток). Введено: ${shipData.systems_cells}.`);
         return false;
     }
 
     // 7. Проверка минимального процента экипажа
     const minCrewCells = Math.ceil((req.min_crew_percentage / 100) * totalCells);
     if (shipData.crew_cells < minCrewCells) {
-        alert(`Ошибка: Недостаточно клеток под экипаж. Минимум требуется: ${minCrewCells} (на основе ${req.min_crew_percentage}% от ${totalCells} клеток). Введено: ${shipData.crew_cells}.`);
+        console.warn(`Ошибка: Недостаточно клеток под экипаж. Минимум требуется: ${minCrewCells} (на основе ${req.min_crew_percentage}% от ${totalCells} клеток). Введено: ${shipData.crew_cells}.`);
         return false;
     }
 
     // 8. Проверка плазменных зеркал (только на линкорах B)
     if (shipData.class_type !== 'B' && shipData.plasma_mirrors > 0) {
-        alert(`Ошибка: Плазменные зеркала (${shipData.plasma_mirrors} шт.) могут быть установлены только на линкорах (B).`);
+        console.warn(`Ошибка: Плазменные зеркала (${shipData.plasma_mirrors} шт.) могут быть установлены только на линкорах (B).`);
         return false;
     }
 
@@ -140,7 +140,7 @@ function validateShipConfiguration(shipData) {
         // Интерпретируем это как требование, что *все* модули зеркал вместе занимают >= 22% или >= 8 клеток.
         let totalMirrorCells = shipData.plasma_mirrors; // Предполагаем 1 модуль = 1 клетка
         if (totalMirrorCells < mirrorCellsRequired) {
-            alert(`Ошибка: Модуль(и) плазменного зеркала должен(ны) занимать минимум ${mirrorCellsRequired} клеток (22% от ${totalCells} или 8 клеток, смотря что больше). Введено: ${totalMirrorCells} клеток.`);
+            console.warn(`Ошибка: Модуль(и) плазменного зеркала должен(ны) занимать минимум ${mirrorCellsRequired} клеток (22% от ${totalCells} или 8 клеток, смотря что больше). Введено: ${totalMirrorCells} клеток.`);
             return false;
         }
     }
@@ -292,6 +292,50 @@ function calculateBattlePower(shipData) {
     };
 }
 
+function applyIonShieldPenalty(shipData, bmCalculation) {
+    // 1. Определяем требуемое количество ионных экранов
+    // "1 модуль на каждые 3000 тонн"
+    // Если масса <= 3000, всё равно нужно хотя бы 1 модуль для избежания 50% штрафа.
+    const requiredShields = Math.ceil(shipData.mass / 3000);
+
+    // 2. Проверяем условия для штрафов
+    let shieldPenaltyPercentage = 0;
+    if (shipData.ion_shield_generators === 0) {
+        // Условие: "вообще не имеет ионных экранов"
+        shieldPenaltyPercentage = 50;
+    } else if (shipData.ion_shield_generators < requiredShields) {
+        // Условие: "меньше модулей, чем требуется"
+        shieldPenaltyPercentage = 25;
+    }
+    // Если экранов достаточно, штраф = 0%.
+
+    // 3. Применяем штраф к уровню ЗАЩ
+    // Берем исходный уровень ZASH из bmCalculation
+    const originalZASH = bmCalculation.systemLevels.ZASH;
+    const penaltyAmount = Math.floor(originalZASH * (shieldPenaltyPercentage / 100));
+    const correctedZASH = originalZASH - penaltyAmount;
+
+    // Уровень не может быть отрицательным
+    bmCalculation.systemLevels.ZASH = Math.max(0, correctedZASH);
+
+    // 4. Пересчитываем базовую и итоговую БМ
+    // Новый baseBM = старый baseBM - (оригинальный ZASH - скорректированный ZASH)
+    const zashDifference = originalZASH - bmCalculation.systemLevels.ZASH;
+    bmCalculation.baseBM -= zashDifference;
+    bmCalculation.finalBM -= zashDifference;
+
+    // 5. Сохраняем информацию о штрафе для вывода
+    bmCalculation.ionShieldInfo = {
+        required: requiredShields,
+        installed: shipData.ion_shield_generators,
+        penaltyPercentage: shieldPenaltyPercentage,
+        originalZASH: originalZASH,
+        correctedZASH: bmCalculation.systemLevels.ZASH
+    };
+
+    return bmCalculation;
+}
+
 function calculateShipStats() {
     // 1. Считываем данные из формы
     const shipData = {
@@ -329,6 +373,12 @@ function calculateShipStats() {
     // Здесь будет вызов следующих функций из Блока 3.
     console.log("Данные корабля валидны. Начинаем расчет БМ...");
     
-    const bmCalculation = calculateBattlePower(shipData);
+    let bmCalculation = calculateBattlePower(shipData);
+
+    // 2. Применяем штрафы за ионные экраны
+    bmCalculation = applyIonShieldPenalty(shipData, bmCalculation);
+
+    // 3. Вывод результата (см. Блок 5)
+    // displayResult(shipData, bmCalculation);
 }
 
