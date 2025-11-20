@@ -158,6 +158,140 @@ function validateShipConfiguration(shipData) {
     return true;
 }
 
+function calculateTotalCells(shipClass, mass) {
+    if (shipClass === 'B') {
+        return Math.ceil(mass / 250);
+    } else if (shipClass === 'C') {
+        return Math.ceil(mass / 150);
+    } else { // D или E
+        return Math.ceil(mass / 100);
+    }
+}
+
+function calculateBattlePower(shipData) {
+    // 1. Вычисляем общее количество клеток
+    const totalCells = calculateTotalCells(shipData.class_type, shipData.mass);
+
+    // 2. Вычисляем компоненты боевой мощи (уровни систем)
+    const systemLevels = {
+        GRAV: 0,
+        PLAZ: 0,
+        ATOM: 0,
+        ZASH: 0,
+        KOMP: 0,
+        EKIP: 0
+    };
+
+    // --- GRAV: Искусственная гравитация ---
+    // Гравиганы учитываются только если они установлены и нет штрафа меткости,
+    // но штраф меткости влияет только на КОМП, а не на сам факт учета GRAV.
+    // Из примера: "Дестроер не несет гравиганов, поэтому Искусственная гравитация ур=3 не учитывается"
+    // Следовательно, GRAV = tech_gravity только если gravity_guns > 0.
+    if (shipData.gravity_guns > 0) {
+        systemLevels.GRAV = shipData.tech_gravity;
+    }
+    // Если гравиганов нет, GRAV = 0, что и есть значение по умолчанию.
+
+    // --- PLAZ: Физика плазмы ---
+    // Аналогично, модификатор применяется только если есть плазмаганы.
+    if (shipData.plasma_guns > 0) {
+        systemLevels.PLAZ = shipData.tech_plasma;
+    }
+
+    // --- ATOM: Ядерная физика ---
+    // Модификатор применяется, если есть Р-заряды любого типа (ракеты или торпеды).
+    // Из примера: "Линкор не имеет на борту Р-зарядов... АТОМ 0 (2)"
+    // Следовательно, ATOM = tech_nuclear только если есть Р-заряды.
+    const hasRCharges = shipData.r_torpedo_launchers > 0 || shipData.r_missile_launchers > 0;
+    if (hasRCharges) {
+        systemLevels.ATOM = shipData.tech_nuclear;
+    }
+
+    // --- ZASH: Борьба за живучесть ---
+    // Модификатор применяется, если есть ионные экраны.
+    // Из примера: "корабль не имеет модулей ионных экранов, поэтому получает штраф... ЗАЩ 0 (2)"
+    // Следовательно, ZASH = tech_survivability только если есть ионные экраны.
+    if (shipData.ion_shield_generators > 0) {
+        systemLevels.ZASH = shipData.tech_survivability;
+    }
+
+    // --- KOMP: Сенсоры и компьютеры ---
+    // Бортовые системы обязательны для всех, поэтому KOMP всегда >= tech_sensors.
+    // Но если есть штраф за гравиган на D/E, он применяется здесь.
+    systemLevels.KOMP = shipData.tech_sensors;
+    if (shipData.has_gravity_penalty) {
+        systemLevels.KOMP = Math.max(0, systemLevels.KOMP - 2); // Уровень не может быть отрицательным
+    }
+
+    // --- EKIP: Тактика и организация ---
+    // Экипаж обязателен для всех, поэтому EKIP всегда = tech_tactics.
+    systemLevels.EKIP = shipData.tech_tactics;
+
+    // 3. Вычисляем базовую БМ (до модификатора класса)
+    const baseBM = systemLevels.GRAV + systemLevels.PLAZ + systemLevels.ATOM + 
+                   systemLevels.ZASH + systemLevels.KOMP + systemLevels.EKIP;
+
+    // 4. Применяем модификатор класса и массы
+    let classModifier;
+    if (shipData.class_type === 'B') classModifier = 3;
+    else if (shipData.class_type === 'C') classModifier = 1.5;
+    else if (shipData.class_type === 'D') classModifier = 1;
+    else if (shipData.class_type === 'E') classModifier = 0.8;
+
+    const massInThousands = shipData.mass / 1000;
+    const classAndMassComponent = Math.round(massInThousands * classModifier);
+
+    let bm = classAndMassComponent + baseBM;
+
+    // 5. Добавляем бонус для дестроера за дополнительные Р-торпеды
+    // "Если на борту более 1 Р-торпеды, БМ дестроера возрастает на 1."
+    // Предположим, что 1 установка = 1 торпеда, 2 установки = 2+ торпеды.
+    if (shipData.class_type === 'D' && shipData.r_torpedo_launchers > 1) {
+        bm += 1;
+    }
+
+    // 6. Проверка на переполнение клеток (неофициальный штраф)
+    // Суммируем все клетки, занятые модулями.
+    // Предположения: 1 модуль оружия/защиты = 1 клетка.
+    // Исключение: Р-торпедная установка: 1 клетка = 1 заряд, 2 клетки = перезаряжаемая (1 установка).
+    // В вводе пользователь указывает *количество установок*, а не клеток.
+    // Для упрощения считаем, что 1 `r_torpedo_launchers` = 1 клетка (если не перезаряжаемый) или 2 клетки.
+    // Но это неоднозначно. Из правил: "1 клетка — однозарядная, 2 клетки — перезаряжаемая".
+    // Будем считать, что значение `r_torpedo_launchers` уже учитывает клетки.
+    // То есть, если у пользователя 1 однозарядная установка - он вводит 1.
+    // Если у него 1 перезаряжаемая - он вводит 2.
+    // Аналогично для Р-ракет: 1 клетка = 1 установка.
+
+    const totalOccupiedCells = 
+        shipData.engine_cells +
+        shipData.fuel_cells +
+        shipData.systems_cells +
+        shipData.crew_cells +
+        shipData.plasma_guns +
+        shipData.gravity_guns +
+        shipData.r_torpedo_launchers +
+        shipData.r_missile_launchers +
+        shipData.ion_shield_generators +
+        shipData.plasma_mirrors +
+        shipData.dock_bays;
+
+    if (totalOccupiedCells > totalCells) {
+        // Это ошибка проектирования. Можно выдать предупреждение.
+        console.warn(`Внимание! Занято клеток: ${totalOccupiedCells}, доступно: ${totalCells}. Корабль перегружен.`);
+        // Игра не предусматривает штрафа БМ, но мастер может отклонить проект.
+    }
+
+    // 7. Возвращаем результат
+    return {
+        totalCells: totalCells,
+        systemLevels: systemLevels,
+        classAndMassComponent: classAndMassComponent,
+        baseBM: baseBM,
+        finalBM: bm,
+        totalOccupiedCells: totalOccupiedCells
+    };
+}
+
 function calculateShipStats() {
     // 1. Считываем данные из формы
     const shipData = {
@@ -194,6 +328,7 @@ function calculateShipStats() {
     // 3. Если валидация пройдена, можно переходить к следующему блоку (расчету БМ)
     // Здесь будет вызов следующих функций из Блока 3.
     console.log("Данные корабля валидны. Начинаем расчет БМ...");
-    // ... (см. Блок 3)
+    
+    const bmCalculation = calculateBattlePower(shipData);
 }
 
