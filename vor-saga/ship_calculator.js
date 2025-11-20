@@ -475,6 +475,79 @@ function displayResult(shipData, bmCalculation) {
     resultDiv.innerHTML = html;
 }
 
+// --- 1. Сохранение и восстановление данных формы ---
+
+function saveFormData() {
+    const formData = {};
+    const inputs = document.querySelectorAll('#shipForm input, #shipForm select');
+    inputs.forEach(input => {
+        if (input.type === 'checkbox') {
+            formData[input.name] = input.checked;
+        } else {
+            formData[input.name] = input.value;
+        }
+    });
+    localStorage.setItem('shipFormData', JSON.stringify(formData));
+}
+
+function loadFormData() {
+    const saved = localStorage.getItem('shipFormData');
+    if (saved) {
+        const formData = JSON.parse(saved);
+        Object.keys(formData).forEach(key => {
+            const element = document.querySelector(`[name="${key}"]`);
+            if (element) {
+                if (element.type === 'checkbox') {
+                    element.checked = formData[key];
+                } else {
+                    element.value = formData[key];
+                }
+            }
+        });
+    }
+}
+
+function clearFormData() {
+    localStorage.removeItem('shipFormData');
+    document.getElementById('shipForm').reset();
+    document.getElementById('result').innerHTML = '';
+    // После сброса формы, если выбран класс, нужно снова установить min
+    setMinimumsForClass();
+}
+
+// --- 2. Установка минимальных значений при выборе класса ---
+
+function setMinimumsForClass() {
+    const classSelect = document.getElementById('ship_class');
+    const classData = classSelect.options[classSelect.selectedIndex].value
+    const massInput = document.getElementById('ship_mass');
+    const mass = parseInt(massInput.value) || 0;
+
+    // Очищаем все min перед установкой новых
+    document.getElementById('engine_cells').value = 0;
+    document.getElementById('fuel_cells').value = 0;
+    document.getElementById('systems_cells').value = 0;
+    document.getElementById('crew_cells').value = 0;
+
+    if (!classData || mass <= 0) {
+      console.log('class or mass empty')
+      return; // Выходим, если класс не выбран или масса не указана
+    }
+
+    const req = requirements[classData];
+    if (!req) {
+      console.log('req not found')
+      return
+    }
+
+    const totalCells = calculateTotalCells(classData, mass);
+
+    document.getElementById('engine_cells').value = Math.ceil((req.min_engine_percentage / 100) * totalCells);
+    document.getElementById('fuel_cells').value = Math.ceil((req.min_fuel_percentage / 100) * totalCells);
+    document.getElementById('systems_cells').value = Math.ceil((req.min_systems_percentage / 100) * totalCells);
+    document.getElementById('crew_cells').value = Math.ceil((req.min_crew_percentage / 100) * totalCells);
+}
+
 function calculateShipStats() {
     // 1. Считываем данные из формы
     const shipData = {
@@ -521,3 +594,17 @@ function calculateShipStats() {
     displayResult(shipData, bmCalculation);
 }
 
+
+// --- Обновление обработчиков событий ---
+document.getElementById('ship_class').addEventListener('change', function() {
+    setMinimumsForClass();
+});
+document.getElementById('ship_mass').addEventListener('input', function() {
+    setMinimumsForClass();
+});
+
+// --- Вызов загрузки данных при загрузке страницы ---
+window.onload = function() {
+    loadFormData();
+    setMinimumsForClass(); // Установить минимумы сразу после загрузки, если данные были
+};
