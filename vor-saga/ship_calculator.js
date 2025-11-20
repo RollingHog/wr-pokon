@@ -336,6 +336,145 @@ function applyIonShieldPenalty(shipData, bmCalculation) {
     return bmCalculation;
 }
 
+function displayResult(shipData, bmCalculation) {
+    // Очистим предыдущий результат
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
+
+    // --- Основная информация ---
+    const classNames = { 'B': 'Линкор', 'C': 'Крейсер', 'D': 'Дестроер', 'E': 'Эксплорер' };
+    const className = classNames[shipData.class_type] || 'Неизвестный класс';
+
+    let html = `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #333; border-radius: 8px; background-color: #f9f9f9;">
+            <h2 style="color: #2c3e50; text-align: center;">Результат проектирования корабля</h2>
+            <p><strong>Корабль:</strong> ${className} (${shipData.mass} т)</p>
+            <p><strong>Клеток всего:</strong> ${bmCalculation.totalCells}</p>
+            <p><strong>Занято клеток:</strong> ${bmCalculation.totalOccupiedCells} / ${bmCalculation.totalCells} 
+                ${bmCalculation.totalOccupiedCells > bmCalculation.totalCells ? 
+                    '<span style="color: #e74c3c;">⚠️ ПЕРЕГРУЖЕН</span>' : 
+                    '<span style="color: #27ae60;">✓ OK</span>'}</p>
+            <hr>
+    `;
+
+    // --- Уровни систем ---
+    html += `
+        <h3 style="color: #3498db;">Уровни систем (влияют на БМ):</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+                <tr style="background-color: #ecf0f1;">
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Система</th>
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Уровень</th>
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Источник</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Системы с их названиями и значениями
+    const systems = [
+        { key: 'GRAV', name: 'Искусственная гравитация', value: bmCalculation.systemLevels.GRAV, active: shipData.gravity_guns > 0 },
+        { key: 'PLAZ', name: 'Физика плазмы', value: bmCalculation.systemLevels.PLAZ, active: shipData.plasma_guns > 0 },
+        { key: 'ATOM', name: 'Ядерная физика', value: bmCalculation.systemLevels.ATOM, active: shipData.r_torpedo_launchers > 0 || shipData.r_missile_launchers > 0 },
+        { key: 'ZASH', name: 'Борьба за живучесть', value: bmCalculation.systemLevels.ZASH, active: shipData.ion_shield_generators > 0 },
+        { key: 'KOMP', name: 'Сенсоры и компьютеры', value: bmCalculation.systemLevels.KOMP, active: true },
+        { key: 'EKIP', name: 'Тактика и организация', value: bmCalculation.systemLevels.EKIP, active: true }
+    ];
+
+    systems.forEach(sys => {
+        const isActive = sys.active;
+        const status = isActive ? '<span style="color: #27ae60;">✓ Активен</span>' : '<span style="color: #95a5a6;">✗ Не установлен</span>';
+        const color = sys.value > 0 ? '#27ae60' : '#7f8c8d';
+        html += `
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">${sys.name}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; color: ${color}; font-weight: bold;">${sys.value}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">${status}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    // --- Штраф за ионные экраны ---
+    if (bmCalculation.ionShieldInfo && bmCalculation.ionShieldInfo.penaltyPercentage > 0) {
+        const info = bmCalculation.ionShieldInfo;
+        const penaltyText = info.penaltyPercentage === 50 ? 'Полный штраф (50%) — нет ионных экранов' : 'Частичный штраф (25%) — недостаточно экранов';
+        html += `
+            <div style="background-color: #f8d7da; border-left: 4px solid #e74c3c; padding: 12px; margin: 15px 0; border-radius: 0 4px 4px 0;">
+                <strong>⚠️ Штраф к Уровню ЗАЩ:</strong> ${penaltyText}<br>
+                Требуется: ${info.required} модулей, установлено: ${info.installed} → Уровень снижен с ${info.originalZASH} до ${info.correctedZASH}
+            </div>
+        `;
+    }
+
+    // --- Штраф за гравиган на D/E ---
+    if (shipData.has_gravity_penalty) {
+        html += `
+            <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; border-radius: 0 4px 4px 0;">
+                <strong>⚠️ Штраф к КОМП:</strong> Установлен гравиган на ${shipData.class_type} — уровень Сенсоров и компьютеров снижен на 2.
+            </div>
+        `;
+    }
+
+    // --- Дополнительные замечания ---
+    const warnings = [];
+
+    if (shipData.plasma_mirrors > 0 && shipData.class_type !== 'B') {
+        warnings.push("⚠️ Плазменные зеркала установлены на корабле, не являющемся линкором — это невозможно в реальных условиях.");
+    }
+
+    if (shipData.class_type === 'D' && shipData.gravity_guns > 0) {
+        warnings.push("⚠️ Установка гравигана на дестроере — крайне неэффективно. Штраф к меткости уже применён.");
+    }
+
+    if (shipData.class_type === 'E' && shipData.gravity_guns > 0) {
+        warnings.push("⚠️ Установка гравигана на эксплорере — неоправданно. Штраф к меткости уже применён.");
+    }
+
+    if (shipData.class_type === 'D' && shipData.r_torpedo_launchers > 1) {
+        warnings.push("✅ Бонус к БМ: Дестроер несёт более 1 Р-торпеды → +1 к боевой мощности.");
+    }
+
+    if (shipData.class_type === 'B' && shipData.r_missile_launchers > 0) {
+        warnings.push("✅ Р-ракеты на линкоре: каждая установка даёт 2 ракеты (база).");
+    }
+
+    if (warnings.length > 0) {
+        html += `<h4 style="color: #e67e22;">Замечания:</h4>`;
+        html += `<ul style="margin: 10px 0; padding-left: 20px;">`;
+        warnings.forEach(warn => {
+            html += `<li style="margin: 5px 0;">${warn}</li>`;
+        });
+        html += `</ul>`;
+    }
+
+    // --- Итоговая боевая мощь ---
+    const classModifier = shipData.class_type === 'B' ? 3 : 
+                          shipData.class_type === 'C' ? 1.5 : 
+                          shipData.class_type === 'D' ? 1 : 0.8;
+
+    html += `
+        <hr>
+        <div style="text-align: center; padding: 20px; background-color: #3498db; color: white; border-radius: 8px; font-size: 20px; font-weight: bold; margin: 20px 0;">
+            💥 <span style="font-size: 28px;">БОЕВАЯ МОЩНОСТЬ (БМ): ${bmCalculation.finalBM}</span>
+        </div>
+        <p style="text-align: center; color: #555; font-size: 14px;">
+            Расчёт: (${Math.round(shipData.mass / 1000)} × ${classModifier}) + (${bmCalculation.baseBM}) = ${bmCalculation.classAndMassComponent} + ${bmCalculation.baseBM} = ${bmCalculation.finalBM}
+        </p>
+    `;
+
+    // --- Закрытие контейнера ---
+    html += `
+        </div>
+    `;
+
+    resultDiv.innerHTML = html;
+}
+
 function calculateShipStats() {
     // 1. Считываем данные из формы
     const shipData = {
@@ -379,6 +518,6 @@ function calculateShipStats() {
     bmCalculation = applyIonShieldPenalty(shipData, bmCalculation);
 
     // 3. Вывод результата (см. Блок 5)
-    // displayResult(shipData, bmCalculation);
+    displayResult(shipData, bmCalculation);
 }
 
