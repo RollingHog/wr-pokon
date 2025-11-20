@@ -608,3 +608,62 @@ window.onload = function() {
     loadFormData();
     setMinimumsForClass(); // Установить минимумы сразу после загрузки, если данные были
 };
+
+// --- Обновленная функция для отображения занятых и общих клеток ---
+function updateCellCounts() {
+    const classSelect = document.getElementById('ship_class');
+    const massInput = document.getElementById('ship_mass');
+    const mass = parseInt(massInput.value) || 0;
+
+    if (!classSelect.value || mass <= 0) {
+        document.getElementById('cellCountInfo').innerHTML = '';
+        return;
+    }
+
+    const totalCells = calculateTotalCells(classSelect.value, mass);
+
+    // Суммируем занятые клетки
+    const engine_cells = parseInt(document.getElementById('engine_cells').value) || 0;
+    const fuel_cells = parseInt(document.getElementById('fuel_cells').value) || 0;
+    const systems_cells = parseInt(document.getElementById('systems_cells').value) || 0;
+    const crew_cells = parseInt(document.getElementById('crew_cells').value) || 0;
+    const plasma_guns = parseInt(document.getElementById('plasma_guns').value) || 0;
+    const gravity_guns = parseInt(document.getElementById('gravity_guns').value) || 0;
+    const r_torpedo_launchers = parseInt(document.getElementById('r_torpedo_launchers').value) || 0;
+    const r_missile_launchers = parseInt(document.getElementById('r_missile_launchers').value) || 0;
+    const ion_shield_generators = parseInt(document.getElementById('ion_shield_generators').value) || 0;
+    const plasma_mirrors = parseInt(document.getElementById('plasma_mirrors').value) || 0;
+    const dock_bays = parseInt(document.getElementById('dock_bays').value) || 0;
+
+    const totalOccupiedCells = engine_cells + fuel_cells + systems_cells + crew_cells +
+                               plasma_guns + gravity_guns + r_torpedo_launchers +
+                               r_missile_launchers + ion_shield_generators + plasma_mirrors + dock_bays;
+
+    let statusClass = '';
+    if (totalOccupiedCells > totalCells) {
+        statusClass = 'overloaded';
+    } else if (totalOccupiedCells === totalCells) {
+        statusClass = 'full';
+    } else {
+        statusClass = 'ok';
+    }
+
+    document.getElementById('cellCountInfo').innerHTML = `
+        <div id="cellCountsDisplay" class="${statusClass}">
+            Занято клеток: <strong>${totalOccupiedCells}</strong> / ${totalCells}
+        </div>
+    `;
+}
+
+// --- Обновление обработчиков событий ---
+document.getElementById('shipForm').addEventListener('change', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+        saveFormData();
+        updateCellCounts();
+    }
+});
+document.getElementById('shipForm').addEventListener('input', function(e) {
+    if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
+        updateCellCounts(); // Обновляем при вводе чисел
+    }
+});
