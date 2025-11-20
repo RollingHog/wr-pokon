@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Калькулятор кораблестроения</title>
+</head>
+<body>
+    <h1>Калькулятор кораблестроения</h1>
+    <form id="shipForm">
+        <label for="ship_class">Класс корабля:</label>
+        <select id="ship_class" name="ship_class" required>
+            <option value="">Выберите класс</option>
+            <option value="B">B - Линкор</option>
+            <option value="C">C - Крейсер</option>
+            <option value="D">D - Дестроер</option>
+            <option value="E">E - Эксплорер</option>
+        </select>&nbsp;&nbsp;
+
+        <label for="ship_mass">Проектная масса (т):</label>
+        <input type="number" id="ship_mass" name="ship_mass" min="1" required><br><br>
+
+        <fieldset>
+            <legend>Модули (в клетках)</legend>
+            <label for="engine_cells">Двигатели:</label>
+            <input type="number" id="engine_cells" name="engine_cells" min="0"><br>
+            <label for="fuel_cells">Топливо:</label>
+            <input type="number" id="fuel_cells" name="fuel_cells" min="0"><br>
+            <label for="systems_cells">Борт. системы:</label>
+            <input type="number" id="systems_cells" name="systems_cells" min="0"><br>
+            <label for="crew_cells">Экипаж:</label>
+            <input type="number" id="crew_cells" name="crew_cells" min="0"><br>
+            <label for="plasma_guns">Плазмаганы:</label>
+            <input type="number" id="plasma_guns" name="plasma_guns" min="0"><br>
+            <label for="gravity_guns">Гравиганы:</label>
+            <input type="number" id="gravity_guns" name="gravity_guns" min="0"><br>
+            <label for="r_torpedo_launchers">Пусковые Р-торпед:</label>
+            <input type="number" id="r_torpedo_launchers" name="r_torpedo_launchers" min="0"><br>
+            <label for="r_missile_launchers">Пусковые Р-ракет:</label>
+            <input type="number" id="r_missile_launchers" name="r_missile_launchers" min="0"><br>
+            <label for="ion_shield_generators">Генераторы ионных экранов:</label>
+            <input type="number" id="ion_shield_generators" name="ion_shield_generators" min="0"><br>
+            <label for="plasma_mirrors">Плазменные зеркала:</label>
+            <input type="number" id="plasma_mirrors" name="plasma_mirrors" min="0"><br>
+            <label for="dock_bays">Док-камеры:</label>
+            <input type="number" id="dock_bays" name="dock_bays" min="0"><br>
+        </fieldset><br>
+
+        <fieldset>
+            <legend>Уровни технологий</legend>
+            <label for="tech_gravity">Искусственная гравитация:</label>
+            <input type="number" id="tech_gravity" name="tech_gravity" min="0"><br>
+            <label for="tech_plasma">Физика плазмы:</label>
+            <input type="number" id="tech_plasma" name="tech_plasma" min="0"><br>
+            <label for="tech_nuclear">Ядерная физика:</label>
+            <input type="number" id="tech_nuclear" name="tech_nuclear" min="0"><br>
+            <label for="tech_propulsion">Пропульсивные системы:</label>
+            <input type="number" id="tech_propulsion" name="tech_propulsion" min="0"><br>
+            <label for="tech_survivability">Борьба за живучесть:</label>
+            <input type="number" id="tech_survivability" name="tech_survivability" min="0"><br>
+            <label for="tech_sensors">Сенсоры и компьютеры:</label>
+            <input type="number" id="tech_sensors" name="tech_sensors" min="0"><br>
+            <label for="tech_tactics">Тактика и организация:</label>
+            <input type="number" id="tech_tactics" name="tech_tactics" min="0"><br>
+        </fieldset><br>
+
+        <label for="has_gravity_penalty">Штраф за гравиган на D/E?</label>
+        <input type="checkbox" id="has_gravity_penalty" name="has_gravity_penalty"><br><br>
+
+        <button type="button" onclick="calculateShipStats()">Рассчитать БМ</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script src="ship_calculator.js"></script>
+</body>
+</html>
