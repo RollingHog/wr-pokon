@@ -24,30 +24,51 @@
         <div id="cellCountInfo"></div>
 
         <fieldset>
-            <legend>Модули (в клетках)</legend>
-            <label for="engine_cells">Двигатели:</label>
-            <input type="number" id="engine_cells" name="engine_cells" min="0"><br>
-            <label for="fuel_cells">Топливо:</label>
-            <input type="number" id="fuel_cells" name="fuel_cells" min="0"><br>
-            <label for="systems_cells">Борт. системы:</label>
-            <input type="number" id="systems_cells" name="systems_cells" min="0"><br>
-            <label for="crew_cells">Экипаж:</label>
-            <input type="number" id="crew_cells" name="crew_cells" min="0"><br>
-            <label for="plasma_guns">Плазмаганы:</label>
-            <input type="number" id="plasma_guns" name="plasma_guns" min="0"><br>
-            <label for="gravity_guns">Гравиганы:</label>
-            <input type="number" id="gravity_guns" name="gravity_guns" min="0"><br>
-            <label for="r_torpedo_launchers">Пусковые Р-торпед:</label>
-            <input type="number" id="r_torpedo_launchers" name="r_torpedo_launchers" min="0"><br>
-            <label for="r_missile_launchers">Пусковые Р-ракет:</label>
-            <input type="number" id="r_missile_launchers" name="r_missile_launchers" min="0"><br>
-            <label for="ion_shield_generators">Генераторы ионных экранов:</label>
-            <input type="number" id="ion_shield_generators" name="ion_shield_generators" min="0"><br>
-            <label for="plasma_mirrors">Плазменные зеркала:</label>
-            <input type="number" id="plasma_mirrors" name="plasma_mirrors" min="0"><br>
-            <label for="dock_bays">Док-камеры:</label>
-            <input type="number" id="dock_bays" name="dock_bays" min="0"><br>
-        </fieldset><br>
+          <legend>Модули (в клетках)</legend>
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="engine_cells" >Двигатели</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="fuel_cells" >Топливо</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="systems_cells" >Борт. системы</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="crew_cells" >Экипаж</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="plasma_guns" >Плазмаганы</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="gravity_guns" >Гравиганы</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="" >Пусковые Р-торпед</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="" >Пусковые Р-ракет</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="ion_shield_generators" >Генераторы ионных экранов</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="plasma_mirrors" >Плазменные зеркала</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="dock_bays" >Док-камеры</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="engine_cells" name="engine_cells"
+                    min="0" style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="fuel_cells" name="fuel_cells" min="0"
+                    style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="systems_cells" name="systems_cells"
+                    min="0" style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="crew_cells" name="crew_cells" min="0"
+                    style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="plasma_guns" name="plasma_guns"
+                    min="0" style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="gravity_guns" name="gravity_guns"
+                    min="0" style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="r_torpedo_launchers"
+                    name="r_torpedo_launchers" min="0" style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="r_missile_launchers"
+                    name="r_missile_launchers" min="0" style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="ion_shield_generators"
+                    name="ion_shield_generators" min="0" style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="plasma_mirrors" name="plasma_mirrors"
+                    min="0" style="width: 100%;"></td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><input type="number" id="dock_bays" name="dock_bays" min="0"
+                    style="width: 100%;"></td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
 
         <fieldset>
             <legend>Уровни технологий</legend>

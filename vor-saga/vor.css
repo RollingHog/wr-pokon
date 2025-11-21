@@ -1,0 +1,69 @@
+/* body {
+  background-color: #f0f2f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+}
+
+form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+  color: #333;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  display: block;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+fieldset {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin: 15px 0;
+  padding: 15px;
+}
+
+legend {
+  font-weight: bold;
+  color: #333;
+} */
+
+
+[for="engine_cells"] { background-color: #ff0000; }       /* ярко-красный */
+[for="fuel_cells"] { background-color: #ff9999; }         /* бледно-красный */
+[for="systems_cells"] { background-color: #66ccff; }     /* голубой */
+[for="crew_cells"] { background-color: #0000ff; }         /* синий */
+[for="plasma_guns"] { background-color: #00cc00; }      /* зеленый */
+[for="gravity_guns"] { background-color: #00ffff; }     /* циан */
+[for="ion_shield_generators"] { background-color: #cc99ff; }          /* фиолетовый */
+[for="plasma_mirrors"] { background-color: #ffff00; }       /* желтый */
+[for="dock_bays"] { background-color: #ff99cc; }         /* розовый */
