@@ -3,38 +3,6 @@ exported
 calculateShipStats
 */ 
 
-// Пример структуры объекта Ship
-let shipData = {
-    // --- Основные параметры ---
-    class_type: "", // 'B', 'C', 'D', 'E'
-    mass: 0,        // в тоннах
-
-    // --- Модули (в клетках) ---
-    engine_cells: 0,
-    fuel_cells: 0,
-    systems_cells: 0,
-    crew_cells: 0,
-    plasma_guns: 0,
-    gravity_guns: 0,
-    r_torpedo_launchers: 0, // 1 клетка = 1 заряд, 2 клетки = 2+ заряда
-    r_missile_launchers: 0, // 1 клетка = 1 или 2 ракеты (B), остальные = 1
-    ion_shield_generators: 0,
-    plasma_mirrors: 0,
-    dock_bays: 0,
-
-    // --- Уровни технологий ---
-    tech_gravity: 0,
-    tech_plasma: 0,
-    tech_nuclear: 0,
-    tech_propulsion: 0,
-    tech_survivability: 0,
-    tech_sensors: 0,
-    tech_tactics: 0,
-
-    // --- Дополнительные параметры ---
-    has_gravity_penalty: false // true, если на D/E установлен гравиган
-};
-
 // Пример структуры объекта Requirements
 const requirements = {
     B: { // Линкор
@@ -188,14 +156,14 @@ function calculateBattlePower(shipData) {
     // Из примера: "Дестроер не несет гравиганов, поэтому Искусственная гравитация ур=3 не учитывается"
     // Следовательно, GRAV = tech_gravity только если gravity_guns > 0.
     if (shipData.gravity_guns > 0) {
-        systemLevels.GRAV = shipData.tech_gravity;
+        systemLevels.GRAV = shipData.gravity_guns + shipData.tech_gravity;
     }
     // Если гравиганов нет, GRAV = 0, что и есть значение по умолчанию.
 
     // --- PLAZ: Физика плазмы ---
     // Аналогично, модификатор применяется только если есть плазмаганы.
     if (shipData.plasma_guns > 0) {
-        systemLevels.PLAZ = shipData.tech_plasma;
+        systemLevels.PLAZ = shipData.plasma_guns + shipData.tech_plasma;
     }
 
     // --- ATOM: Ядерная физика ---
@@ -204,7 +172,9 @@ function calculateBattlePower(shipData) {
     // Следовательно, ATOM = tech_nuclear только если есть Р-заряды.
     const hasRCharges = shipData.r_torpedo_launchers > 0 || shipData.r_missile_launchers > 0;
     if (hasRCharges) {
-        systemLevels.ATOM = shipData.tech_nuclear;
+        systemLevels.ATOM = shipData.r_torpedo_launchers 
+          + shipData.r_missile_launchers 
+          + shipData.tech_nuclear;
     }
 
     // --- ZASH: Борьба за живучесть ---
@@ -212,20 +182,20 @@ function calculateBattlePower(shipData) {
     // Из примера: "корабль не имеет модулей ионных экранов, поэтому получает штраф... ЗАЩ 0 (2)"
     // Следовательно, ZASH = tech_survivability только если есть ионные экраны.
     if (shipData.ion_shield_generators > 0) {
-        systemLevels.ZASH = shipData.tech_survivability;
+        systemLevels.ZASH = shipData.ion_shield_generators + shipData.tech_survivability;
     }
 
     // --- KOMP: Сенсоры и компьютеры ---
     // Бортовые системы обязательны для всех, поэтому KOMP всегда >= tech_sensors.
     // Но если есть штраф за гравиган на D/E, он применяется здесь.
-    systemLevels.KOMP = shipData.tech_sensors;
+    systemLevels.KOMP = shipData.systems_cells + shipData.tech_sensors;
     if (shipData.has_gravity_penalty) {
         systemLevels.KOMP = Math.max(0, systemLevels.KOMP - 2); // Уровень не может быть отрицательным
     }
 
     // --- EKIP: Тактика и организация ---
     // Экипаж обязателен для всех, поэтому EKIP всегда = tech_tactics.
-    systemLevels.EKIP = shipData.tech_tactics;
+    systemLevels.EKIP = shipData.crew_cells + shipData.tech_tactics;
 
     // 3. Вычисляем базовую БМ (до модификатора класса)
     const baseBM = systemLevels.GRAV + systemLevels.PLAZ + systemLevels.ATOM + 
