@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Раскраска таблицы 9x9 с палитрой</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 20px auto;
+    }
+
+    td {
+      width: 35px;
+      height: 35px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      transition: background-color 0.1s;
+    }
+
+    .palette {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px;
+    }
+
+    .palette-color {
+      width: 30px;
+      height: 30px;
+      border: 2px solid #aaa;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .palette-color.active {
+      border-color: #000;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .counter {
+      margin: 10px;
+      padding: 5px;
+    }
+
+    .controls {
+      text-align: center;
+      margin: 15px;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="controls">
+    <button id="resetBtn">Сбросить все</button>
+  </div>
+
+  <div class="palette" id="palette">
+    <!-- Палитра будет создана через JavaScript -->
+  </div>
+
+  <table id="colorTable">
+    <!-- Ячейки будут созданы через JavaScript -->
+  </table>
+
+  <div id="counters">
+    <!-- Счётчики будут добавлены через JavaScript -->
+  </div>
+
+  <script>
+    // Цвета и их идентификаторы
+    const COLORS = {
+      ДВИГ: '#ff6b6b',
+      ТОПЛ: '#ffcccc',
+      КОМП: '#6b6bFF',
+      ЭКИП: '#FFA500',
+      ПЛАЗ: '#006400',
+      ГРАВ: '#00FFFF',
+      purple: '#CC99FF',
+      АТОМ: '#CCFF33',
+      erase: '#ffffff' // цвет "очистка" (белый)
+    };
+
+    // Состояние счётчиков
+    const counters = {};
+    let currentColor = null; // текущий выбранный цвет (ключ)
+    let table = document.getElementById('colorTable');
+    let countersDiv = document.getElementById('counters');
+    let paletteDiv = document.getElementById('palette');
+
+    // Инициализация палитры
+    function initPalette() {
+      paletteDiv.innerHTML = '';
+      for (let colorId in COLORS) {
+        let colorBox = document.createElement('div');
+        colorBox.className = 'palette-color';
+        colorBox.style.backgroundColor = COLORS[colorId];
+        colorBox.dataset.colorId = colorId;
+
+        // Добавляем подсказку для "очистки"
+        if (colorId === 'erase') {
+          colorBox.title = 'Очистка';
+        }
+
+        colorBox.addEventListener('click', function () {
+          // Снимаем активный класс со всех
+          document.querySelectorAll('.palette-color').forEach(el => {
+            el.classList.remove('active');
+          });
+          // Добавляем активный класс текущему
+          this.classList.add('active');
+          // Устанавливаем текущий цвет
+          currentColor = colorId;
+        });
+
+        paletteDiv.appendChild(colorBox);
+      }
+    }
+
+    // Инициализация таблицы 9x9
+    function initTable() {
+      table.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        let row = table.insertRow();
+        for (let j = 0; j < 9; j++) {
+          let cell = row.insertCell();
+          cell.addEventListener('click', handleCellClick);
+        }
+      }
+    }
+
+    // Инициализация счётчиков
+    function initCounters() {
+      countersDiv.innerHTML = '';
+
+      // Создаём таблицу
+      let table = document.createElement('table');
+      table.style.margin = '0 auto';
+      table.style.borderCollapse = 'collapse';
+      table.style.textAlign = 'center';
+
+      let row1 = table.insertRow(); // строка с названиями цветов
+      let row2 = table.insertRow(); // строка с количеством клеток
+
+      for (let colorId in COLORS) {
+        if (colorId === 'erase') continue; // "очистка" не учитывается в счётчике
+        counters[colorId] = 0;
+
+        // Ячейка с названием цвета
+        let nameCell = row1.insertCell();
+        nameCell.textContent = colorId;
+        nameCell.style.background = COLORS[colorId];
+        nameCell.style.padding = '5px';
+
+        // Ячейка с количеством
+        let countCell = row2.insertCell();
+        countCell.id = `counter-${colorId}`;
+        countCell.textContent = counters[colorId];
+        countCell.style.padding = '5px';
+      }
+
+      countersDiv.appendChild(table);
+    }
+
+    // Обработчик клика по ячейке
+    function handleCellClick(e) {
+      if (currentColor === null) return; // если цвет не выбран, выходим
+
+      let cell = e.target;
+      let previousBg = cell.style.backgroundColor;
+
+      // Находим предыдущий цвет ячейки
+      let prevColorId = 'none';
+      for (let id in COLORS) {
+        if (COLORS[id] === previousBg) {
+          prevColorId = id;
+          break;
+        }
+      }
+
+      // Если цвет не из палитры, считаем его как 'none'
+      if (prevColorId !== 'none' && !COLORS.hasOwnProperty(prevColorId)) {
+        prevColorId = 'none';
+      }
+
+      // Если выбран цвет "очистка", очищаем ячейку
+      if (currentColor === 'erase') {
+        cell.style.backgroundColor = '';
+        if (prevColorId !== 'none' && prevColorId !== 'erase') {
+          counters[prevColorId]--;
+        }
+      } else {
+        // Обновляем цвет ячейки
+        cell.style.backgroundColor = COLORS[currentColor];
+
+        // Обновляем счётчики
+        if (prevColorId !== 'none' && prevColorId !== 'erase') {
+          counters[prevColorId]--;
+        }
+        if (currentColor !== 'erase') {
+          counters[currentColor]++;
+        }
+      }
+
+      updateCountersDisplay();
+    }
+
+    // Обновление отображения счётчиков
+    function updateCountersDisplay() {
+      for (let colorId in COLORS) {
+        if (colorId === 'erase') continue;
+        let counterElement = document.getElementById(`counter-${colorId}`);
+        if (counterElement) {
+          counterElement.textContent = counters[colorId];
+        }
+      }
+    }
+
+    // Сброс таблицы и счётчиков
+    document.getElementById('resetBtn').addEventListener('click', function () {
+      let cells = document.querySelectorAll('#colorTable td');
+      cells.forEach(cell => {
+        cell.style.backgroundColor = '';
+      });
+
+      for (let colorId in counters) {
+        counters[colorId] = 0;
+      }
+      updateCountersDisplay();
+
+      // Сбрасываем выбранный цвет
+      currentColor = null;
+      document.querySelectorAll('.palette-color').forEach(el => {
+        el.classList.remove('active');
+      });
+    });
+
+    // Запуск при загрузке
+    initPalette();
+    initTable();
+    initCounters();
+  </script>
+
+</body>
+
+</html>
