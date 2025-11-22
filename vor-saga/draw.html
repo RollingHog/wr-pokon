@@ -86,7 +86,7 @@
       ЭКИП: '#FFA500',
       ПЛАЗ: '#006400',
       ГРАВ: '#00FFFF',
-      purple: '#CC99FF',
+      ИОН: '#CC99FF',
       АТОМ: '#CCFF33',
       erase: '#ffffff' // цвет "очистка" (белый)
     };
@@ -140,10 +140,10 @@
     }
 
     // Инициализация счётчиков
-    function initCounters() {
+   function initCounters() {
       countersDiv.innerHTML = '';
 
-      // Создаём таблицу
+      // Создаём общую таблицу
       let table = document.createElement('table');
       table.style.margin = '0 auto';
       table.style.borderCollapse = 'collapse';
@@ -151,6 +151,7 @@
 
       let row1 = table.insertRow(); // строка с названиями цветов
       let row2 = table.insertRow(); // строка с количеством клеток
+      let row3 = table.insertRow(); // строка с данными из родительского окна
 
       for (let colorId in COLORS) {
         if (colorId === 'erase') continue; // "очистка" не учитывается в счётчике
@@ -162,14 +163,58 @@
         nameCell.style.background = COLORS[colorId];
         nameCell.style.padding = '5px';
 
-        // Ячейка с количеством
+        // Ячейка с количеством клеток
         let countCell = row2.insertCell();
         countCell.id = `counter-${colorId}`;
         countCell.textContent = counters[colorId];
         countCell.style.padding = '5px';
+
+        // Ячейка для данных из родительского окна (пустая или с заглушкой)
+        let dataCell = row3.insertCell();
+        dataCell.id = `data-${colorId}`;
+        dataCell.textContent = '—'; // заглушка до загрузки данных
+        dataCell.style.padding = '5px';
+        dataCell.style.fontStyle = 'italic';
+        dataCell.style.color = '#888';
       }
 
       countersDiv.appendChild(table);
+
+      debugger
+      // Заполняем третью строку данными из родительского окна
+      if (window.opener && !window.opener.closed) {
+        try {
+          let openerDoc = window.opener.document;
+
+          let dataMap = {
+            ДВИГ: 'engine_cells',
+            ТОПЛ: 'fuel_cells',
+            КОМП: 'systems_cells',
+            ЭКИП: 'crew_cells',
+            ПЛАЗ: 'plasma_guns',
+            ГРАВ: 'gravity_guns',
+            ИОН: 'ion_shield_generators',
+            АТОМ: 'r_missile_launchers'
+            // erase не участвует
+          };
+
+          for (let colorId in dataMap) {
+            if (COLORS[colorId]) {
+              let elementId = dataMap[colorId];
+              let value = parseInt(openerDoc.getElementById(elementId).value) || 0;
+              if(elementId === 'r_missile_launchers') value += parseInt(openerDoc.getElementById('r_torpedo_launchers').value) || 0
+              let dataCell = document.getElementById(`data-${colorId}`);
+              if (dataCell) {
+                dataCell.textContent = value;
+                dataCell.style.fontStyle = 'normal';
+                dataCell.style.color = COLORS[colorId];
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Не удалось получить данные из родительского окна:", e);
+        }
+      }
     }
 
     // Обработчик клика по ячейке
