@@ -629,8 +629,53 @@ function updateCellCounts() {
             Занято клеток: <strong>${totalOccupiedCells}</strong> / ${totalCells}
         </div>
     `;
+
+    updateTonnageCells();
 }
 
+function updateTonnageCells() {
+    const classSelect = document.getElementById('ship_class');
+    if (!classSelect.value) {
+        // Если класс корабля не выбран, выходим
+        return;
+    }
+
+    // Получаем множитель для класса
+    const multiplier = TONNS_PER_CLASS[classSelect.value] || 0;
+
+    // Список идентификаторов соответствующих input'ов
+    const cellIds = [
+        'engine_cells',
+        'fuel_cells',
+        'systems_cells',
+        'crew_cells',
+        'plasma_guns',
+        'gravity_guns',
+        'r_torpedo_launchers',
+        'r_missile_launchers',
+        'ion_shield_generators',
+        'plasma_mirrors',
+        'dock_bays'
+    ];
+
+    // Проходим по каждому ID
+    for (const id of cellIds) {
+        const inputElement = document.getElementById(id);
+        if (!inputElement) continue; // Пропускаем, если элемент не найден
+
+        // Получаем числовое значение из input
+        const value = parseInt(inputElement.value) || 0;
+
+        // Вычисляем итоговое значение
+        const result = value * multiplier;
+
+        // Находим все ячейки с классом, соответствующим ID, и классом tonnage
+        const targetCells = document.querySelectorAll(`td.${id}.tonnage`);
+        targetCells.forEach(cell => {
+            cell.textContent = result; // Заполняем ячейку числом
+        });
+    }
+}
 // --- Обновление обработчиков событий ---
 document.getElementById('shipForm').addEventListener('change', function(e) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
