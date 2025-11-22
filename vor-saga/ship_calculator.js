@@ -31,6 +31,13 @@ const requirements = {
     }
 };
 
+const TONNS_PER_CLASS = {
+    'B': 250,
+    'C': 150,
+    'D': 100,
+    'E': 100,
+};
+
 // Пример структуры объекта TechModifiers
 const techModifiers = {
     gravity: 0, // соответствует tech_gravity
