@@ -575,6 +575,7 @@ document.getElementById('ship_mass').addEventListener('input', function() {
 window.onload = function() {
     loadFormData();
     setMinimumsForClass(); // Установить минимумы сразу после загрузки, если данные были
+    updateCellCounts();
 };
 
 // --- Обновленная функция для отображения занятых и общих клеток ---
