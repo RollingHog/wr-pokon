@@ -321,10 +321,9 @@ function displayResult(shipData, bmCalculation) {
     const className = classNames[shipData.class_type] || 'Неизвестный класс';
 
     let html = `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; border: 1px solid #333; border-radius: 8px; background-color: #f9f9f9;">
-            <h2 style="color: #2c3e50; text-align: center;">Результат проектирования корабля</h2>
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 8px auto; padding: 8px; border: 1px solid #333; border-radius: 8px; background-color: #f9f9f9;">
+            <b style="color: #2c3e50; text-align: center;">Результат проектирования корабля</b>
             <p><strong>Корабль:</strong> ${className} (${shipData.mass} т)</p>
-            <p><strong>Клеток всего:</strong> ${bmCalculation.totalCells}</p>
             <p><strong>Занято клеток:</strong> ${bmCalculation.totalOccupiedCells} / ${bmCalculation.totalCells} 
                 ${bmCalculation.totalOccupiedCells > bmCalculation.totalCells ? 
                     '<span style="color: #e74c3c;">⚠️ ПЕРЕГРУЖЕН</span>' : 
@@ -332,44 +331,44 @@ function displayResult(shipData, bmCalculation) {
             <hr>
     `;
 
-    // --- Уровни систем ---
+    // --- Уровни систем (горизонтальная таблица: названия в первой строке, уровни во второй) ---
     html += `
         <h3 style="color: #3498db;">Уровни систем (влияют на БМ):</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
             <thead>
                 <tr style="background-color: #ecf0f1;">
-                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Система</th>
-                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Уровень</th>
-                    <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Источник</th>
-                </tr>
-            </thead>
-            <tbody>
     `;
 
     // Системы с их названиями и значениями
     const systems = [
-        { key: 'GRAV', name: 'Искусственная гравитация', value: bmCalculation.systemLevels.GRAV, active: shipData.gravity_guns > 0 },
-        { key: 'PLAZ', name: 'Физика плазмы', value: bmCalculation.systemLevels.PLAZ, active: shipData.plasma_guns > 0 },
-        { key: 'ATOM', name: 'Ядерная физика', value: bmCalculation.systemLevels.ATOM, active: shipData.r_torpedo_launchers > 0 || shipData.r_missile_launchers > 0 },
-        { key: 'ZASH', name: 'Борьба за живучесть', value: bmCalculation.systemLevels.ZASH, active: shipData.ion_shield_generators > 0 },
-        { key: 'KOMP', name: 'Сенсоры и компьютеры', value: bmCalculation.systemLevels.KOMP, active: true },
-        { key: 'EKIP', name: 'Тактика и организация', value: bmCalculation.systemLevels.EKIP, active: true }
+        { key: 'GRAV', name: 'ГРАВ', value: bmCalculation.systemLevels.GRAV, active: shipData.gravity_guns > 0 },
+        { key: 'PLAZ', name: 'ПЛАЗ', value: bmCalculation.systemLevels.PLAZ, active: shipData.plasma_guns > 0 },
+        { key: 'ATOM', name: 'АТОМ', value: bmCalculation.systemLevels.ATOM, active: shipData.r_torpedo_launchers > 0 || shipData.r_missile_launchers > 0 },
+        { key: 'ZASH', name: 'ЗАЩ', value: bmCalculation.systemLevels.ZASH, active: shipData.ion_shield_generators > 0 },
+        { key: 'KOMP', name: 'КОМП', value: bmCalculation.systemLevels.KOMP, active: true },
+        { key: 'EKIP', name: 'ЭКИП', value: bmCalculation.systemLevels.EKIP, active: true }
     ];
 
+    // Первая строка: названия систем
     systems.forEach(sys => {
-        const isActive = sys.active;
-        const status = isActive ? '<span style="color: #27ae60;">✓ Активен</span>' : '<span style="color: #95a5a6;">✗ Не установлен</span>';
-        const color = sys.value > 0 ? '#27ae60' : '#7f8c8d';
-        html += `
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">${sys.name}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; color: ${color}; font-weight: bold;">${sys.value}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">${status}</td>
-            </tr>
-        `;
+        html += `<th style="padding: 8px; text-align: center; ">${sys.name}</th>`;
     });
 
     html += `
+                </tr>
+                <tr style="background-color: #f9f9f9;">
+    `;
+
+    // Вторая строка: уровни систем
+    systems.forEach(sys => {
+        const color = sys.value > 0 ? '#27ae60' : '#7f8c8d';
+        html += `<td style="padding: 8px; text-align: center; color: ${color}; font-weight: bold;">${sys.value}</td>`;
+    });
+
+    html += `
+                </tr>
+            </thead>
+            <tbody>
             </tbody>
         </table>
     `;

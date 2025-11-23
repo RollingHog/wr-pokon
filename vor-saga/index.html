@@ -29,17 +29,17 @@
           <table style="width: 100%; border-collapse: collapse;">
             <thead>
               <tr>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="engine_cells" >Двигатели</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="fuel_cells" >Топливо</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="systems_cells" >Борт. системы</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="crew_cells" >Экипаж</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="plasma_guns" >Плазмаганы</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="gravity_guns" >Гравиганы</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="r_torpedo_launchers" >Пусковые Р-торпед</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="r_missile_launchers" >Пусковые Р-ракет</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="ion_shield_generators" >Генераторы ионных экранов</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="plasma_mirrors" >Плазменные зеркала</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="dock_bays" >Док-камеры</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="engine_cells" >ДВИГ</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="fuel_cells" >ТОПЛ</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="systems_cells" >КОМП</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="crew_cells" >ЭКИП</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="plasma_guns" >ПЛАЗ</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="gravity_guns" >ГРАВ</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="r_torpedo_launchers" >АТОМ (торпед)</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="r_missile_launchers" >АТОМ (ракет)</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="ion_shield_generators" >ЩИТ</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="plasma_mirrors" >П-зеркала</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="dock_bays" >Док</th>
               </tr>
             </thead>
             <tbody>
@@ -68,17 +68,17 @@
                     style="width: 100%;"></td>
               </tr>
             <tr title=Тоннаж>
-  <td class="engine_cells tonnage"></td>
-  <td class="fuel_cells tonnage"></td>
-  <td class="systems_cells tonnage"></td>
-  <td class="crew_cells tonnage"></td>
-  <td class="plasma_guns tonnage"></td>
-  <td class="gravity_guns tonnage"></td>
-  <td class="r_torpedo_launchers tonnage"></td>
-  <td class="r_missile_launchers tonnage"></td>
-  <td class="ion_shield_generators tonnage"></td>
-  <td class="plasma_mirrors tonnage"></td>
-  <td class="dock_bays tonnage"></td>
+              <td class="engine_cells tonnage"></td>
+              <td class="fuel_cells tonnage"></td>
+              <td class="systems_cells tonnage"></td>
+              <td class="crew_cells tonnage"></td>
+              <td class="plasma_guns tonnage"></td>
+              <td class="gravity_guns tonnage"></td>
+              <td class="r_torpedo_launchers tonnage"></td>
+              <td class="r_missile_launchers tonnage"></td>
+              <td class="ion_shield_generators tonnage"></td>
+              <td class="plasma_mirrors tonnage"></td>
+              <td class="dock_bays tonnage"></td>
             </tr>
             </tbody>
           </table>
@@ -86,20 +86,61 @@
 
         <fieldset>
             <legend>Уровни технологий</legend>
-            <label for="tech_gravity">Искусственная гравитация:</label>
-            <input type="number" id="tech_gravity" name="tech_gravity" min="0"><br>
-            <label for="tech_plasma">Физика плазмы:</label>
-            <input type="number" id="tech_plasma" name="tech_plasma" min="0"><br>
-            <label for="tech_nuclear">Ядерная физика:</label>
-            <input type="number" id="tech_nuclear" name="tech_nuclear" min="0"><br>
-            <label for="tech_propulsion">Пропульсивные системы:</label>
-            <input type="number" id="tech_propulsion" name="tech_propulsion" min="0"><br>
-            <label for="tech_survivability">Борьба за живучесть:</label>
-            <input type="number" id="tech_survivability" name="tech_survivability" min="0"><br>
-            <label for="tech_sensors">Сенсоры и компьютеры:</label>
-            <input type="number" id="tech_sensors" name="tech_sensors" min="0"><br>
-            <label for="tech_tactics">Тактика и организация:</label>
-            <input type="number" id="tech_tactics" name="tech_tactics" min="0"><br>
+            <table style="border-collapse: collapse; width: 100%;">
+              <style>
+                th {
+                  /* padding: 8px; */
+                  border: 1px solid #ddd;
+                  text-align: center;
+                  width: 30px;
+                }
+            
+                td {
+                  padding: 4px;
+                  border: 1px solid #ddd;
+                  text-align: center;
+                  width: 30px;
+                }
+                
+                td input {
+                  width: 80%;
+                }
+              </style>
+              <thead>
+                <tr>
+                  <th class="ГРАВ">ГРАВ</th>
+                  <th class="ПЛАЗ">ПЛАЗ</th>
+                  <th class="АТОМ">АТОМ</th>
+                  <th class="ДВИГ">ДВИГ</th>
+                  <th class="ЩИТ">БзЖ</th>
+                  <th class="КОМП">КОМП</th>
+                  <th class="ЭКИП">ЭКИП</th>
+                </tr>
+                <tr>
+                  <td>
+                    <input type="number" id="tech_gravity" name="tech_gravity" min="0">
+                  </td>
+                  <td>
+                    <input type="number" id="tech_plasma" name="tech_plasma" min="0">
+                  </td>
+                  <td>
+                    <input type="number" id="tech_nuclear" name="tech_nuclear" min="0">
+                  </td>
+                  <td>
+                    <input type="number" id="tech_propulsion" name="tech_propulsion" min="0">
+                  </td>
+                  <td>
+                    <input type="number" id="tech_survivability" name="tech_survivability" min="0">
+                  </td>
+                  <td>
+                    <input type="number" id="tech_sensors" name="tech_sensors" min="0">
+                  </td>
+                  <td>
+                    <input type="number" id="tech_tactics" name="tech_tactics" min="0">
+                  </td>
+                </tr>
+              </thead>
+            </table>
         </fieldset><br>
 
         <label for="has_gravity_penalty">Штраф за гравиган на D/E?</label>

@@ -6,7 +6,7 @@ const COLORS = {
   ЭКИП: '#FFA500',
   ПЛАЗ: '#006400',
   ГРАВ: '#00FFFF',
-  ИОН: '#CC99FF',
+  ЩИТ: '#CC99FF',
   АТОМ: '#CCFF33',
   erase: '#ffffff' // цвет "очистка" (белый)
 };
@@ -111,7 +111,7 @@ function initCounters() {
         ЭКИП: 'crew_cells',
         ПЛАЗ: 'plasma_guns',
         ГРАВ: 'gravity_guns',
-        ИОН: 'ion_shield_generators',
+        ЗАЩ: 'ion_shield_generators',
         АТОМ: 'r_missile_launchers'
         // erase не участвует
       };

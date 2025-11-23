@@ -58,16 +58,16 @@ legend {
 } */
 
 
-[for="engine_cells"], [for="tech_propulsion"] { background-color: #ff0000; }       /* ярко-красный */
+[for="engine_cells"], .ДВИГ { background-color: #ff0000; }       /* ярко-красный */
 [for="fuel_cells"] { background-color: #ff9999; }         /* бледно-красный */
-[for="systems_cells"], [for="tech_sensors"] { background-color: cornflowerblue; }     /* голубой */
-[for="crew_cells"], [for="tech_tactics"] { background-color: darkorange; }         /* синий */
-[for="plasma_guns"], [for="tech_plasma"] { background-color: green; }      /* зеленый */
+[for="systems_cells"], .КОМП { background-color: cornflowerblue; }     /* голубой */
+[for="crew_cells"], .ЭКИП { background-color: darkorange; }         /* синий */
+[for="plasma_guns"], .ПЛАЗ { background-color: green; }      /* зеленый */
 
-[for="gravity_guns"], [for="tech_gravity"] { background-color: #00ffff; }     /* циан */
-[for="r_torpedo_launchers"], [for="tech_nuclear"] { background-color: #00ff22; }    
-[for="r_missile_launchers"], [for="tech_nuclear"] { background-color: #00ff22; }    
-[for="ion_shield_generators"], [for="tech_survivability"] { background-color: #cc99ff; }          /* фиолетовый */
+[for="gravity_guns"], .ГРАВ { background-color: #00ffff; }     /* циан */
+[for="r_torpedo_launchers"], .АТОМ { background-color: #00ff22; }    
+[for="r_missile_launchers"], .АТОМ { background-color: #00ff22; }    
+[for="ion_shield_generators"], .ЩИТ { background-color: #cc99ff; }          /* фиолетовый */
 [for="plasma_mirrors"] { background-color: #ffff00; }       /* желтый */
 [for="dock_bays"] { background-color: #ff99cc; }         /* розовый */
 
