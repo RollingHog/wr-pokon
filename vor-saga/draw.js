@@ -138,16 +138,11 @@ function handleCellClick(e) {
   if (currentColor === null) return; // если цвет не выбран, выходим
 
   let cell = e.target;
-  let previousBg = cell.style.backgroundColor;
+  let previousBg = cell.className;
 
   // Находим предыдущий цвет ячейки
-  let prevColorId = 'none';
-  for (let id in COLORS) {
-    if (COLORS[id] === previousBg) {
-      prevColorId = id;
-      break;
-    }
-  }
+  let prevColorId = previousBg;
+
 
   // Если цвет не из палитры, считаем его как 'none'
   if (prevColorId !== 'none' && !COLORS.hasOwnProperty(prevColorId)) {
@@ -183,7 +178,18 @@ function updateCountersDisplay() {
     let counterElement = document.getElementById(`counter-${colorId}`);
     if (counterElement) {
       counterElement.textContent = counters[colorId];
+    }    
+    let dataElement = document.getElementById(`data-${colorId}`);
+    if (dataElement) {
+      if(+dataElement.textContent === counters[colorId]) {
+        dataElement.style.background = 'green';
+      } else if(+dataElement.textContent < counters[colorId]) {
+        dataElement.style.background = 'red';
+      } else {
+        dataElement.style.background = '';
+      }
     }
+
   }
 }
 
