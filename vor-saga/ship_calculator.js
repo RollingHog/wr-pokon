@@ -321,19 +321,19 @@ function displayResult(shipData, bmCalculation) {
     const className = classNames[shipData.class_type] || 'Неизвестный класс';
 
     let html = `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 8px auto; padding: 8px; border: 1px solid #333; border-radius: 8px; background-color: #f9f9f9;">
-            <b style="color: #2c3e50; text-align: center;">Результат проектирования корабля</b>
-            <p><strong>Корабль:</strong> ${className} (${shipData.mass} т)</p>
-            <p><strong>Занято клеток:</strong> ${bmCalculation.totalOccupiedCells} / ${bmCalculation.totalCells} 
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 8px auto; padding: 8px; border: 1px solid #333; border-radius: 8px; background-color: #f9f9f9; margin-top: -20px;">
+            <b style="color: #2c3e50; text-align: center;">Результат проектирования корабля</b><br>
+            <span><strong>Корабль:</strong> ${className} (${shipData.mass} т)</span>
+            <span style="float: right"><strong>Занято клеток:</strong> ${bmCalculation.totalOccupiedCells} / ${bmCalculation.totalCells} 
                 ${bmCalculation.totalOccupiedCells > bmCalculation.totalCells ? 
                     '<span style="color: #e74c3c;">⚠️ ПЕРЕГРУЖЕН</span>' : 
-                    '<span style="color: #27ae60;">✓ OK</span>'}</p>
+                    '<span style="color: #27ae60;">✓ OK</span>'}</span>
             <hr>
     `;
 
     // --- Уровни систем (горизонтальная таблица: названия в первой строке, уровни во второй) ---
     html += `
-        <h3 style="color: #3498db;">Уровни систем (влияют на БМ):</h3>
+        <b hidden style="color: #3498db;">Уровни систем (влияют на БМ):</b>
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
             <thead>
                 <tr style="background-color: #ecf0f1;">
@@ -351,7 +351,7 @@ function displayResult(shipData, bmCalculation) {
 
     // Первая строка: названия систем
     systems.forEach(sys => {
-        html += `<th style="padding: 8px; text-align: center; ">${sys.name}</th>`;
+        html += `<th style="padding: 8px; text-align: center;" class="${sys.name}">${sys.name}</th>`;
     });
 
     html += `
@@ -433,8 +433,8 @@ function displayResult(shipData, bmCalculation) {
 
     html += `
         <hr>
-        <div style="text-align: center; padding: 20px; background-color: #3498db; color: white; border-radius: 8px; font-size: 20px; font-weight: bold; margin: 20px 0;">
-            💥 <span style="font-size: 28px;">БОЕВАЯ МОЩНОСТЬ (БМ): ${bmCalculation.finalBM}</span>
+        <div style="text-align: center; padding: 20px; background-color: #3498db; color: white; border-radius: 8px; font-weight: bold; margin: 8px 0;">
+            💥 <span style="">БОЕВАЯ МОЩНОСТЬ (БМ): ${bmCalculation.finalBM}</span>
         </div>
         <p style="text-align: center; color: #555; font-size: 14px;">
             Расчёт: (${Math.round(shipData.mass / 1000)} × ${classModifier}) + (${bmCalculation.baseBM}) = ${bmCalculation.classAndMassComponent} + ${bmCalculation.baseBM} = ${bmCalculation.finalBM}
@@ -545,8 +545,9 @@ function calculateShipStats() {
         tech_survivability: parseInt(document.getElementById('tech_survivability').value) || 0,
         tech_sensors: parseInt(document.getElementById('tech_sensors').value) || 0,
         tech_tactics: parseInt(document.getElementById('tech_tactics').value) || 0,
-        has_gravity_penalty: document.getElementById('has_gravity_penalty').checked
     };
+
+    shipData.has_gravity_penalty = ['D', 'E'].includes(shipData.class_type) && shipData.gravity_guns > 0
 
     // 2. Проверяем валидность конфигурации
     if (!validateShipConfiguration(shipData)) {

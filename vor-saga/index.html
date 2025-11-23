@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="vor.css">
 </head>
 <body>
-    <h1>Калькулятор кораблестроения</h1>
+    <h2>Калькулятор кораблестроения</h2>
     <span style="float: right;"><a href="./draw.html" target="_blank" rel=opener>Сетка для рисования</a></span>
     <form id="shipForm">
         <label for="ship_class">Класс корабля:</label>
@@ -37,7 +37,7 @@
                 <th style="padding: 8px; border: 1px solid #ddd;" for="gravity_guns" >ГРАВ</th>
                 <th style="padding: 8px; border: 1px solid #ddd;" for="r_torpedo_launchers" >АТОМ (торпед)</th>
                 <th style="padding: 8px; border: 1px solid #ddd;" for="r_missile_launchers" >АТОМ (ракет)</th>
-                <th style="padding: 8px; border: 1px solid #ddd;" for="ion_shield_generators" >ЩИТ</th>
+                <th style="padding: 8px; border: 1px solid #ddd;" for="ion_shield_generators" >ЗАЩ</th>
                 <th style="padding: 8px; border: 1px solid #ddd;" for="plasma_mirrors" >П-зеркала</th>
                 <th style="padding: 8px; border: 1px solid #ddd;" for="dock_bays" >Док</th>
               </tr>
@@ -112,7 +112,7 @@
                   <th class="ПЛАЗ">ПЛАЗ</th>
                   <th class="АТОМ">АТОМ</th>
                   <th class="ДВИГ">ДВИГ</th>
-                  <th class="ЩИТ">БзЖ</th>
+                  <th class="ЗАЩ">БзЖ</th>
                   <th class="КОМП">КОМП</th>
                   <th class="ЭКИП">ЭКИП</th>
                 </tr>
@@ -142,9 +142,6 @@
               </thead>
             </table>
         </fieldset><br>
-
-        <label for="has_gravity_penalty">Штраф за гравиган на D/E?</label>
-        <input type="checkbox" id="has_gravity_penalty" name="has_gravity_penalty"><br><br>
 
         <button type="button" onclick="calculateShipStats()">Рассчитать БМ</button>
     </form>

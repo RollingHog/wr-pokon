@@ -67,7 +67,7 @@ legend {
 [for="gravity_guns"], .ГРАВ { background-color: #00ffff; }     /* циан */
 [for="r_torpedo_launchers"], .АТОМ { background-color: #00ff22; }    
 [for="r_missile_launchers"], .АТОМ { background-color: #00ff22; }    
-[for="ion_shield_generators"], .ЩИТ { background-color: #cc99ff; }          /* фиолетовый */
+[for="ion_shield_generators"], .ЗАЩ { background-color: #cc99ff; }          /* фиолетовый */
 [for="plasma_mirrors"] { background-color: #ffff00; }       /* желтый */
 [for="dock_bays"] { background-color: #ff99cc; }         /* розовый */
 
