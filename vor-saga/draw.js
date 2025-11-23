@@ -8,6 +8,7 @@ const COLORS = {
   ГРАВ: '#00FFFF',
   ЗАЩ: '#CC99FF',
   АТОМ: '#CCFF33',
+  ЗЕРК: '#CCFF33',
   erase: '#ffffff' // цвет "очистка" (белый)
 };
 
@@ -49,9 +50,9 @@ function initPalette() {
 // Инициализация таблицы 9x9
 function initTable() {
   table.innerHTML = '';
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 11; i++) {
     let row = table.insertRow();
-    for (let j = 0; j < 9; j++) {
+    for (let j = 0; j < 11; j++) {
       let cell = row.insertCell();
       cell.addEventListener('click', handleCellClick);
     }
@@ -111,7 +112,8 @@ function initCounters() {
         ПЛАЗ: 'plasma_guns',
         ГРАВ: 'gravity_guns',
         ЗАЩ: 'ion_shield_generators',
-        АТОМ: 'r_missile_launchers'
+        АТОМ: 'r_missile_launchers',
+        ЗЕРК: 'plasma_mirrors',
         // erase не участвует
       };
 
