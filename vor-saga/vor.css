@@ -59,7 +59,7 @@ legend {
 
 
 [for="engine_cells"], .ДВИГ { background-color: #ff0000; }       /* ярко-красный */
-[for="fuel_cells"] { background-color: #ff9999; }         /* бледно-красный */
+[for="fuel_cells"], .ТОПЛ { background-color: #ff9999; }         /* бледно-красный */
 [for="systems_cells"], .КОМП { background-color: cornflowerblue; }     /* голубой */
 [for="crew_cells"], .ЭКИП { background-color: darkorange; }         /* синий */
 [for="plasma_guns"], .ПЛАЗ { background-color: green; }      /* зеленый */

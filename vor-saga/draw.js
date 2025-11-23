@@ -23,8 +23,7 @@ function initPalette() {
   paletteDiv.innerHTML = '';
   for (let colorId in COLORS) {
     let colorBox = document.createElement('div');
-    colorBox.className = 'palette-color';
-    colorBox.style.backgroundColor = COLORS[colorId];
+    colorBox.className = 'palette-color ' + colorId;
     colorBox.dataset.colorId = colorId;
 
     // Добавляем подсказку для "очистки"
@@ -80,7 +79,7 @@ function initCounters() {
     // Ячейка с названием цвета
     let nameCell = row1.insertCell();
     nameCell.textContent = colorId;
-    nameCell.style.background = COLORS[colorId];
+    nameCell.className = colorId;
     nameCell.style.padding = '5px';
 
     // Ячейка с количеством клеток
@@ -157,13 +156,13 @@ function handleCellClick(e) {
 
   // Если выбран цвет "очистка", очищаем ячейку
   if (currentColor === 'erase') {
-    cell.style.backgroundColor = '';
+    cell.className = '';
     if (prevColorId !== 'none' && prevColorId !== 'erase') {
       counters[prevColorId]--;
     }
   } else {
     // Обновляем цвет ячейки
-    cell.style.backgroundColor = COLORS[currentColor];
+    cell.className = [currentColor];
 
     // Обновляем счётчики
     if (prevColorId !== 'none' && prevColorId !== 'erase') {
@@ -192,7 +191,7 @@ function updateCountersDisplay() {
 document.getElementById('resetBtn').addEventListener('click', function () {
   let cells = document.querySelectorAll('#colorTable td');
   cells.forEach(cell => {
-    cell.style.backgroundColor = '';
+    cell.className = '';
   });
 
   for (let colorId in counters) {
