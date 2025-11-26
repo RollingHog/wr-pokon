@@ -164,7 +164,7 @@ const CODE_TO_CELL_TYPE = {
 
 // Сериализует таблицу в строку (по строкам таблицы → строки в сериализации)
 function serializeGrid() {
-  const table = document.querySelector('#ship_grid'); // предполагаем ID таблицы
+; // предполагаем ID таблицы
   if (!table) return '';
 
   const rows = table.querySelectorAll('tr');
@@ -192,7 +192,6 @@ function serializeGrid() {
 
 // Десериализует строку в таблицу
 function deserializeGrid(serialized) {
-  const table = document.querySelector('#ship_grid');
   if (!table) return;
 
   const lines = serialized.split('\n').filter(line => line.trim() !== '');
