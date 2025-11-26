@@ -135,6 +135,146 @@ function initCounters() {
   }
 }
 
+// Объект для отображения типов клеток в односимвольные коды
+const CELL_TYPE_TO_CODE = {
+  'ДВИГ': 'E', // Engine
+  'ТОПЛ': 'F', // Fuel
+  'КОМП': 'S', // Systems
+  'ЭКИП': 'C', // Crew
+  'ПЛАЗ': 'P', // Plasma gun
+  'ГРАВ': 'G', // Gravity gun
+  'ЗАЩ': 'I',  // Ion shield
+  'АТОМ': 'R', // R-charge launcher (ракеты/торпеды)
+  'ЗЕРК': 'M', // Mirror
+  'none': '.', // Пустая клетка
+};
+
+const CODE_TO_CELL_TYPE = {
+  'E': 'ДВИГ',
+  'F': 'ТОПЛ',
+  'S': 'КОМП',
+  'C': 'ЭКИП',
+  'P': 'ПЛАЗ',
+  'G': 'ГРАВ',
+  'I': 'ЗАЩ',
+  'R': 'АТОМ',
+  'M': 'ЗЕРК',
+  '.': 'none',
+};
+
+// Сериализует таблицу в строку (по строкам таблицы → строки в сериализации)
+function serializeGrid() {
+  const table = document.querySelector('#ship_grid'); // предполагаем ID таблицы
+  if (!table) return '';
+
+  const rows = table.querySelectorAll('tr');
+  const lines = [];
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    if (cells.length === 0) return; // пропускаем заголовки
+
+    let line = '';
+    cells.forEach(cell => {
+      const className = cell.className;
+      let type = 'none';
+
+      if (className && Object.keys(COLORS).includes(className)) {
+        type = className;
+      }
+      line += CELL_TYPE_TO_CODE[type] || '.';
+    });
+    lines.push(line);
+  });
+
+  return lines.join('\n');
+}
+
+// Десериализует строку в таблицу
+function deserializeGrid(serialized) {
+  const table = document.querySelector('#ship_grid');
+  if (!table) return;
+
+  const lines = serialized.split('\n').filter(line => line.trim() !== '');
+  const rows = table.querySelectorAll('tr');
+
+  let rowIndex = 0;
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    if (cells.length === 0) return; // пропускаем заголовки
+
+    if (rowIndex >= lines.length) return;
+
+    const line = lines[rowIndex];
+    for (let i = 0; i < cells.length && i < line.length; i++) {
+      const code = line[i];
+      const type = CODE_TO_CELL_TYPE[code] || 'none';
+
+      if (type === 'none') {
+        cells[i].className = '';
+      } else if (COLORS.hasOwnProperty(type)) {
+        cells[i].className = type;
+      }
+    }
+
+    // Очистка остатка строки, если она короче
+    for (let i = line.length; i < cells.length; i++) {
+      cells[i].className = '';
+    }
+
+    rowIndex++;
+  });
+
+  // Обновить счётчики после загрузки
+  updateCountersFromGrid();
+}
+
+function updateCountersFromGrid() {
+  // Сброс всех счётчиков
+  Object.keys(COLORS).forEach(key => {
+    if (key !== 'erase') counters[key] = 0;
+  });
+  counters['none'] = 0;
+
+  const cells = document.querySelectorAll('#ship_grid td');
+  cells.forEach(cell => {
+    const className = cell.className;
+    if (className && Object.keys(COLORS).includes(className)) {
+      counters[className] = (counters[className] || 0) + 1;
+    } else {
+      counters['none'] = (counters['none'] || 0) + 1;
+    }
+  });
+
+  updateCountersDisplay(); // предполагается, что эта функция существует
+}
+
+async function copyGridToClipboard() {
+  const serialized = serializeGrid();
+  try {
+    await navigator.clipboard.writeText(serialized);
+    alert('Сетка скопирована в буфер обмена!');
+  } catch (err) {
+    console.error('Не удалось скопировать: ', err);
+    alert('Ошибка при копировании в буфер обмена.');
+  }
+}
+
+async function pasteGridFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (!text.trim()) {
+      alert('Буфер обмена пуст.');
+      return;
+    }
+    deserializeGrid(text);
+    alert('Сетка загружена из буфера обмена!');
+  } catch (err) {
+    console.error('Не удалось вставить: ', err);
+    alert('Ошибка при чтении из буфера обмена.');
+  }
+}
+
 // Обработчик клика по ячейке
 function handleCellClick(e) {
   if (currentColor === null) return; // если цвет не выбран, выходим
