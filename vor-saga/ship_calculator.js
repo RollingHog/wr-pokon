@@ -186,9 +186,9 @@ function calculateBattlePower(shipData) {
     // Модификатор применяется, если есть ионные экраны.
     // Из примера: "корабль не имеет модулей ионных экранов, поэтому получает штраф... ЗАЩ 0 (2)"
     // Следовательно, ZASH = tech_survivability только если есть ионные экраны.
-    if (shipData.ion_shield_generators > 0) {
-        systemLevels.ZASH =  shipData.tech_survivability;
-    }
+    // if (shipData.ion_shield_generators > 0) {
+    systemLevels.ZASH =  shipData.tech_survivability;
+    // }
 
     // --- KOMP: Сенсоры и компьютеры ---
     // Бортовые системы обязательны для всех, поэтому KOMP всегда >= tech_sensors.
