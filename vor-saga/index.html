@@ -18,7 +18,20 @@
             <option value="E">E - Эксплорер</option>
         </select>&nbsp;&nbsp;
 
-        <label for="ship_mass">Проектная масса (т):</label>
+        <label for="ship_mass" id="massLabel" style="cursor: help; text-decoration: underline dotted #666;">
+          Проектная масса (т):
+        </label>
+        <div id="overlay"
+          style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); z-index: 1000; overflow: auto; padding: 20px; box-sizing: border-box;">
+          <div
+            style="max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <h2 style="text-align: center; margin-top: 0;">Свободные клетки для проектирования</h2>
+            <div id="freeCellsTableInOverlay"></div>
+            <p style="text-align: center; margin-top: 20px; color: #666;">
+              Кликните вне таблицы или нажмите Escape, чтобы закрыть.
+            </p>
+          </div>
+        </div>
         <input type="number" id="ship_mass" name="ship_mass" min="1" required>
         <button type="button" onclick="clearFormData()">Сбросить форму</button>
         <br><br>

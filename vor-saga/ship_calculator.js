@@ -537,6 +537,78 @@ function setMinimumsForClass() {
     document.getElementById('crew_cells').value = minValues.crew_cells;
 }
 
+function renderFreeCellsTable(containerId = 'freeCellsTable') {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container with id "${containerId}" not found.`);
+        return;
+    }
+
+    // Диапазоны масс (в тоннах) для отображения
+    const massRanges = [500, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7500, 10000];
+
+    let html = `
+        <h3 style="margin-top: 20px;">Свободные клетки по классам и массе</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th style="padding: 8px; border: 1px solid #ccc;">Масса (т)</th>
+    `;
+
+    // Заголовки: один столбец на класс
+    for (const cls of ['B', 'C', 'D', 'E']) {
+        html += `<th style="padding: 8px; border: 1px solid #ccc;">${cls}</th>`;
+    }
+
+    html += `
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Для каждой массы — строка
+    for (const mass of massRanges) {
+        html += `<tr><td style="padding: 6px; border: 1px solid #ccc; text-align: center;">${mass}</td>`;
+
+        // Для каждого класса — ячейка
+        for (const cls of ['B', 'C', 'D', 'E']) {
+            const minCells = calculateMinimumModuleCells(cls, mass);
+            if (!minCells) {
+                html += `<td style="padding: 6px; border: 1px solid #ccc; text-align: center; color: #999;">—</td>`;
+                continue;
+            }
+
+            const totalCells = minCells.totalCells;
+            const requiredCells = minCells.engine_cells
+               + minCells.fuel_cells + minCells.systems_cells + minCells.crew_cells;
+            const freeCells = totalCells - requiredCells;
+
+            let cellStyle = 'padding: 6px; border: 1px solid #ccc; text-align: center;';
+            if (freeCells < 0) {
+                cellStyle += ' background-color: #ffe6e6; color: #d32f2f;'; // перегруз
+            } else if (freeCells === 0) {
+                cellStyle += ' background-color: #fff3e0; color: #e65100;'; // впритык
+            } else {
+                cellStyle += ' background-color: #e8f5e9; color: #2e7d32;'; // свободно
+            }
+
+            html += `<td style="${cellStyle}">${freeCells} / ${totalCells}</td>`;
+        }
+
+        html += `</tr>`;
+    }
+
+    html += `
+            </tbody>
+        </table>
+        <p style="font-size: 11px; color: #666; margin-top: 5px;">
+            Формат: <strong>свободно / всего</strong>. Зелёный — есть место под вооружение. Оранжевый — впритык. Красный — невозможно.
+        </p>
+    `;
+
+    container.innerHTML = html;
+}
+
 function calculateShipStats() {
     // 1. Считываем данные из формы
     const shipData = {
@@ -701,5 +773,31 @@ document.getElementById('shipForm').addEventListener('change', function(e) {
 document.getElementById('shipForm').addEventListener('input', function(e) {
     if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
         updateCellCounts(); // Обновляем при вводе чисел
+    }
+});
+
+document.getElementById('massLabel').addEventListener('click', function(e) {
+    e.preventDefault();
+    const overlay = document.getElementById('overlay');
+    overlay.style.display = 'block';
+    
+    // Рендерим таблицу прямо в оверлей
+    renderFreeCellsTable('freeCellsTableInOverlay');
+    
+    // Фокус на оверлее для обработки Escape
+    overlay.focus();
+});
+
+// Закрытие по клику вне контента
+document.getElementById('overlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+        this.style.display = 'none';
+    }
+});
+
+// Закрытие по нажатию Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('overlay').style.display = 'none';
     }
 });
