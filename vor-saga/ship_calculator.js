@@ -578,6 +578,7 @@ function renderFreeCellsTable(containerId = 'freeCellsTableInOverlay') {
     // Соберём все массы от minMass до max (шаг = step, макс. 70 клеток)
     const rows = [];
     let currentMass = minMass;
+    // eslint-disable-next-line no-constant-condition
     while (true) {
         const totalCells = Math.ceil(currentMass / step);
         if (totalCells > maxTotalCells) break;
@@ -598,24 +599,34 @@ function renderFreeCellsTable(containerId = 'freeCellsTableInOverlay') {
         return;
     }
 
+    // style="padding: 8px; border: 1px solid #ddd;"
     // === Формируем ВЕРТИКАЛЬНУЮ таблицу ===
     let html = `
         <h3 style="text-align: center; margin-bottom: 15px;">
             Свободные клетки для ${shipClass}
         </h3>
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin: 0 auto;">
+        <style>
+        #info_cells_t tr {
+          cursor: pointer;
+        }
+        #info_cells_t td {
+          padding: 8px;
+        }
+        </style>
+        <table id=info_cells_t style="width: 30%; border-collapse: collapse; font-size: 13px; margin: 0 auto;">
             <thead>
                 <tr style="background-color: #f5f5f5;">
-                    <th style="padding: 8px; border: 1px solid #ddd;">Масса (т)</th>
-                    <th style="padding: 8px; border: 1px solid #ddd;">Всего клеток</th>
-                    <th style="padding: 8px; border: 1px solid #ddd;">Свободно</th>
+                    <th >Масса (т)</th>
+                    <th>Всего клеток</th>
+                    <th>Свободно</th>
                 </tr>
             </thead>
             <tbody>
     `;
 
     rows.forEach(row => {
-        let cellStyle = 'padding: 8px; border: 1px solid #ddd; text-align: center;';
+      // padding: 8px; border: 1px solid #ddd; 
+        let cellStyle = 'text-align: center;';
         if (row.free <= 0) {
             cellStyle += ' background-color: #ffebee; color: #c62828;';
         } else if (row.free <= 2) {
@@ -625,9 +636,9 @@ function renderFreeCellsTable(containerId = 'freeCellsTableInOverlay') {
         }
 
         html += `
-            <tr>
-                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${row.mass}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${row.totalCells}</td>
+            <tr onclick="selectMassAndCloseOverlay(${row.mass})">
+                <td>${row.mass}</td>
+                <td>${row.totalCells}</td>
                 <td style="${cellStyle}">${row.free}</td>
             </tr>
         `;
@@ -643,6 +654,23 @@ function renderFreeCellsTable(containerId = 'freeCellsTableInOverlay') {
     `;
 
     container.innerHTML = html;
+}
+
+// eslint-disable-next-line no-unused-vars
+function selectMassAndCloseOverlay(mass) {
+    // Устанавливаем массу в поле ввода
+    const massInput = document.getElementById('ship_mass');
+    if (massInput) {
+        massInput.value = mass;
+        // Триггерим обновление (например, для setMinimumsForClass)
+        massInput.dispatchEvent(new Event('input'));
+    }
+    
+    // Закрываем оверлей
+    const overlay = document.getElementById('overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
 }
 
 function calculateShipStats() {
@@ -828,6 +856,13 @@ document.getElementById('massLabel').addEventListener('click', function(e) {
 document.getElementById('overlay').addEventListener('click', function(e) {
     if (e.target === this) {
         this.style.display = 'none';
+    }
+});
+
+// Закрытие по клику вне контента
+document.getElementById('freeCellsTableInOverlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+        document.getElementById('overlay').style.display = 'none';
     }
 });
 
