@@ -491,35 +491,50 @@ function clearFormData() {
 
 // --- 2. Установка минимальных значений при выборе класса ---
 
+// --- Новая переиспользуемая функция расчёта минимальных значений ---
+function calculateMinimumModuleCells(shipClass, mass) {
+    if (!shipClass || mass <= 0) {
+        return null;
+    }
+
+    const req = requirements[shipClass];
+    if (!req) {
+        return null;
+    }
+
+    const totalCells = calculateTotalCells(shipClass, mass);
+
+    return {
+        engine_cells: Math.ceil((req.min_engine_percentage / 100) * totalCells),
+        fuel_cells: Math.ceil((req.min_fuel_percentage / 100) * totalCells),
+        systems_cells: Math.ceil((req.min_systems_percentage / 100) * totalCells),
+        crew_cells: Math.ceil((req.min_crew_percentage / 100) * totalCells),
+        totalCells: totalCells
+    };
+}
+
+// --- Обновлённая функция setMinimumsForClass ---
 function setMinimumsForClass() {
     const classSelect = document.getElementById('ship_class');
-    const classData = classSelect.options[classSelect.selectedIndex].value
+    const classData = classSelect.value;
     const massInput = document.getElementById('ship_mass');
     const mass = parseInt(massInput.value) || 0;
 
-    // Очищаем все min перед установкой новых
-    document.getElementById('engine_cells').value = 0;
-    document.getElementById('fuel_cells').value = 0;
-    document.getElementById('systems_cells').value = 0;
-    document.getElementById('crew_cells').value = 0;
+    // Очищаем поля перед установкой новых значений
+    document.getElementById('engine_cells').value = '';
+    document.getElementById('fuel_cells').value = '';
+    document.getElementById('systems_cells').value = '';
+    document.getElementById('crew_cells').value = '';
 
-    if (!classData || mass <= 0) {
-      console.log('class or mass empty')
-      return; // Выходим, если класс не выбран или масса не указана
+    const minValues = calculateMinimumModuleCells(classData, mass);
+    if (!minValues) {
+        return;
     }
 
-    const req = requirements[classData];
-    if (!req) {
-      console.log('req not found')
-      return
-    }
-
-    const totalCells = calculateTotalCells(classData, mass);
-
-    document.getElementById('engine_cells').value = Math.ceil((req.min_engine_percentage / 100) * totalCells);
-    document.getElementById('fuel_cells').value = Math.ceil((req.min_fuel_percentage / 100) * totalCells);
-    document.getElementById('systems_cells').value = Math.ceil((req.min_systems_percentage / 100) * totalCells);
-    document.getElementById('crew_cells').value = Math.ceil((req.min_crew_percentage / 100) * totalCells);
+    document.getElementById('engine_cells').value = minValues.engine_cells;
+    document.getElementById('fuel_cells').value = minValues.fuel_cells;
+    document.getElementById('systems_cells').value = minValues.systems_cells;
+    document.getElementById('crew_cells').value = minValues.crew_cells;
 }
 
 function calculateShipStats() {
