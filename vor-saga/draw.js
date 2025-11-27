@@ -146,7 +146,7 @@ const CELL_TYPE_TO_CODE = {
   'ЗАЩ': 'I',  // Ion shield
   'АТОМ': 'R', // R-charge launcher (ракеты/торпеды)
   'ЗЕРК': 'M', // Mirror
-  'none': '.', // Пустая клетка
+  'none': '0', // Пустая клетка
 };
 
 const CODE_TO_CELL_TYPE = {
@@ -159,7 +159,7 @@ const CODE_TO_CELL_TYPE = {
   'I': 'ЗАЩ',
   'R': 'АТОМ',
   'M': 'ЗЕРК',
-  '.': 'none',
+  '0': 'none',
 };
 
 // Сериализует таблицу в строку (по строкам таблицы → строки в сериализации)
@@ -182,19 +182,19 @@ function serializeGrid() {
       if (className && Object.keys(COLORS).includes(className)) {
         type = className;
       }
-      line += CELL_TYPE_TO_CODE[type] || '.';
+      line += CELL_TYPE_TO_CODE[type] || '0';
     });
     lines.push(line);
   });
 
-  return lines.join('\n');
+  return lines.join('Z');
 }
 
 // Десериализует строку в таблицу
 function deserializeGrid(serialized) {
   if (!table) return;
 
-  const lines = serialized.split('\n').filter(line => line.trim() !== '');
+  const lines = serialized.split('Z').filter(line => line.trim() !== '');
   const rows = table.querySelectorAll('tr');
 
   let rowIndex = 0;
@@ -252,7 +252,6 @@ async function copyGridToClipboard() {
   const serialized = serializeGrid();
   try {
     await navigator.clipboard.writeText(serialized);
-    alert('Сетка скопирована в буфер обмена!');
   } catch (err) {
     console.error('Не удалось скопировать: ', err);
     alert('Ошибка при копировании в буфер обмена.');
@@ -267,7 +266,6 @@ async function pasteGridFromClipboard() {
       return;
     }
     deserializeGrid(text);
-    alert('Сетка загружена из буфера обмена!');
   } catch (err) {
     console.error('Не удалось вставить: ', err);
     alert('Ошибка при чтении из буфера обмена.');

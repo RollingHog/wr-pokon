@@ -720,6 +720,93 @@ function calculateShipStats() {
     displayResult(shipData, bmCalculation);
 }
 
+function serializeShipToReadableJSON() {
+    const data = {
+        class: document.getElementById('ship_class').value,
+        mass: parseInt(document.getElementById('ship_mass').value) || null,
+
+        modules: {
+            engine_cells: parseInt(document.getElementById('engine_cells').value) || 0,
+            fuel_cells: parseInt(document.getElementById('fuel_cells').value) || 0,
+            systems_cells: parseInt(document.getElementById('systems_cells').value) || 0,
+            crew_cells: parseInt(document.getElementById('crew_cells').value) || 0,
+            plasma_guns: parseInt(document.getElementById('plasma_guns').value) || 0,
+            gravity_guns: parseInt(document.getElementById('gravity_guns').value) || 0,
+            r_torpedo_launchers: parseInt(document.getElementById('r_torpedo_launchers').value) || 0,
+            r_missile_launchers: parseInt(document.getElementById('r_missile_launchers').value) || 0,
+            ion_shield_generators: parseInt(document.getElementById('ion_shield_generators').value) || 0,
+            plasma_mirrors: parseInt(document.getElementById('plasma_mirrors').value) || 0,
+            dock_bays: parseInt(document.getElementById('dock_bays').value) || 0
+        }
+    };
+
+    // Убираем null/undefined для чистоты
+    if (data.mass === null) delete data.mass;
+
+    return JSON.stringify(data, null, 2); // 2 — отступы для читаемости
+}
+
+function deserializeShipFromReadableJSON(jsonString) {
+    try {
+        const data = JSON.parse(jsonString);
+
+        // Восстанавливаем класс и массу
+        if (data.class) document.getElementById('ship_class').value = data.class;
+        if (data.mass) document.getElementById('ship_mass').value = data.mass;
+
+        // Восстанавливаем модули (если есть)
+        const modules = data.modules || {};
+        const fields = [
+            'engine_cells', 'fuel_cells', 'systems_cells', 'crew_cells',
+            'plasma_guns', 'gravity_guns', 'r_torpedo_launchers', 'r_missile_launchers',
+            'ion_shield_generators', 'plasma_mirrors', 'dock_bays'
+        ];
+
+        fields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input && modules[field] !== undefined) {
+                input.value = modules[field];
+            }
+        });
+
+        // Триггерим обновление минимумов и подсчётов
+        // document.getElementById('ship_class').dispatchEvent(new Event('change'));
+        // document.getElementById('ship_mass').dispatchEvent(new Event('input'));
+
+    } catch (e) {
+        alert('Ошибка при загрузке данных: неверный формат JSON.');
+        console.error(e);
+    }
+}
+
+// eslint-disable-next-line no-unused-vars
+async function copyShipToClipboard() {
+    const json = serializeShipToReadableJSON();
+    try {
+        await navigator.clipboard.writeText(json);
+        // alert('Конфигурация корабля скопирована в буфер обмена!');
+    } catch (err) {
+        console.error('Ошибка копирования:', err);
+        alert('Не удалось скопировать в буфер обмена.');
+    }
+}
+
+// eslint-disable-next-line no-unused-vars
+async function pasteShipFromClipboard() {
+    try {
+        const text = await navigator.clipboard.readText();
+        if (!text.trim()) {
+            alert('Буфер обмена пуст.');
+            return;
+        }
+        deserializeShipFromReadableJSON(text);
+        // alert('Конфигурация корабля загружена!');
+    } catch (err) {
+        console.error('Ошибка вставки:', err);
+        alert('Не удалось прочитать данные из буфера обмена.');
+    }
+}
+
 
 // --- Обновление обработчиков событий ---
 document.getElementById('ship_class').addEventListener('change', function() {
