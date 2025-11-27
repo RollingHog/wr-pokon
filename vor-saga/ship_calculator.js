@@ -537,72 +537,108 @@ function setMinimumsForClass() {
     document.getElementById('crew_cells').value = minValues.crew_cells;
 }
 
-function renderFreeCellsTable(containerId = 'freeCellsTable') {
+const maxTotalCells = 70;
+function renderFreeCellsTable(containerId = 'freeCellsTableInOverlay') {
     const container = document.getElementById(containerId);
-    if (!container) {
-        console.error(`Container with id "${containerId}" not found.`);
+    if (!container) return;
+
+    const classSelect = document.getElementById('ship_class');
+    const shipClass = classSelect.value;
+
+    if (!shipClass || !TONNS_PER_CLASS[shipClass]) {
+        container.innerHTML = '<p style="text-align: center; color: #d32f2f;">Выберите класс корабля.</p>';
         return;
     }
 
-    // Диапазоны масс (в тоннах) для отображения
-    const massRanges = [500, 1000, 1500, 2000, 3000, 4000, 5000, 6000, 7500, 10000];
+    const step = TONNS_PER_CLASS[shipClass];
 
-    let html = `
-        <h3 style="margin-top: 20px;">Свободные клетки по классам и массе</h3>
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-            <thead>
-                <tr style="background-color: #f2f2f2;">
-                    <th style="padding: 8px; border: 1px solid #ccc;">Масса (т)</th>
-    `;
-
-    // Заголовки: один столбец на класс
-    for (const cls of ['B', 'C', 'D', 'E']) {
-        html += `<th style="padding: 8px; border: 1px solid #ccc;">${cls}</th>`;
+    // Найдём минимальную массу с хотя бы 1 свободной клеткой
+    let minMass = step;
+    let hasMin = false;
+    while (minMass <= maxTotalCells * step) {
+        const totalCells = Math.ceil(minMass / step);
+        const minCells = calculateMinimumModuleCells(shipClass, minMass);
+        if (minCells) {
+            const required = minCells.engine_cells + minCells.fuel_cells +
+                             minCells.systems_cells + minCells.crew_cells;
+            const free = totalCells - required;
+            if (free >= 1) {
+                hasMin = true;
+                break;
+            }
+        }
+        minMass += step;
     }
 
-    html += `
+    if (!hasMin) {
+        container.innerHTML = '<p style="text-align: center; color: #d32f2f;">Невозможно получить даже 1 свободную клетку в допустимом диапазоне.</p>';
+        return;
+    }
+
+    // Соберём все массы от minMass до max (шаг = step, макс. 70 клеток)
+    const rows = [];
+    let currentMass = minMass;
+    while (true) {
+        const totalCells = Math.ceil(currentMass / step);
+        if (totalCells > maxTotalCells) break;
+
+        const minCells = calculateMinimumModuleCells(shipClass, currentMass);
+        if (minCells) {
+            const required = minCells.engine_cells + minCells.fuel_cells +
+                             minCells.systems_cells + minCells.crew_cells;
+            const free = totalCells - required;
+            rows.push({ mass: currentMass, totalCells, free });
+        }
+
+        currentMass += step;
+    }
+
+    if (rows.length === 0) {
+        container.innerHTML = '<p>Нет данных для отображения.</p>';
+        return;
+    }
+
+    // === Формируем ВЕРТИКАЛЬНУЮ таблицу ===
+    let html = `
+        <h3 style="text-align: center; margin-bottom: 15px;">
+            Свободные клетки для ${shipClass}
+        </h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin: 0 auto;">
+            <thead>
+                <tr style="background-color: #f5f5f5;">
+                    <th style="padding: 8px; border: 1px solid #ddd;">Масса (т)</th>
+                    <th style="padding: 8px; border: 1px solid #ddd;">Всего клеток</th>
+                    <th style="padding: 8px; border: 1px solid #ddd;">Свободно</th>
                 </tr>
             </thead>
             <tbody>
     `;
 
-    // Для каждой массы — строка
-    for (const mass of massRanges) {
-        html += `<tr><td style="padding: 6px; border: 1px solid #ccc; text-align: center;">${mass}</td>`;
-
-        // Для каждого класса — ячейка
-        for (const cls of ['B', 'C', 'D', 'E']) {
-            const minCells = calculateMinimumModuleCells(cls, mass);
-            if (!minCells) {
-                html += `<td style="padding: 6px; border: 1px solid #ccc; text-align: center; color: #999;">—</td>`;
-                continue;
-            }
-
-            const totalCells = minCells.totalCells;
-            const requiredCells = minCells.engine_cells
-               + minCells.fuel_cells + minCells.systems_cells + minCells.crew_cells;
-            const freeCells = totalCells - requiredCells;
-
-            let cellStyle = 'padding: 6px; border: 1px solid #ccc; text-align: center;';
-            if (freeCells < 0) {
-                cellStyle += ' background-color: #ffe6e6; color: #d32f2f;'; // перегруз
-            } else if (freeCells === 0) {
-                cellStyle += ' background-color: #fff3e0; color: #e65100;'; // впритык
-            } else {
-                cellStyle += ' background-color: #e8f5e9; color: #2e7d32;'; // свободно
-            }
-
-            html += `<td style="${cellStyle}">${freeCells} / ${totalCells}</td>`;
+    rows.forEach(row => {
+        let cellStyle = 'padding: 8px; border: 1px solid #ddd; text-align: center;';
+        if (row.free <= 0) {
+            cellStyle += ' background-color: #ffebee; color: #c62828;';
+        } else if (row.free <= 2) {
+            cellStyle += ' background-color: #fff8e1; color: #ff8f00;';
+        } else {
+            cellStyle += ' background-color: #e8f5e9; color: #2e7d32;';
         }
 
-        html += `</tr>`;
-    }
+        html += `
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${row.mass}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${row.totalCells}</td>
+                <td style="${cellStyle}">${row.free}</td>
+            </tr>
+        `;
+    });
 
     html += `
             </tbody>
         </table>
-        <p style="font-size: 11px; color: #666; margin-top: 5px;">
-            Формат: <strong>свободно / всего</strong>. Зелёный — есть место под вооружение. Оранжевый — впритык. Красный — невозможно.
+        <p style="font-size: 12px; color: #666; text-align: center; margin-top: 10px;">
+            Свободные клетки = всего − двигатели − топливо − системы − экипаж.<br>
+            Цвет: 🟢 ≥3, 🟠 1–2, 🔴 ≤0.
         </p>
     `;
 
