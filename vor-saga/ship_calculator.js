@@ -770,8 +770,8 @@ function deserializeShipFromReadableJSON(jsonString) {
         });
 
         // Триггерим обновление минимумов и подсчётов
-        // document.getElementById('ship_class').dispatchEvent(new Event('change'));
-        // document.getElementById('ship_mass').dispatchEvent(new Event('input'));
+        document.getElementById('ship_class').dispatchEvent(new Event('change'));
+        document.getElementById('ship_mass').dispatchEvent(new Event('input'));
 
     } catch (e) {
         alert('Ошибка при загрузке данных: неверный формат JSON.');
