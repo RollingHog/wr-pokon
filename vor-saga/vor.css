@@ -69,7 +69,7 @@ legend {
 [for="r_missile_launchers"], .АТОМ { background-color: #00ff22; }    
 [for="ion_shield_generators"], .ЗАЩ { background-color: #cc99ff; }          /* фиолетовый */
 [for="plasma_mirrors"], .ЗЕРК { background-color: #ffff00; }       /* желтый */
-[for="dock_bays"] { background-color: #ff99cc; }         /* розовый */
+[for="dock_bays"], .ДОК { background-color: deeppink; }         /* розовый */
 
 
 
