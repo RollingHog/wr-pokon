@@ -9,6 +9,7 @@ const COLORS = {
   ЗАЩ: '#CC99FF',
   АТОМ: '#CCFF33',
   ЗЕРК: '#CCFF33',
+  ДОК: '',
   erase: '#ffffff' // цвет "очистка" (белый)
 };
 
@@ -114,6 +115,7 @@ function initCounters() {
         ЗАЩ: 'ion_shield_generators',
         АТОМ: 'r_missile_launchers',
         ЗЕРК: 'plasma_mirrors',
+        ДОК: 'dock_bays',
         // erase не участвует
       };
 
@@ -146,6 +148,7 @@ const CELL_TYPE_TO_CODE = {
   'ЗАЩ': 'I',  // Ion shield
   'АТОМ': 'R', // R-charge launcher (ракеты/торпеды)
   'ЗЕРК': 'M', // Mirror
+  'ДОК':'D',
   'none': '0', // Пустая клетка
 };
 
@@ -159,6 +162,7 @@ const CODE_TO_CELL_TYPE = {
   'I': 'ЗАЩ',
   'R': 'АТОМ',
   'M': 'ЗЕРК',
+  'D': 'ДОК',
   '0': 'none',
 };
 
