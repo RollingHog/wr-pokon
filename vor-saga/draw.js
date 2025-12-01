@@ -9,7 +9,7 @@ const COLORS = {
   ЗАЩ: '#CC99FF',
   АТОМ: '#CCFF33',
   ЗЕРК: '#CCFF33',
-  ДОК: '',
+  ДОК: 'deeppink',
   erase: '#ffffff' // цвет "очистка" (белый)
 };
 
