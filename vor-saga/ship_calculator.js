@@ -624,15 +624,36 @@ function renderFreeCellsTable(containerId = 'freeCellsTableInOverlay') {
             <tbody>
     `;
 
+    const seenFreeValues = new Set(); // <-- отслеживаем первые вхождения
+
     rows.forEach(row => {
-      // padding: 8px; border: 1px solid #ddd; 
         let cellStyle = 'text-align: center;';
+
+        // Определяем базовый цвет по значению free
+        let baseBgColor = '#e8f5e9'; // зелёный по умолчанию
+        let textColor = '#2e7d32';
+
         if (row.free <= 0) {
-            cellStyle += ' background-color: #ffebee; color: #c62828;';
+            baseBgColor = '#ffebee';
+            textColor = '#c62828';
         } else if (row.free <= 2) {
-            cellStyle += ' background-color: #fff8e1; color: #ff8f00;';
+            baseBgColor = '#fff8e1';
+            textColor = '#ff8f00';
+        }
+
+        // Проверяем, первый ли это случай такого количества свободных клеток
+        if (!seenFreeValues.has(row.free)) {
+            seenFreeValues.add(row.free);
+            // Подсвечиваем ОРАНЖЕВЫМ первое вхождение ЛЮБОГО значения free >= 1
+            if (row.free >= 1) {
+                cellStyle += ' background-color: #ffcc80; color: #e65100; font-weight: bold;';
+            } else {
+                // Для free <= 0 оставляем красный, но можно тоже выделить — по желанию
+                cellStyle += ` background-color: ${baseBgColor}; color: ${textColor};`;
+            }
         } else {
-            cellStyle += ' background-color: #e8f5e9; color: #2e7d32;';
+            // Не первое вхождение — обычный стиль
+            cellStyle += ` background-color: ${baseBgColor}; color: ${textColor};`;
         }
 
         html += `
