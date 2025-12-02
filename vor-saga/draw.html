@@ -12,7 +12,7 @@
 
     table {
       border-collapse: collapse;
-      margin: 20px auto;
+      margin: 12px auto;
     }
 
     td {
@@ -64,8 +64,8 @@
 
   <div class="controls">
     <button id="resetBtn">Сбросить все</button>
-  <button onclick="copyGridToClipboard()">Скопировать в буфер обмена</button>
-  <button onclick="pasteGridFromClipboard()">Прочитать из буфера обмена</button>
+  <button onclick="copyGridToClipboard()">Скопировать</button>
+  <button onclick="pasteGridFromClipboard()">Прочитать</button>
   </div>
 
   <div class="palette" id="palette">
@@ -76,11 +76,15 @@
     <!-- Ячейки будут созданы через JavaScript -->
   </table>
 
+  <div id="shipData" style="text-align: center; padding-bottom: 8px;"></div>
   <div id="counters">
     <!-- Счётчики будут добавлены через JavaScript -->
   </div>
 
+
   <script src="./draw.js"></script>
+
+  <br><br><a href="./index.html" rel=opener>Главная</a>
 
 </body>
 

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Парсер броска КБ</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 10px; }
+        textarea, button { width: 100%; padding: 10px; font-size: 14px; }
+        button { background: #2196F3; color: white; border: none; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #1976D2; }
+        .result { margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 6px; }
+        .log { font-family: monospace; font-size: 14px; background: #eee; padding: 10px; margin: 10px 0; overflow-x: auto; white-space: pre-wrap; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #e0e0e0; }
+    </style>
+</head>
+<body>
+
+<h2>Парсер броска КБ</h2>
+<p>Вставьте сюда бросок в формате:</p>
+<pre style="background: #f0f0f0; padding: 8px; font-size: 13px;">
+14d6: (5 + 2 + 3 + ...) = 48
+14d100: (40 + 57 + 85 + ...) = 660
+</pre>
+
+<textarea id="rollInput" rows="4" placeholder="Например:
+14d6: (5 + 2 + 3 + 2 + 2 + 5 + 1 + 6 + 3 + 4 + 3 + 5 + 6 + 1) = 48
+14d100: (40 + 57 + 85 + 83 + 73 + 41 + 36 + 39 + 16 + 33 + 21 + 66 + 3 + 67) = 660"></textarea>
+
+<button onclick="parseRoll()">Рассчитать ресурсы</button>
+
+<div id="result" class="result" style="display: none;"></div>
+
+<br><br><a href="./index.html" rel=opener>Главная</a>
+
+<script>
+    // Справочник: диапазоны d100 → ресурс
+    const RESOURCE_RANGES = [
+        { min: 2,  max: 9,  name: "ГРАВ", desc: "гравидеструкторы" },
+        { min: 10, max: 37, name: "ДВИГ", desc: "двигатели" },
+        { min: 38, max: 46, name: "АТОМ", desc: "ядерное оружие" },
+        { min: 47, max: 63, name: "ЭКИП", desc: "экипаж" },
+        { min: 64, max: 70, name: "ЗАЩ", desc: "защита" },
+        { min: 71, max: 87, name: "КОМП", desc: "электроника" },
+        { min: 88, max: 99, name: "ПЛАЗ", desc: "плазмаганы" }
+    ];
+
+    function getResourceName(d100) {
+        if (d100 === 1) return "КРИТ. ПРОВАЛ";
+        if (d100 === 100) return "КРИТ. УСПЕХ";
+        for (const r of RESOURCE_RANGES) {
+            if (d100 >= r.min && d100 <= r.max) return r.name;
+        }
+        return "??";
+    }
+
+    function parseRoll() {
+        const input = document.getElementById('rollInput').value.trim();
+        if (!input) {
+            alert("Введите бросок!");
+            return;
+        }
+
+        const lines = input.split('\n').map(line => line.trim()).filter(line => line);
+
+        if (lines.length < 2) {
+            alert("Нужны две строки: d6 и d100");
+            return;
+        }
+
+        // Парсинг d6
+        const d6Line = lines[0];
+        const d6Match = d6Line.match(/\(([^)]+)\)/);
+        if (!d6Match) {
+            alert("Не найдены значения d6 в скобках");
+            return;
+        }
+        const d6Values = d6Match[1].split('+').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+        if (d6Values.length === 0) {
+            alert("Неверный формат d6");
+            return;
+        }
+
+        // Парсинг d100
+        const d100Line = lines[1];
+        const d100Match = d100Line.match(/\(([^)]+)\)/);
+        if (!d100Match) {
+            alert("Не найдены значения d100 в скобках");
+            return;
+        }
+        const d100Values = d100Match[1].split('+').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+        if (d100Values.length === 0) {
+            alert("Неверный формат d100");
+            return;
+        }
+
+        if (d6Values.length !== d100Values.length) {
+            alert(`Несовпадение количества бросков: d6 = ${d6Values.length}, d100 = ${d100Values.length}`);
+            return;
+        }
+
+        // Подсчёт ресурсов
+        const resources = {
+            "ГРАВ": 0, "ДВИГ": 0, "АТОМ": 0,
+            "ЭКИП": 0, "ЗАЩ": 0, "КОМП": 0, "ПЛАЗ": 0,
+            "КРИТ. ПРОВАЛ": 0, "КРИТ. УСПЕХ": 0
+        };
+
+        for (let i = 0; i < d6Values.length; i++) {
+            const d6 = d6Values[i];
+            const d100 = d100Values[i];
+            const res = getResourceName(d100);
+            resources[res] += d6;
+        }
+
+        // Вывод
+        let html = `<h3>Результат парсинга (${d6Values.length} КБ):</h3>`;
+
+        html += `<div class="log"><strong>d6:</strong> ${d6Values.join(" + ")} = <strong>${d6Values.reduce((a,b)=>a+b,0)}</strong></div>`;
+        html += `<div class="log"><strong>d100:</strong> ${d100Values.join(" + ")} = <strong>${d100Values.reduce((a,b)=>a+b,0)}</strong></div>`;
+
+        html += `<h4>Полученные ресурсы:</h4><table><tr><th>Ресурс</th><th>Кол-во фишек</th></tr>`;
+
+        const mainOrder = ["ГРАВ", "ДВИГ", "АТОМ", "ЭКИП", "ЗАЩ", "КОМП", "ПЛАЗ"];
+        for (const key of mainOrder) {
+            if (resources[key] > 0) {
+                const desc = RESOURCE_RANGES.find(r => r.name === key)?.desc || key;
+                html += `<tr><td>${key} (${desc})</td><td>${resources[key]}</td></tr>`;
+            }
+        }
+
+        if (resources["КРИТ. ПРОВАЛ"] > 0) {
+            html += `<tr><td style="color: red;">КРИТ. ПРОВАЛ</td><td>${resources["КРИТ. ПРОВАЛ"]}</td></tr>`;
+        }
+        if (resources["КРИТ. УСПЕХ"] > 0) {
+            html += `<tr><td style="color: green;">КРИТ. УСПЕХ</td><td>${resources["КРИТ. УСПЕХ"]}</td></tr>`;
+        }
+
+        html += `</table>`;
+        document.getElementById('result').innerHTML = html;
+        document.getElementById('result').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

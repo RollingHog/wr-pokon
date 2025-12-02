@@ -131,6 +131,11 @@ function initCounters() {
           }
         }
       }
+
+      const classEl = openerDoc.getElementById('ship_class')
+      const shipClass = classEl.options[classEl.selectedIndex].text
+      
+      document.getElementById('shipData').innerText = `${shipClass} ${openerDoc.getElementById('ship_mass').value} т.`
     } catch (e) {
       console.warn("Не удалось получить данные из родительского окна:", e);
     }
