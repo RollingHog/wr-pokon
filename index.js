@@ -364,7 +364,7 @@ function imageObjByObjName(filename) {
 function onCustomImageLoad(filename, src) {
   const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
 
-  const emojiName = EMOJI_IMAGES[filename]
+  const emojiName = typeof EMOJI_IMAGES !== 'undefined' ? EMOJI_IMAGES[filename] : null
 
   if(!emojiName) {
     const imageObj = new Image();
@@ -551,7 +551,7 @@ function drawCanvas() {
 }
 
 const fogCheckbox = document.getElementById('ch_fog')
-const visionRadius = 160
+const visionRadius = SETTINGS.VISION_RADIUS || 160
 
 const lvlTextSize = 20
 
@@ -648,6 +648,7 @@ const draw = {
       bgFigure = SETTINGS.DEFAULT_FIGURE_BG
     }
 
+    ctx.globalAlpha = 0.7;
     switch (bgFigure) {
       case 'circle':
         ctx.beginPath();
@@ -669,9 +670,10 @@ const draw = {
         alert('wtf')
         break;
     }
+    ctx.globalAlpha = 1;
 
     let img 
-    if(EMOJI_IMAGES[el.name]) {
+    if(typeof EMOJI_IMAGES !== 'undefined' && EMOJI_IMAGES[el.name]) {
       const emojiFontSize = (el.width * 0.7).toString(10)
       ctx.font = `bold ${emojiFontSize}px "Noto Color Emoji"`;
       ctx.textAlign = 'center';
@@ -1693,7 +1695,7 @@ const TechUtils = {
         !(line.startsWith('Здание:') || line.startsWith('Юнит:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?'))
       )
       .map( str => [str, null])
-    console.log(res)
+    // console.log(res)
     return res
   }
 }
