@@ -19,7 +19,7 @@ const SETTINGS = {
 
 const MAP_PATH = 'underdark/lair.png'
 
-const MAX_UNIT_HP = 10
+const MAX_UNIT_HP = 1
 
 // may be left empty, then _pop_ wont be applied
 const POP_PROP = 'Население'
@@ -40,6 +40,7 @@ const DEFAULT = {
   noGrave: [
   ],
   noUpkeep: [
+    "Жители",
   ],
 }
 
@@ -50,6 +51,9 @@ const EMOJI_IMAGES = {
   'Деревня': '🏘️',
   'Крепость': '🏯',
   'Солдат': '⚔️',
+
+  /** монстры */
+  "Василиск": "🐉",
 }
 
 const WEATHER_EFF = {}
@@ -57,8 +61,8 @@ const WEATHER_EFF = {}
 const CATEGORY_PRICES = {
   UNITS: {
     _default_: [
-      ['Население', 3],
-      ['Железо', 1],
+      ['Еда', 2],
+      ['Ремесло', 1],
     ],
   },
   BUILDINGS: {
@@ -74,7 +78,6 @@ const OBJ_CATEGORIES = {
     ],
     _default_: [
       'Солдат',
-      'Щитовик',
       'Жители',
     ],
   },
@@ -127,7 +130,7 @@ const EFFECT_LISTS = {
   ],
 }
 
-const UNIT_UPKEEP = 3
+const UNIT_UPKEEP = 1
 const UNDO_POP_USAGE = ['Рабочие', 1]
 const DICT_COMMON = {
   _upkeep_: {
@@ -143,20 +146,21 @@ const DICT_COMMON = {
   ],
   _unit_: [
     [KW.ATK, 0],
-    // [KW.DEF, 0],
   ],
   _pop_: [
     ["Еда", -0.5],
   ],
   [KW.CAPITAL]:
     [
-      [POP_PROP, '+ЛВЛ'],
-      ["Еда", 25],
-      ["Дерево", 3],
+      // [POP_PROP, '+ЛВЛ'],
+      ["Еда", 2],
+      ["Ремесло", 2],
     ],
 
-  Стена:
+  Жители:
     [
+      ["Еда", -0.5],
+      ['Рабочие', 1],
     ],
 
   //////////////// units
