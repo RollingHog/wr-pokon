@@ -18,6 +18,7 @@ CATEGORY_PRICES OBJ_CATEGORIES
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
 TECH_EFFECTS 
+onEndTurnCb
 */
 
 /// <reference path="./bnb/userParams.js"/>
@@ -356,10 +357,15 @@ function onEndTurn() {
     }
   });
 
+  if(typeof onEndTurnCb === 'function') {
+    onEndTurnCb()
+  }
+
   // eslint-disable-next-line no-global-assign
   CURRENT_TURN++;
   drawCanvas()
   drawTurnDisplay();
+  drawInfoPanel(getShapeColor())
 }
 
 function imageObjByObjName(filename) {
@@ -1465,6 +1471,10 @@ function colorFromUsername(username) {
 
 function playerByColor(colorStr) {
   return Array.from(document.querySelectorAll('.player-btn')).find(el => el.dataset.color === colorStr).textContent
+}
+
+function listPlayers() {
+  return Array.from(document.querySelectorAll('.player-btn')).map(el => el.textContent)
 }
 
 let isAttack = false

@@ -4,6 +4,7 @@ CATEGORY_PRICES OBJ_CATEGORIES
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
 TECH_EFFECTS
+onEndTurnCb
 */
 
 /// <reference path="../../src/keywords.js"/>
@@ -153,7 +154,6 @@ const DICT_COMMON = {
   ],
   [KW.CAPITAL]:
     [
-      // [POP_PROP, '+ЛВЛ'],
       ["Еда", 2],
       ["Ремесло", 2],
     ],
@@ -172,5 +172,22 @@ const DICT_COMMON = {
     [KW.AP, 2],
   ],
 };
+
+const onEndTurnCb = () => {
+  for(let player of listPlayers()) {
+    if(NPCPlayers.includes(player)) continue
+    const sum = userEffectsObj.sumEffects(player)
+    for(let [effName, v] of Object.entries(sum)) {
+      if(EFFECT_LISTS.resources.includes(effName)) {
+        if(typeof USER_RESOURCES[player][effName] !== 'number') {
+          USER_RESOURCES[player][effName] = 0
+        }
+        USER_RESOURCES[player][effName] += +v
+      }
+
+    }
+    console.log()
+  }
+}
 
 const TECH_EFFECTS = {}
