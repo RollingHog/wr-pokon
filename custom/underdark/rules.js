@@ -84,6 +84,7 @@ const OBJ_CATEGORIES = {
   BUILDINGS: {
     _none_: [
       // '_build_slot',
+      KW.GRAVE_UNIT,
       KW.WRECK_UNIT,
       // '_unknown_bonus',
     ],
