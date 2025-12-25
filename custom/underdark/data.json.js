@@ -1,8 +1,9 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 2,
-  "canvasOffsetX": -1261.6058975334959,
-  "canvasOffsetY": -332.7942903342906
+  "scale": 0.5648590729620003,
+  "canvasOffsetX": 13.319147519072772,
+  "canvasOffsetY": 61.29540247200393,
+  "shapeColor": "#ff0000"
 };
 DEFAULT_DATA=[
   {

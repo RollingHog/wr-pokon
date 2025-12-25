@@ -455,7 +455,10 @@ function loadDefaultData() {
   }
   if(typeof OTHER_SAVE_DATA !== 'undefined') {
       const oth = OTHER_SAVE_DATA
-      scale = oth.scale 
+      scale = oth.scale
+      if(oth.shapeColor) {
+        setTimeout(_=>setShapeColor(oth.shapeColor), 0)
+      }
       // canvasOffsetX = oth.canvasOffsetX 
       // canvasOffsetY = oth.canvasOffsetY 
   }
@@ -1855,7 +1858,7 @@ function saveMap() {
 
 function saveGame() {
   const otherData = {
-    scale, canvasOffsetX, canvasOffsetY,
+    scale, canvasOffsetX, canvasOffsetY, shapeColor: getShapeColor()
   }
   saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
 OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
