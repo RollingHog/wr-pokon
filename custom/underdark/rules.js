@@ -81,6 +81,9 @@ const OBJ_CATEGORIES = {
       'Солдат',
       'Жители',
     ],
+    Монстр: [
+      "Василиск"
+    ],
   },
   BUILDINGS: {
     _none_: [
@@ -165,12 +168,13 @@ const DICT_COMMON = {
     ],
 
   //////////////// units
-
+  
   Пехота: [
     [KW.ATK, 2],
-    // [KW.DEF, 2],
     [KW.AP, 2],
   ],
+
+  //////////////// monsters
 };
 
 const onEndTurnCb = () => {
@@ -186,7 +190,6 @@ const onEndTurnCb = () => {
       }
 
     }
-    console.log()
   }
 }
 
