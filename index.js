@@ -3,7 +3,7 @@
 
 /// <reference path="./data/data.json.js"/>
 /* global
-CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA
+CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA USER_RESOURCES
 */
 
 /// <reference path="./src/keywords.js"/>
@@ -247,11 +247,12 @@ function setShapeColor(color) {
 
 function drawInfoPanel(color) {
   if(!color) return
-  const effs = userEffectsObj.sumEffects(playerByColor(color))
+  const player = playerByColor(color)
+  const effs = userEffectsObj.sumEffects(player)
   // TODO add printing tech effects
-  info_panel.querySelector('h3').innerText = playerByColor(color)
+  info_panel.querySelector('h3').innerText = player
   info_panel.querySelector('h3').style.color = color
-  info_panel_body.innerText = userEffectsObj.groupBySections(effs).toPrettyList()
+  info_panel_body.innerText = userEffectsObj.groupBySections(effs).toPrettyList(player)
 }
 
 function addListeners() {
@@ -1335,6 +1336,7 @@ const userEffectsObj = {
     return Object.entries(effectsDict)
   },
   groupBySections(obj) {
+    /**@type {Record<keyof EFFECT_LISTS | '_unique_', [string, number][]>} */
     const result = {};
 
     // Инициализируем все секции пустыми массивами
@@ -1371,12 +1373,17 @@ const userEffectsObj = {
     return {
       result,
       toObj() { return result },
-      toPrettyList() {
+      toPrettyList(playerName = null) {
         delete result.local
+        const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {}
         return Object.entries(result)
-          .map(([section, eff]) =>
-            (`==${section}==\n ${eff.map((arr) => arr.join(': ')).join('\n')}\n`)
-          ).join('')
+          .map(([section, eff]) => {
+            if(section === 'resources') {
+              const effList = eff.map((arr) => `${arr[0]}: ${uRes[arr[0]] || '?'} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )`)
+              return `==${section}==\n ${effList.join('\n')}\n`
+            }
+            return `==${section}==\n ${eff.map((arr) => arr.join(': ')).join('\n')}\n`
+          }).join('')
       }
     };
   },
@@ -1445,7 +1452,7 @@ const userEffectsObj = {
     }
     console.log(effectsDict)
     alert(`Игрок ${username}:\n`
-      + (this.groupBySections(effectsDict).toPrettyList())
+      + (userEffectsObj.groupBySections(effectsDict).toPrettyList())
       + '\n' + warns
     // + JSON.stringify(, 0, 2)
       )
@@ -1862,6 +1869,7 @@ function saveGame() {
   }
   saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
 OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
+USER_RESOURCES=${JSON.stringify(typeof USER_RESOURCES !== 'undefined' ? USER_RESOURCES : {}, 0, 2)};
 DEFAULT_DATA=` 
     + JSON.stringify(elements.filter(e => e.y), 0, 2)
   )
