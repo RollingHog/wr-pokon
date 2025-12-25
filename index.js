@@ -1107,99 +1107,72 @@ function cloneShape() {
   placeShape()
 }
 
-/**
- * Внутренняя чистая(почти) функция: создаёт и размещает фигуру.
- * Зависит от графических параметров (canvas, scale), но не от DOM.
- *
- * @param {string} shapeType - тип фигуры ('square', 'line', 'custom')
- * @param {string} color - цвет
- * @param {number} size - размер
- * @param {Object|null} customShape - кастомная форма (с .src, .filename)
- * @param {boolean} spawnNearMenu - спавнить рядом с меню?
- * @param {number} maxHp - максимальное HP
- */
-function placeShapeInternal({
-  shapeType,
-  color,
-  size,
-  customShape = null,
-  spawnNearMenu = false,
-  maxHp = MAX_UNIT_HP
-}) {
-  // --- 1. Вычисляем размеры ---
+function placeShape(spawnNearMenu = false) {
+  if (currentMapIndex === -1) {
+      // console.warn('Сначала загрузите карту');
+      return;
+  }
+
+  const color = document.getElementById('shape-color').value;
+  const size = parseInt(document.getElementById('shape-size').value);
+  
   let width = size;
   let height = size;
   let src = null;
-  let name = null;
 
-  if (shapeType === 'line') {
-    height = 2;
-    width = size * 2;
-  } else if (shapeType === 'custom' && customShape) {
-    src = customShape.src;
-    name = customShape.filename || customShape.name || null;
-
-    const ratio = customShape.ratio ||
-                  (customShape.width && customShape.height ? customShape.width / customShape.height : 1);
-
-    width = size;
-    height = parseFloat((size / ratio).toFixed(2));
+  let activePreview = {}
+  
+  if (activeShapeType === 'line') {
+      height = 2;
+      width = size * 2;
+  } else if (activeShapeType === 'custom') {
+      activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
+      if (activePreview) {
+          const shapeId = activePreview.dataset.shapeId;
+          const customShape = customShapes.find(s => s.id === shapeId);
+          if (customShape) {
+              src = customShape.src;
+              // Сохраняем пропорции изображения
+              const img = new Image();
+              img.src = src;
+              const ratio = img.width / img.height;
+              if(!ratio) {
+                // TODO there is some strange bug here
+                console.warn('ratio bad!!!', customShape, img);
+              }
+              width = size;
+              height = +((size / ratio).toFixed(2));
+              // FIXME ratio checker
+          }
+      }
   }
-
-  // --- 2. Вычисляем логические координаты x, y ---
-  const isMenu = typeof spawnNearMenu === 'boolean' && spawnNearMenu;
+  
+  const isMenu = typeof spawnNearMenu === 'boolean' && spawnNearMenu
   const x = isMenu
-    ? (-canvasOffsetX + canvas.width * 0.05 - width * scale / 2) / scale
-    : (-canvasOffsetX + canvas.width / 2 - width * scale / 2) / scale;
+    ? (-canvasOffsetX + canvas.width * 0.05 - width*scale/2) / scale
+    : (-canvasOffsetX + canvas.width/2 - width*scale/2) / scale
 
   const y = isMenu
-    ? (-canvasOffsetY + canvas.height / 5 - height * scale / 2) / scale
-    : (-canvasOffsetY + canvas.height / 2 - height * scale / 2) / scale;
+    ? (-canvasOffsetY + canvas.height/5 - height*scale/2) / scale
+    : (-canvasOffsetY + canvas.height/2 - height*scale/2) / scale
 
-  // --- 3. Создаём объект shape ---
   const shape = {
-    type: 'shape',
-    name: name,
-    shape: shapeType,
-    color: color,
-    x,
-    y,
-    width,
-    height,
-    src,
-    curr_hp: maxHp,
-    disabled: false,
-    endedTurn: false
+      type: 'shape',
+      name: activePreview.dataset.filename,
+      shape: activeShapeType,
+      color: color,
+      x,
+      y,
+      width: width,
+      height: height,
+      src: src,
+      curr_hp: MAX_UNIT_HP,
+      disabled: false,
+      endedTurn: false,
   };
-
+  
   elements.push(shape);
-  draw.element(shape);
-}
-
-function placeShape(spawnNearMenu = false) {
-  if (currentMapIndex === -1) return;
-
-  // --- Сбор данных из DOM ---
-  const color = getShapeColor()
-  const size = parseInt(document.getElementById('shape-size').value, 10);
-
-  let customShape = null;
-  if (activeShapeType === 'custom') {
-    const activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
-    if (activePreview) {
-      const shapeId = activePreview.dataset.shapeId;
-      customShape = customShapes.find(s => s.id === shapeId);
-    }
-  }
-
-  placeShapeInternal({
-    shapeType: activeShapeType,
-    color,
-    size,
-    customShape,
-    spawnNearMenu,
-    maxHp: MAX_UNIT_HP
-  });
+  draw.element(shape)
 }
 
 function placeText() {
