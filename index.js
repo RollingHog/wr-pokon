@@ -618,7 +618,7 @@ const draw = {
 
     // Для каждого юнита рисуем круг видимости (в локальных координатах)
     visibleUnits.forEach(el => {
-      const isCapital = el.name === KW.CAPITAL
+      const isCapital = el.name === KW.CAPITAL && SETTINGS.CAPITAL_SPECIAL_VISION
       const radius = isCapital 
         ? CURRENT_TURN * visionRadius * 0.4 * scale
         : visionRadius * scale;
@@ -701,7 +701,7 @@ const draw = {
       ctx.drawImage(img, x, y, el.width, el.height);
     }
     ///
-    if ((el.curr_hp < MAX_UNIT_HP) && !isNoHealth(el)) {
+    if ((el.curr_hp !== MAX_UNIT_HP) && !isNoHealth(el)) {
       draw.healthBar(ctx, x, y + el.height, el.width, el.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
     }
     if (el.disabled) {
@@ -763,7 +763,9 @@ const draw = {
 
     // Цвета
     const backgroundColor = '#333333';
-    const healthColor = healthPercent > 0.6 ? '#4CAF50' :  // Зеленый
+    const healthColor = 
+      healthPercent > 1 ? 'mediumspringgreen' :  // overheal
+      healthPercent > 0.6 ? '#4CAF50' :  // Зеленый
       healthPercent > 0.3 ? '#FFC107' :  // Желтый
         '#F44336';                         // Красный
 
@@ -1506,7 +1508,7 @@ function offsetObjLvl(obj, amount) {
 function offsetUnitHp(obj, amount) {
   const curr = obj.curr_hp
   let res = curr + amount
-  if (res > MAX_UNIT_HP) {
+  if (amount > 0 && res > MAX_UNIT_HP) {
     res = MAX_UNIT_HP
   }
   if (res / MAX_UNIT_HP < 0.3) {

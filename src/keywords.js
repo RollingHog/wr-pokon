@@ -8,6 +8,9 @@ const KW = /** @type {const} */ ({
   
   CAPITAL: 'Столица',
 
+  COST: '_cost_',
+  DROP: '_drop_',
+
   ATK: "Атака",
   DEF: 'Защита',
   /** action points */
