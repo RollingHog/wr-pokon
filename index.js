@@ -372,6 +372,44 @@ function imageObjByObjName(filename) {
   return customShapes.find(({ name }) => name === filename).imageObj
 }
 
+function getUnitPrice(filename) {
+  const typeKey = isUnit({ name: filename }) ? 'UNITS' : 'BUILDINGS'
+  if (OBJ_CATEGORIES[typeKey]._none_.includes(filename)) return null
+
+  for (let category in OBJ_CATEGORIES[typeKey]) {
+    const objCost = DICT_COMMON[filename]?.find( ([k, _]) => k === KW.COST )
+    if(objCost) return objCost[1]
+    if (OBJ_CATEGORIES[typeKey][category].includes(filename)) {
+      const res = CATEGORY_PRICES[typeKey][category]
+      if(!res) console.warn(`Неверная категория ${category} `)
+      return res
+    }
+  }
+  return CATEGORY_PRICES[typeKey]._default_
+}
+
+function getUnitDescription(filename) {
+  const effArrToStr = (arr) => arr
+    .filter(e => ![KW.COST].includes(e[0]))
+    .map(e => e.join(': ')).join('\n')
+  let costStr = ''
+
+  if (!DEFAULT.noHealth.includes(filename)) {
+    costStr = '\nЦЕНА:\n'
+    let categoryPrice = getUnitPrice(filename)
+
+    if (categoryPrice) {
+      costStr += effArrToStr(categoryPrice)
+    }
+  }
+
+  const effStr = typeof DICT_COMMON[filename] !== 'undefined'
+    ? '\n\nЭФФЕКТЫ:\n' + effArrToStr(DICT_COMMON[filename])
+    : ''
+
+  return filename + costStr + effStr
+}
+
 function onCustomImageLoad(filename, src) {
   const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
 
@@ -403,31 +441,8 @@ function onCustomImageLoad(filename, src) {
   preview.dataset.shapeId = shapeId;
   preview.dataset.filename = filename;
 
-  const effArrToStr = (arr) => arr.map(e => e.join(': ')).join('\n')
-  let costStr = ''
   
-  if(!DEFAULT.noHealth.includes(filename)) {
-    costStr = '\nЦЕНА:\n'
-    let categoryPrice = null
-    const typeKey = isUnit({name: filename}) ? 'UNITS' : 'BUILDINGS'
-    if(!OBJ_CATEGORIES[typeKey]._none_.includes(filename)) {
-      for(let category in OBJ_CATEGORIES[typeKey]) {
-        if(OBJ_CATEGORIES[typeKey][category].includes(filename)) {
-          categoryPrice = CATEGORY_PRICES[typeKey][category]
-        }
-      }
-      if(!categoryPrice) {
-        categoryPrice = CATEGORY_PRICES[typeKey]._default_
-      }
-      costStr += effArrToStr(categoryPrice)
-    }
-  } 
-
-  const effStr = typeof DICT_COMMON[filename] !== 'undefined'
-    ? '\n\nЭФФЕКТЫ:\n' + effArrToStr(DICT_COMMON[filename])
-    : ''
-
-  preview.title = filename + costStr + effStr
+  preview.title = getUnitDescription(filename)
     
   preview.addEventListener('click', function onShapeSelect() {
       activeShapeType = 'custom';
@@ -1322,6 +1337,7 @@ const userEffectsObj = {
       if (!el) return el
       const [k, v] = el
       if (!k) return el
+      if(k.startsWith('_')) return null
       if (typeof v === 'number' || !isNaN(+v)) return [k, v]
       if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || 1]
       if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2 * +obj.lvl || 1]
