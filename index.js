@@ -54,6 +54,10 @@ let isDraggingElement = false;
 let dragStartX, dragStartY;
 let canvasOffsetX = 0, canvasOffsetY = 0;
 let tempOffsetX = 0, tempOffsetY = 0;
+let mousePos = {
+  x:0, 
+  y:0
+}
 /** 
 * @type {{
 *     type: 'shape',
@@ -1026,6 +1030,10 @@ const selection = {
 }
 
 function handleMouseMove(e) {
+  mousePos = {
+    x: e.clientX, 
+    y: e.clientY
+  }
   if (!isDragging) return;
   e.preventDefault();
   updateDrag(e.clientX, e.clientY);
@@ -1176,12 +1184,12 @@ function placeShape(spawnNearMenu = false) {
   
   const isMenu = typeof spawnNearMenu === 'boolean' && spawnNearMenu
   const x = isMenu
-    ? (-canvasOffsetX + canvas.width * 0.05 - width*scale/2) / scale
-    : (-canvasOffsetX + canvas.width/2 - width*scale/2) / scale
+    ? (-canvasOffsetX + canvas.width * 0.05 - width * scale / 2) / scale
+    : (mousePos.x - canvas.getBoundingClientRect().left - canvasOffsetX - width * scale / 2) / scale
 
   const y = isMenu
-    ? (-canvasOffsetY + canvas.height/5 - height*scale/2) / scale
-    : (-canvasOffsetY + canvas.height/2 - height*scale/2) / scale
+    ? (-canvasOffsetY + canvas.height / 5 - height * scale / 2) / scale
+    : (mousePos.y - canvas.getBoundingClientRect().top - canvasOffsetY - height * scale / 2) / scale
 
   const shape = {
       type: 'shape',
