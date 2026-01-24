@@ -1208,6 +1208,7 @@ function placeShape(spawnNearMenu = false) {
   
   elements.push(shape);
   draw.element(shape)
+  draw.fogOfWar()
 }
 
 function placeText() {
