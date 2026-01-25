@@ -588,6 +588,8 @@ const visionRadius = SETTINGS.VISION_RADIUS || 160
 
 const lvlTextSize = 20
 
+const UNIT_SIZE = 38
+
 const draw = {
 
   // lol nope, it LAGS
@@ -644,7 +646,7 @@ const draw = {
       const x = el.x * scale + canvasOffsetX;
       const y = el.y * scale + canvasOffsetY;
 
-      const delta = 38 / 2 * scale;
+      const delta = UNIT_SIZE / 2 * scale;
       localCtx.clearRect(x - radius + delta, y - radius + delta, radius * 2, radius * 2);
     });
 
@@ -1088,11 +1090,13 @@ function endDrag() {
   isDraggingElement = false;
 }
 
+const MIN_SCALE = 0.1 // 0.25
+
 function handleWheel(e) {
   e.preventDefault();
   
   const delta = e.deltaY > 0 ? 0.9 : 1.1;
-  const newScale = Math.min(Math.max(scale * delta, 0.25), 2);
+  const newScale = Math.min(Math.max(scale * delta, MIN_SCALE), 2);
   
   if (newScale !== scale) {
       const rect = canvas.getBoundingClientRect();
