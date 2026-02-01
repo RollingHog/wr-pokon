@@ -1520,6 +1520,7 @@ const userEffectsObj = {
     )
       .flat()
       .filter(e => e)
+
     let effectsDict = {
       unit_count: userUnits.length,
       unit_to_upkeep: userUnits.filter(
@@ -1529,6 +1530,11 @@ const userEffectsObj = {
       build_to_upkeep: userBuildings.filter(
         obj => !DEFAULT.noUpkeep.includes(obj.name)
       ).length,
+    }
+
+    // list resources even if income is zero
+    for(let resName of EFFECT_LISTS.resources) {
+      effectsDict[resName] = 0
     }
     //       
     effectsDict = Object.assign(effectsDict, userEffectsObj.sumEffArr(userEffects))
