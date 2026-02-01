@@ -1359,28 +1359,20 @@ const userEffectsObj = {
   getCommonEffects(objName) {
 
   },
-  /**
-   * @param {elements[0]} obj 
-   */
-  getCachedEffects(obj) {
+
+  //getStaticEffects
+
+  getRawEffectsList(obj) {
     const username = playerByColor(obj.color)
 
-    // // TODO cache doesn't save lvl data
-    // const cacheKey = `${objName}-${username}`;
-    // if (this.effCache[cacheKey]) {
-    //   return Object.entries(this.effCache[cacheKey]);
-    // }
-
-    // const obj = {name: objName}
     const typeKey = isBuilding(obj) ? '_building_' : '_unit_'
     let list = [].concat([
-        DICT_COMMON?.[typeKey],
-        DICT_USER[username]?.[typeKey],
-        DICT_COMMON?.[obj.name],
-        DICT_USER[username]?.[obj.name],
-      ]
-    )
-    
+      DICT_COMMON?.[typeKey],
+      DICT_USER[username]?.[typeKey],
+      DICT_COMMON?.[obj.name],
+      DICT_USER[username]?.[obj.name],
+    ])
+
     if (
       !DEFAULT.noUpkeep.includes(obj.name)
       && !isNoHealth(obj)
@@ -1390,8 +1382,24 @@ const userEffectsObj = {
         DICT_COMMON?._upkeep_?.[typeKey],
       ])
     }
-    // TODO
-    // console.log(obj.name, JSON.stringify(list))
+
+    return list
+  },
+  /**
+   * @param {elements[0]} obj 
+   */
+  getCachedEffects(obj) {
+
+    // // TODO cache doesn't save lvl data
+    // const cacheKey = `${objName}-${username}`;
+    // if (this.effCache[cacheKey]) {
+    //   return Object.entries(this.effCache[cacheKey]);
+    // }
+
+    // const obj = {name: objName}
+
+    let list = userEffectsObj.getRawEffectsList(obj)
+
     if (!list) return []
     const res = list.flat().map((el) => {
       if (!el) return el
@@ -1464,7 +1472,7 @@ const userEffectsObj = {
           .map(([section, eff]) => {
             if(section === 'resources') {
               const effList = eff.map((arr) => {
-                const currentValue = uRes[arr[0]] || '?';
+                const currentValue = typeof uRes[arr[0]] !== 'undefined' ? uRes[arr[0]] : '?';
                 return `<span onclick="Player.offsetCurrentFromHTML('${arr[0]}')">${arr[0]}: ${currentValue} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )</span>`;
               });
               return `==${section}==<br> ${effList.join('<br>')}<br>`
