@@ -251,14 +251,14 @@ function setShapeColor(color) {
   drawInfoPanel(color)
 }
 
-function drawInfoPanel(color) {
+function drawInfoPanel(color = getShapeColor()) {
   if(!color) return
   const player = playerByColor(color)
   const effs = userEffectsObj.sumEffects(player)
   // TODO add printing tech effects
   info_panel.querySelector('h3').innerText = player
   info_panel.querySelector('h3').style.color = color
-  info_panel_body.innerText = userEffectsObj.groupBySections(effs).toPrettyList(player)
+  info_panel_body.innerHTML = userEffectsObj.groupBySections(effs).toPrettyHTML(player)
 }
 
 function addListeners() {
@@ -674,10 +674,10 @@ const draw = {
     ctx.fillStyle = el.color;
     let bgFigure = ''
     if (isBuilding(el)) {
-      bgFigure = 'circle'
+      bgFigure = 'square'
     } else {
       // unit
-      bgFigure = 'triangle'
+      bgFigure = 'circle'
     }
 
     if(SETTINGS.DEFAULT_FIGURE_BG) {
@@ -701,6 +701,9 @@ const draw = {
         ctx.lineTo(x, y + el.height);
         ctx.closePath();
         ctx.fill();
+        break;
+      case 'square':
+        ctx.fillRect(x, y, el.width, el.height);
         break;
       default:
         alert('wtf')
@@ -1412,6 +1415,21 @@ const userEffectsObj = {
     return {
       result,
       toObj() { return result },
+      toPrettyHTML(playerName = null) {
+        delete result.local
+        const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {}
+        return Object.entries(result)
+          .map(([section, eff]) => {
+            if(section === 'resources') {
+              const effList = eff.map((arr) => {
+                const currentValue = uRes[arr[0]] || '?';
+                return `<span onclick="Player.offsetCurrentFromHTML('${arr[0]}')">${arr[0]}: ${currentValue} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )</span>`;
+              });
+              return `==${section}==<br> ${effList.join('<br>')}<br>`
+            }
+            return `==${section}==<br> ${eff.map((arr) => arr.join(': ')).join('<br>')}<br>`
+          }).join('')
+      },
       toPrettyList(playerName = null) {
         delete result.local
         const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {}
@@ -1496,6 +1514,38 @@ const userEffectsObj = {
     // + JSON.stringify(, 0, 2)
       )
   }
+}
+
+const Player = {
+  offsetCurrentFromHTML(resourceKey) {
+    Player.offsetResourcesCurrent(resourceKey)
+    drawInfoPanel(getShapeColor())
+  },
+  offsetResourcesCurrent(resourceKey) {
+    Player.offsetResources(Player.getCurrent(), resourceKey)
+  },
+  /** remember to drawInfoPanel */
+  offsetResources(playerName, resourceKey) {
+    const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {};
+
+    const inputValue = prompt(`Введите величину изменения ресурса "${resourceKey}" для игрока "${playerName}":`);
+
+    if (inputValue === null) {
+      return;
+    }
+
+    const offsetValue = Number(inputValue);
+
+    if (isNaN(offsetValue)) {
+      return;
+    }
+
+    USER_RESOURCES[playerName][resourceKey] = (uRes[resourceKey] || 0) + offsetValue;
+  },
+  getCurrent() {
+    const currentColor = getShapeColor();
+    return playerByColor(currentColor);
+  },
 }
 
 function colorFromUsername(username) {
