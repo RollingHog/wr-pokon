@@ -210,7 +210,7 @@ function init() {
           
           preview.addEventListener('click', function() {
               activeShapeType = shape.type;
-              document.getElementById('shape-size').value = 38;
+              // document.getElementById('shape-size').value = 38;
               shapeModal.style.display = 'none';
           });
           
@@ -224,6 +224,7 @@ function init() {
   document.querySelector('.shape-preview')?.click();
 
   // document.getElementById('add-shape-btn').click()
+  document.getElementById('shape-size').dispatchEvent(new Event('input'))
 
   const playerBtns = Array.from(document.querySelectorAll('.player-btn'))
   playerBtns.forEach(el => {
@@ -1090,13 +1091,14 @@ function endDrag() {
   isDraggingElement = false;
 }
 
-const MIN_SCALE = 0.1 // 0.25
+const MAX_SCALE = 0.25 // 0.25
+const MIN_SCALE = 3
 
 function handleWheel(e) {
   e.preventDefault();
   
   const delta = e.deltaY > 0 ? 0.9 : 1.1;
-  const newScale = Math.min(Math.max(scale * delta, MIN_SCALE), 2);
+  const newScale = Math.min(Math.max(scale * delta, MAX_SCALE), MIN_SCALE);
   
   if (newScale !== scale) {
       const rect = canvas.getBoundingClientRect();
@@ -1506,6 +1508,43 @@ function playerByColor(colorStr) {
 
 function listPlayers() {
   return Array.from(document.querySelectorAll('.player-btn')).map(el => el.textContent)
+}
+
+/**
+ * Вычитает стоимость юнита/здания из ресурсов игрока.
+ *
+ * @param {string} filename - Название объекта (например, "Солдат", "Ферма")
+ * @param {string} player - Имя игрока
+ * @returns {boolean} true, если хватило ресурсов и вычитание прошло успешно, иначе false
+ */
+function subtractUnitCost(filename, player) {
+  // 1. Получаем цену через новую функцию
+  const price = getUnitPrice(filename);
+
+  // 2. Если цена не определена (например, _none_), выходим успешно
+  if (!price) {
+    return true;
+  }
+
+  // 3. Проверяем, хватает ли ресурсов
+  for (const [resourceName, cost] of price) {
+    if (typeof cost !== 'number' || cost <= 0) continue; // пропускаем отрицательные (например, бонусы)
+
+    const current = USER_RESOURCES[player][resourceName];
+    if (typeof current !== 'number' || current < cost) {
+      console.warn(`Недостаточно ресурса "${resourceName}" для покупки "${filename}" игроком "${player}"`);
+      return false;
+    }
+  }
+
+  // 4. Вычитаем ресурсы
+  for (const [resourceName, cost] of price) {
+    if (typeof cost !== 'number' || cost <= 0) continue;
+
+    USER_RESOURCES[player][resourceName] -= cost;
+  }
+
+  return true;
 }
 
 let isAttack = false
