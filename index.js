@@ -51,6 +51,7 @@ const info_panel_body = document.getElementById('info_panel_body');
 let scale = 1;
 let isDragging = false;
 let isDraggingElement = false;
+let dragStartTime = Date.now();
 let dragStartX, dragStartY;
 let canvasOffsetX = 0, canvasOffsetY = 0;
 let tempOffsetX = 0, tempOffsetY = 0;
@@ -901,10 +902,10 @@ function drawText(text) {
 
 // Обработчики событий мыши/касания
 function handleMouseDown(e) {
-  const isRightClick = e.button !== 0
   e.preventDefault();
+
   if(!lineModeObj.active) {
-    startDrag(e.clientX, e.clientY, isRightClick);
+    startDrag(e.clientX, e.clientY, e.button);
   } else {
     if (e.button === 0) {
       lineModeObj.active = true;
@@ -938,7 +939,9 @@ function handleTouchStart(e) {
   }
 }
 
-function startDrag(clientX, clientY, isRightClick = false) {
+function startDrag(clientX, clientY, mouseButton = 0) {
+  const isRightClick = mouseButton === 2
+
   const rect = canvas.getBoundingClientRect();
   const mouseX = clientX - rect.left;
   const mouseY = clientY - rect.top;
@@ -973,6 +976,7 @@ function startDrag(clientX, clientY, isRightClick = false) {
           
           // Начинаем перетаскивание
           isDragging = true;
+          dragStartTime = Date.now()
           dragStartX = mouseX;
           dragStartY = mouseY;
           tempOffsetX = element.x;
@@ -988,6 +992,7 @@ function startDrag(clientX, clientY, isRightClick = false) {
   
   // Если не кликнули на элемент, начинаем перемещение холста
   isDragging = true;
+  dragStartTime = Date.now()
   isDraggingElement = false;
   dragStartX = clientX;
   dragStartY = clientY;
@@ -1080,8 +1085,8 @@ function updateDrag(clientX, clientY) {
   drawCanvas();
 }
 
-function handleMouseUp() {
-  endDrag();
+function handleMouseUp(evt) {
+  endDrag(evt.button);
 }
 
 function handleTouchEnd() {
@@ -1089,8 +1094,14 @@ function handleTouchEnd() {
   touchIdentifier = null;
 }
 
-function endDrag() {
+function endDrag(mouseButton = 0) {
+  const isMiddleClick = mouseButton === 1
+  if (isMiddleClick && (Date.now() - dragStartTime < 170)) {
+    placeShape()
+  }
+
   isDragging = false;
+  dragStartTime = 0
   isDraggingElement = false;
 }
 
@@ -1156,14 +1167,14 @@ function cloneShape() {
  * @param {{selectedElement: elements[0]}} param0 
  * @returns 
  */
-function placeShape({spawnNearMenu = false, selectedElement = undefined}) {
+function placeShape({spawnNearMenu = false, selectedElement} = {}) {
   if (currentMapIndex === -1) {
       // console.warn('Сначала загрузите карту');
       return;
   }
 
   const color = document.getElementById('shape-color').value;
-  const size = selectedElement.height || parseInt(document.getElementById('shape-size').value);
+  const size = selectedElement?.height || parseInt(document.getElementById('shape-size').value);
   
   let width = size;
   let height = size;
