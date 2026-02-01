@@ -1096,7 +1096,8 @@ function handleTouchEnd() {
 
 function endDrag(mouseButton = 0) {
   const isMiddleClick = mouseButton === 1
-  if (isMiddleClick && (Date.now() - dragStartTime < 170)) {
+  const insertOnMiddleClick = document.getElementById('el_insertOnMiddleClick')?.checked
+  if (isMiddleClick && (Date.now() - dragStartTime < 170) && insertOnMiddleClick) {
     placeShape()
   }
 
