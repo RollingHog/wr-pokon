@@ -9,7 +9,7 @@ const KW = /** @type {const} */ ({
   CAPITAL: 'Столица',
 
   COST: '_cost_',
-  DROP: '_drop_',
+  LOOT: '_loot_',
 
   MAX_HP: '_max_hp_',
 

@@ -396,10 +396,15 @@ const Unit = {
   },
 
   getMaxHP(filename) {
+    if(isNoHealth({name: filename})) return 1
     // DICT_USER[Player.getCurrent()]?.[filename] ||
     return DICT_COMMON?.[filename]?.find(el => el[0] == KW.MAX_HP)?.[1] ||
       MAX_UNIT_HP
-  }
+  },
+
+  getLoot(filename) {
+    return DICT_COMMON?.[filename]?.find(el => el[0] == KW.LOOT)?.[1]
+  },
 }
 
 
@@ -1025,7 +1030,7 @@ const selection = {
   },
   damage(amount = 1) {
     if (selectedElement) {
-      if (isNoHealth(selectedElement)) return
+      // if (isNoHealth(selectedElement)) return
       if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = Unit.getMaxHP(selectedElement.name)
       offsetUnitHp(selectedElement, -amount)
     }
@@ -1482,6 +1487,20 @@ const userEffectsObj = {
     };
   },
 
+  sumEffArr(userEffects) {
+    const effectsDict = {}
+    for (let [k, v] of userEffects) {
+      if (!k) continue
+      if (EFFECT_LISTS.local.includes(k)) continue
+      if (effectsDict[k]) {
+        effectsDict[k] += +v
+      } else {
+        effectsDict[k] = +v
+      }
+    }
+    return effectsDict
+  },
+
   sumEffects(username) {
     const userColor = colorFromUsername(username)
 
@@ -1493,6 +1512,7 @@ const userEffectsObj = {
     const userUnits = userObjs.filter(obj => isUnit(obj))
     userEffects = [].concat(
       userObjs.map(obj => {
+        // TODO upkeep even if disabled
         if (obj.disabled) return []
         return userEffectsObj.getCachedEffects(obj)
       }),
@@ -1500,7 +1520,7 @@ const userEffectsObj = {
     )
       .flat()
       .filter(e => e)
-    const effectsDict = {
+    let effectsDict = {
       unit_count: userUnits.length,
       unit_to_upkeep: userUnits.filter(
         obj => !DEFAULT.noUpkeep.includes(obj.name)
@@ -1511,15 +1531,7 @@ const userEffectsObj = {
       ).length,
     }
     //       
-    for (let [k, v] of userEffects) {
-      if (!k) continue
-      if (EFFECT_LISTS.local.includes(k)) continue
-      if (effectsDict[k]) {
-        effectsDict[k] += +v
-      } else {
-        effectsDict[k] = +v
-      }
-    }
+    effectsDict = Object.assign(effectsDict, userEffectsObj.sumEffArr(userEffects))
     if (POP_PROP) {
       const popEff = [].concat(
         DICT_USER[username]?._pop_,
@@ -1555,29 +1567,28 @@ const userEffectsObj = {
 
 const Player = {
   offsetCurrentFromHTML(resourceKey) {
-    Player.offsetResourcesCurrent(resourceKey)
-    drawInfoPanel(getShapeColor())
-  },
-  offsetResourcesCurrent(resourceKey) {
-    Player.offsetResources(Player.getCurrent(), resourceKey)
-  },
-  /** remember to drawInfoPanel */
-  offsetResources(playerName, resourceKey) {
-    const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {};
+    const playerName = Player.getCurrent()
 
     const inputValue = prompt(`Введите величину изменения ресурса "${resourceKey}" для игрока "${playerName}":`);
-
     if (inputValue === null) {
       return;
     }
-
     const offsetValue = Number(inputValue);
 
     if (isNaN(offsetValue)) {
       return;
     }
 
-    USER_RESOURCES[playerName][resourceKey] = (uRes[resourceKey] || 0) + offsetValue;
+    Player.offsetResourcesCurrent(resourceKey, offsetValue)
+    drawInfoPanel()
+  },
+  offsetResourcesCurrent(resourceKey, offsetValue) {
+    Player.offsetResources(Player.getCurrent(), resourceKey, offsetValue)
+  },
+  /** remember to drawInfoPanel */
+  offsetResources(playerName, resourceKey, offsetValue) {
+    USER_RESOURCES[playerName][resourceKey] = (USER_RESOURCES[playerName][resourceKey] || 0) 
+      + offsetValue;
   },
   getCurrent() {
     const currentColor = getShapeColor();
@@ -1686,7 +1697,16 @@ function offsetUnitHp(obj, amount) {
 function killObj(obj) {
   obj.disabled = false
 
-  if (DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj.name)) {
+  const lootList = Unit.getLoot(obj.name)
+  if(lootList) {
+    const loot =  userEffectsObj.sumEffArr(lootList)
+    for(let [k, v] of Object.entries(loot)) {
+      Player.offsetResourcesCurrent(k, v)
+    }
+    drawInfoPanel()
+  }
+
+  if (DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj)) {
     selection.delete()
     return
   }
@@ -2109,8 +2129,11 @@ function isUnit(shape) {
   return DEFAULT.units.includes(shape.name)
 }
 
-function isNoHealth(shape) {
-  return DEFAULT.noHealth.includes(shape.name)
+function isNoHealth(shapeOrStr) {
+  if(typeof shapeOrStr === 'string') {
+    return DEFAULT.noHealth.includes(shapeOrStr)
+  }
+  return DEFAULT.noHealth.includes(shapeOrStr.name)
 }
 
 function saveFile(filename, data) {
