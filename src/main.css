@@ -273,7 +273,7 @@ input, select {
 }
 
 /* tgt mark at the screen center */
-#tgt_el {
+/* #tgt_el {
   width: 6px;
   height: 6px;
   color: orangered;
@@ -284,6 +284,8 @@ input, select {
   font-size: xx-large;
   user-select: none;
 }
+<div id="tgt_el">+</div>
+*/
 
 .turn-indicator {
     position: fixed;

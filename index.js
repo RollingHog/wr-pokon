@@ -1148,17 +1148,22 @@ function cloneShape() {
   if(!selectedElement) return
   
   document.querySelector(`.shape-preview[data-filename="${selectedElement.name}"]`).click()
-  placeShape()
+  placeShape({selectedElement})
 }
 
-function placeShape(spawnNearMenu = false) {
+/**
+ * 
+ * @param {{selectedElement: elements[0]}} param0 
+ * @returns 
+ */
+function placeShape({spawnNearMenu = false, selectedElement = undefined}) {
   if (currentMapIndex === -1) {
       // console.warn('Сначала загрузите карту');
       return;
   }
 
   const color = document.getElementById('shape-color').value;
-  const size = parseInt(document.getElementById('shape-size').value);
+  const size = selectedElement.height || parseInt(document.getElementById('shape-size').value);
   
   let width = size;
   let height = size;
@@ -1192,13 +1197,19 @@ function placeShape(spawnNearMenu = false) {
   }
   
   const isMenu = typeof spawnNearMenu === 'boolean' && spawnNearMenu
+  const driftObj = selectedElement
   const x = isMenu
     ? (-canvasOffsetX + canvas.width * 0.05 - width * scale / 2) / scale
-    : (mousePos.x - canvas.getBoundingClientRect().left - canvasOffsetX - width * scale / 2) / scale
+    : 
+      driftObj 
+      ? (+driftObj.x + (width * (Math.random() * 2 - 1))) 
+      : (mousePos.x - canvas.getBoundingClientRect().left - canvasOffsetX - width * scale / 2) / scale
 
   const y = isMenu
     ? (-canvasOffsetY + canvas.height / 5 - height * scale / 2) / scale
-    : (mousePos.y - canvas.getBoundingClientRect().top - canvasOffsetY - height * scale / 2) / scale
+    : driftObj
+      ? (+driftObj.y + (height * (Math.random() * 2 - 1)))
+      : (mousePos.y - canvas.getBoundingClientRect().top - canvasOffsetY - height * scale / 2) / scale
 
   const shape = {
       type: 'shape',
