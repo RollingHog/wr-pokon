@@ -8,7 +8,8 @@ OTHER_SAVE_DATA={
 USER_RESOURCES={
   "Синие": {},
   "Красные": {
-    "Еда": 1
+    "Еда": 1,
+    "Ремесло": 0
   }
 };
 DEFAULT_DATA=[
@@ -22,7 +23,7 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 38,
     "src": null,
-    "curr_hp": 1,
+    "curr_hp": 4,
     "disabled": false,
     "endedTurn": false
   },
