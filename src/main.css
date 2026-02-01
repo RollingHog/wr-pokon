@@ -308,14 +308,14 @@ input, select {
 
 #info_panel {
   /* Размеры */
-  width: 370px;
-  height: 40vh;
+  width: 250px;
+  height: 80vh;
   /* Примерно треть высоты экрана */
 
   /* Фиксированное позиционирование — правый нижний угол */
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 12px;
+  right: 8px;
 
   /* Внешний вид */
   background-color: #2c3e50;

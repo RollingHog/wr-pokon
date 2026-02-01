@@ -74,6 +74,7 @@ let mousePos = {
 *     lvl?: number,
 *     disabled?: boolean,
 *     endedTurn?: boolean,
+*     title?: string,
 * }[]} 
 */
 let elements = [];
@@ -126,6 +127,9 @@ function init() {
     },
     'E': () => {
       selection.switchEndedTurn()
+    }, 
+    'F2': () => {
+      selection.setTitle(prompt('new title?', selectedElement?.title))
     },
     'Space': () => {
       onEndTurn()
@@ -431,6 +435,7 @@ function getUnitDescription(filename) {
   return filename + costStr + effStr
 }
 
+// TODO sections
 function onCustomImageLoad(filename, src) {
   const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
 
@@ -748,6 +753,13 @@ const draw = {
         el.curr_hp || Unit.getMaxHP(el.name), Unit.getMaxHP(el.name)
       )
     }
+    if(el.title) {
+      draw.textBelow(
+        ctx, x, y + el.height, el.width,
+        el.title
+      )
+    }
+
     if (el.disabled) {
       ctx.strokeStyle = 'white';
       ctx.lineWidth = 2
@@ -836,6 +848,15 @@ const draw = {
     //     barY + height + 12  // Под полоской
     // );
   },
+
+  textBelow(ctx, x, y, width, text, height = 5, offsetY = 4) {
+    const TITLE_FONT = '12px Arial'
+
+    ctx.font = TITLE_FONT;
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, x + width / 2, y + offsetY);
+  }
 }
 
 /** 
@@ -1055,7 +1076,20 @@ const selection = {
       editPanel.style.display = 'none';
       drawCanvas();
     }
-  }
+  },
+
+  setTitle(newTitle) {
+    if (!selectedElement) return
+    if(newTitle === null) return
+
+    if(newTitle === '') {
+      delete selectedElement.title
+      draw.element(selectedElement)
+      return
+    }
+    selectedElement.title = newTitle
+    draw.element(selectedElement)
+  },
 }
 
 function handleMouseMove(e) {
