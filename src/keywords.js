@@ -11,6 +11,8 @@ const KW = /** @type {const} */ ({
   COST: '_cost_',
   DROP: '_drop_',
 
+  MAX_HP: '_max_hp_',
+
   ATK: "Атака",
   DEF: 'Защита',
   /** action points */

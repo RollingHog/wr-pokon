@@ -378,21 +378,31 @@ function imageObjByObjName(filename) {
   return customShapes.find(({ name }) => name === filename).imageObj
 }
 
-function getUnitPrice(filename) {
-  const typeKey = isUnit({ name: filename }) ? 'UNITS' : 'BUILDINGS'
-  if (OBJ_CATEGORIES[typeKey]._none_.includes(filename)) return null
+const Unit = {
+  getPrice(filename) {
+    const typeKey = isUnit({ name: filename }) ? 'UNITS' : 'BUILDINGS'
+    if (OBJ_CATEGORIES[typeKey]._none_.includes(filename)) return null
 
-  for (let category in OBJ_CATEGORIES[typeKey]) {
-    const objCost = DICT_COMMON[filename]?.find( ([k, _]) => k === KW.COST )
-    if(objCost) return objCost[1]
-    if (OBJ_CATEGORIES[typeKey][category].includes(filename)) {
-      const res = CATEGORY_PRICES[typeKey][category]
-      if(!res) console.warn(`Неверная категория ${category} `)
-      return res
+    for (let category in OBJ_CATEGORIES[typeKey]) {
+      const objCost = DICT_COMMON[filename]?.find(([k, _]) => k === KW.COST)
+      if (objCost) return objCost[1]
+      if (OBJ_CATEGORIES[typeKey][category].includes(filename)) {
+        const res = CATEGORY_PRICES[typeKey][category]
+        if (!res) console.warn(`Неверная категория ${category} `)
+        return res
+      }
     }
+    return CATEGORY_PRICES[typeKey]._default_
+  },
+
+  getMaxHP(filename) {
+    // DICT_USER[Player.getCurrent()]?.[filename] ||
+    return DICT_COMMON?.[filename]?.find(el => el[0] == KW.MAX_HP)?.[1] ||
+      MAX_UNIT_HP
   }
-  return CATEGORY_PRICES[typeKey]._default_
 }
+
+
 
 function getUnitDescription(filename) {
   const effArrToStr = (arr) => arr
@@ -402,7 +412,7 @@ function getUnitDescription(filename) {
 
   if (!DEFAULT.noHealth.includes(filename)) {
     costStr = '\nЦЕНА:\n'
-    let categoryPrice = getUnitPrice(filename)
+    let categoryPrice = Unit.getPrice(filename)
 
     if (categoryPrice) {
       costStr += effArrToStr(categoryPrice)
@@ -727,8 +737,11 @@ const draw = {
       ctx.drawImage(img, x, y, el.width, el.height);
     }
     ///
-    if ((el.curr_hp !== MAX_UNIT_HP) && !isNoHealth(el)) {
-      draw.healthBar(ctx, x, y + el.height, el.width, el.curr_hp || MAX_UNIT_HP, MAX_UNIT_HP)
+    if ((el.curr_hp !== Unit.getMaxHP(el.name)) && !isNoHealth(el)) {
+      draw.healthBar(
+        ctx, x, y + el.height, el.width, 
+        el.curr_hp || Unit.getMaxHP(el.name), Unit.getMaxHP(el.name)
+      )
     }
     if (el.disabled) {
       ctx.strokeStyle = 'white';
@@ -1013,7 +1026,7 @@ const selection = {
   damage(amount = 1) {
     if (selectedElement) {
       if (isNoHealth(selectedElement)) return
-      if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = MAX_UNIT_HP
+      if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = Unit.getMaxHP(selectedElement.name)
       offsetUnitHp(selectedElement, -amount)
     }
   },
@@ -1223,9 +1236,10 @@ function placeShape({spawnNearMenu = false, selectedElement} = {}) {
       ? (+driftObj.y + (height * (Math.random() * 2 - 1)))
       : (mousePos.y - canvas.getBoundingClientRect().top - canvasOffsetY - height * scale / 2) / scale
 
+  const name = activePreview.dataset.filename
   const shape = {
       type: 'shape',
-      name: activePreview.dataset.filename,
+      name,
       shape: activeShapeType,
       color: color,
       x,
@@ -1233,7 +1247,7 @@ function placeShape({spawnNearMenu = false, selectedElement} = {}) {
       width: width,
       height: height,
       src: src,
-      curr_hp: MAX_UNIT_HP,
+      curr_hp: Unit.getMaxHP(name),
       disabled: false,
       endedTurn: false,
   };
@@ -1592,7 +1606,7 @@ function listPlayers() {
  */
 function subtractUnitCost(filename, player) {
   // 1. Получаем цену через новую функцию
-  const price = getUnitPrice(filename);
+  const price = Unit.getPrice(filename);
 
   // 2. Если цена не определена (например, _none_), выходим успешно
   if (!price) {
@@ -1648,13 +1662,14 @@ function offsetObjLvl(obj, amount) {
  */
 function offsetUnitHp(obj, amount) {
   const curr = obj.curr_hp
+  const maxHP = Unit.getMaxHP(obj.name)
   let res = curr + amount
-  if (amount > 0 && res > MAX_UNIT_HP) {
-    res = MAX_UNIT_HP
+  if (amount > 0 && res > maxHP) {
+    res = maxHP
   }
-  if (res / MAX_UNIT_HP < 0.3) {
+  if (res / maxHP < 0.3) {
     obj.disabled = true
-  } else if (res / MAX_UNIT_HP >= 0.3 && curr / MAX_UNIT_HP < 0.3) {
+  } else if (res / maxHP >= 0.3 && curr / maxHP < 0.3) {
     obj.disabled = false
   }
   obj.curr_hp = res
