@@ -1389,6 +1389,20 @@ const lineActionsObj = {
 
 // TODO + sort + icons?
 const userEffectsObj = {
+  sumEffArr(userEffects, { ignoreLocals } = {}) {
+    const effectsDict = {}
+    for (let [k, v] of userEffects) {
+      if (!k) continue
+      if (EFFECT_LISTS.local.includes(k) && ignoreLocals) continue
+      if (effectsDict[k]) {
+        effectsDict[k] += +v
+      } else {
+        effectsDict[k] = +v
+      }
+    }
+    return effectsDict
+  },
+  
   effCache: {},
   getCommonEffects(objName) {
 
@@ -1448,15 +1462,7 @@ const userEffectsObj = {
       console.warn('bad DICT rule for', obj.name, [k, v])
     }).filter(e=>e)
 
-    const effectsDict = {}
-    for(let [k,v] of res) {
-        if(!k) continue
-        if(effectsDict[k]) {
-          effectsDict[k] += +v
-        } else {
-          effectsDict[k] = +v
-        }
-    }
+    const effectsDict = userEffectsObj.sumEffArr(res)
 
     // this.effCache[cacheKey] = effectsDict
     return Object.entries(effectsDict)
@@ -1529,20 +1535,6 @@ const userEffectsObj = {
     };
   },
 
-  sumEffArr(userEffects) {
-    const effectsDict = {}
-    for (let [k, v] of userEffects) {
-      if (!k) continue
-      if (EFFECT_LISTS.local.includes(k)) continue
-      if (effectsDict[k]) {
-        effectsDict[k] += +v
-      } else {
-        effectsDict[k] = +v
-      }
-    }
-    return effectsDict
-  },
-
   sumEffects(username) {
     const userColor = colorFromUsername(username)
 
@@ -1579,7 +1571,7 @@ const userEffectsObj = {
       effectsDict[resName] = 0
     }
     //       
-    effectsDict = Object.assign(effectsDict, userEffectsObj.sumEffArr(userEffects))
+    effectsDict = Object.assign(effectsDict, userEffectsObj.sumEffArr(userEffects, {ignoreLocals: true}))
     if (POP_PROP) {
       const popEff = [].concat(
         DICT_USER[username]?._pop_,
