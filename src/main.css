@@ -142,6 +142,19 @@ input, select {
   gap: 2px;
 }
 
+.shape-preview.category-divider {
+  background-color: #f0f0f0 !important;
+  border: 1px solid #ccc !important;
+  cursor: default !important;
+  user-select: none;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px !important;
+  color: #666;
+  pointer-events: none; /* Отключаем клики */
+}
+
 #map-list {
   display: flex;
   gap: 5px;

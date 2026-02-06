@@ -526,15 +526,43 @@ function loadDefaultMap() {
 }
 
 function loadDefaultCustomImages() {
+  const root = SETTINGS.IS_CUSTOM ? '..' : '.';
 
-  const root = SETTINGS.IS_CUSTOM ? '..' : '.'
-  
-  for (const objName of DEFAULT.buildings) {
-      onCustomImageLoad(objName, `${root}/images/buildings/${objName}.png`)
+  const category2ru = {
+    '_none_': 'игромех',
+    '_default_': 'Обычные',
   }
   
-  for (const objName of DEFAULT.units) {
-      onCustomImageLoad(objName, `${root}/images/units/${objName}.png`)
+  // Загружаем здания с категориями
+  for (const [category, items] of Object.entries(OBJ_CATEGORIES.BUILDINGS)) {
+    // Добавляем заголовок категории
+    const categoryDiv = document.createElement('div');
+    categoryDiv.className = 'shape-preview category-divider';
+    categoryDiv.textContent = "Здания\n"+ (category2ru[category] || category);
+    customShapesContainer.appendChild(categoryDiv);
+    
+    const modalCategoryDiv = categoryDiv.cloneNode(true);
+    modalShapesContainer.appendChild(modalCategoryDiv);
+    
+    for (const objName of items) {
+      onCustomImageLoad(objName, `${root}/images/buildings/${objName}.png`);
+    }
+  }
+  
+  // Загружаем юниты с категориями
+  for (const [category, items] of Object.entries(OBJ_CATEGORIES.UNITS)) {
+    // Добавляем заголовок категории
+    const categoryDiv = document.createElement('div');
+    categoryDiv.className = 'shape-preview category-divider';
+    categoryDiv.textContent = "Юниты\n" + (category2ru[category] || category);
+    customShapesContainer.appendChild(categoryDiv);
+    
+    const modalCategoryDiv = categoryDiv.cloneNode(true);
+    modalShapesContainer.appendChild(modalCategoryDiv);
+    
+    for (const objName of items) {
+      onCustomImageLoad(objName, `${root}/images/units/${objName}.png`);
+    }
   }
 }
 
