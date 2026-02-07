@@ -1307,7 +1307,11 @@ function startDrag(clientX, clientY, mouseButton = 0) {
           return
         }
 
-          selectedElement = element;
+        
+        selectedElement = element;
+        UI.drawEditPanel(mouseX, mouseY, element);
+
+        if(Ownership.isOwnedObj(element)) return
           isDraggingElement = true;
           
           // Сохраняем начальные координаты дочерних элементов
@@ -1319,7 +1323,6 @@ function startDrag(clientX, clientY, mouseButton = 0) {
             }
           }
           
-          UI.drawEditPanel(mouseX, mouseY, element);
           
           // Начинаем перетаскивание
           isDragging = true;
@@ -1379,6 +1382,7 @@ const selection = {
   },
   delete() {
     if (selectedElement) {
+      Ownership.removeOwner(selectedElement.id)
       elements = elements.filter(el => el !== selectedElement);
       selectedElement = null;
       editPanel.style.display = 'none';
@@ -2077,6 +2081,7 @@ function offsetUnitHp(obj, amount) {
  */
 function killObj(obj) {
   obj.disabled = false
+  Ownership.removeOwner(obj.id)
 
   const lootList = Unit.getLoot(obj.name)
   if(lootList) {
