@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 1.7622942858574333,
-  "canvasOffsetX": -1128.9308282111406,
-  "canvasOffsetY": -1245.4706359072798,
+  "scale": 2.5271306683236805,
+  "canvasOffsetX": -1684.6513260276383,
+  "canvasOffsetY": -1834.2754268090935,
   "shapeColor": "#d3d3d3"
 };
 USER_RESOURCES={
@@ -12,6 +12,7 @@ USER_RESOURCES={
     "Ремесло": 0
   }
 };
+OWNER_MAP={"19":[20]};
 DEFAULT_DATA=[
   {
     "type": "shape",
@@ -288,8 +289,8 @@ DEFAULT_DATA=[
     "name": "Фея",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 794.38,
-    "y": 782.65,
+    "x": 795.41,
+    "y": 781.93,
     "width": 40,
     "height": 40,
     "src": null,
@@ -303,8 +304,8 @@ DEFAULT_DATA=[
     "name": "Фея",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 794.91,
-    "y": 867.78,
+    "x": 798.79,
+    "y": 867.89,
     "width": 40,
     "height": 40,
     "src": null,

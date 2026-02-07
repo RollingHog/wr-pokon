@@ -3,7 +3,7 @@
 
 /// <reference path="./data/data.json.js"/>
 /* global
-CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA USER_RESOURCES
+CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA USER_RESOURCES OWNER_MAP
 */
 
 /// <reference path="./src/keywords.js"/>
@@ -61,6 +61,7 @@ let mousePos = {
 }
 /** 
 * @type {{
+*     id: number,
 *     type: 'shape',
 *     shape: activeShapeType,
 *     color: color,
@@ -306,6 +307,8 @@ function addListeners() {
   
   // Форма редактирования
   document.getElementById('edit-atk-btn').addEventListener('click', enableAttackMode);
+  document.getElementById('edit-pin-btn').addEventListener('click', enablePinMode);
+  document.getElementById('remove-pin-btn').addEventListener('click', () => { Ownership.removePreviousOwnership(selectedElement)});
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   // document.getElementById('edit-color').addEventListener('input', updateElementColor);
   document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
@@ -501,6 +504,8 @@ function loadDefaultData() {
   if(typeof DEFAULT_DATA !== 'undefined') {
       elements = DEFAULT_DATA
   }
+  assignIdsToElements()
+
   if(typeof OTHER_SAVE_DATA !== 'undefined') {
       const oth = OTHER_SAVE_DATA
       scale = oth.scale
@@ -510,7 +515,34 @@ function loadDefaultData() {
       // canvasOffsetX = oth.canvasOffsetX 
       // canvasOffsetY = oth.canvasOffsetY 
   }
+
+  if (typeof OWNER_MAP !== 'undefined') {
+    Ownership.fromJSON(OWNER_MAP)
+
+  }
 }
+
+function assignIdsToElements() {
+  let maxId = 0;
+  
+  // Проходим по всем элементам и находим максимальный ID
+  for(const element of elements) {
+    if(element.id !== undefined && element.id > maxId) {
+      maxId = element.id;
+    }
+  }
+  
+  // Увеличиваем maxId на 1 для следующего ID
+  currentId = maxId + 1;
+  
+  // Устанавливаем ID для элементов, у которых его нет
+  for(const element of elements) {
+    if(element.id === undefined) {
+      element.id = currentId++;
+    }
+  }
+}
+
 function loadDefaultMap() {
   var defaultMapImg = new Image();
   defaultMapImg.onload = function () {
@@ -788,6 +820,18 @@ const draw = {
       )
     }
 
+    if (Ownership.isOwner(el)) {
+      draw.textBelow(
+        ctx, x + el.width / 2.2, y, el.width,
+        'O'
+      )
+    } else if (Ownership.isOwnedObj(el)) {
+      draw.textBelow(
+        ctx, x + el.width / 2.2, y, el.width,
+        'X'
+      )
+    }
+
     if (el.disabled) {
       ctx.strokeStyle = 'white';
       ctx.lineWidth = 2
@@ -884,7 +928,64 @@ const draw = {
     ctx.fillStyle = 'black';
     ctx.textAlign = 'center';
     ctx.fillText(text, x + width / 2, y + offsetY);
-  }
+  },
+
+  // TODO doesn't work because of non-relative coords?..
+  /**
+   * Рисует белую однонаправленную стрелку между двумя объектами
+   * @param {CanvasRenderingContext2D} ctx - Контекст canvas
+   * @param {Object} fromObj - Исходный объект
+   * @param {Object} toObj - Целевой объект
+   */
+  // arrow(ctx, fromObj, toObj) {
+  //   const fromX = fromObj.x + fromObj.width / 2;
+  //   const fromY = fromObj.y + fromObj.height / 2;
+  //   const toX = toObj.x + toObj.width / 2;
+  //   const toY = toObj.y + toObj.height / 2;
+
+  //   // Вычисляем вектор направления
+  //   const dx = toX - fromX;
+  //   const dy = toY - fromY;
+  //   const length = Math.sqrt(dx * dx + dy * dy);
+    
+  //   if (length === 0) return;
+
+  //   // Нормализуем вектор
+  //   const unitX = dx / length;
+  //   const unitY = dy / length;
+
+  //   // Рассчитываем точки для стрелки (с учетом размеров объектов)
+  //   const startX = fromX + unitX * (fromObj.width / 2);
+  //   const startY = fromY + unitY * (fromObj.height / 2);
+  //   const endX = toX - unitX * (toObj.width / 2);
+  //   const endY = toY - unitY * (toObj.height / 2);
+
+  //   // Рисуем линию стрелки
+  //   ctx.beginPath();
+  //   ctx.moveTo(startX, startY);
+  //   ctx.lineTo(endX, endY);
+  //   ctx.strokeStyle = 'white';
+  //   ctx.lineWidth = 2;
+  //   ctx.stroke();
+
+  //   // Рисуем наконечник стрелки
+  //   const arrowSize = 10;
+  //   const angle = Math.atan2(dy, dx);
+    
+  //   ctx.beginPath();
+  //   ctx.moveTo(endX, endY);
+  //   ctx.lineTo(
+  //     endX - arrowSize * Math.cos(angle - Math.PI / 6),
+  //     endY - arrowSize * Math.sin(angle - Math.PI / 6)
+  //   );
+  //   ctx.lineTo(
+  //     endX - arrowSize * Math.cos(angle + Math.PI / 6),
+  //     endY - arrowSize * Math.sin(angle + Math.PI / 6)
+  //   );
+  //   ctx.closePath();
+  //   ctx.fillStyle = 'white';
+  //   ctx.fill();
+  // },
 }
 
 /** 
@@ -967,6 +1068,150 @@ function drawText(text) {
   ctx.restore();
 }
 
+const Ownership = {
+  // Инициализация словаря владельцев
+  ownerMap: new Map(), // ownerName -> Set(childObjects)
+
+  /**
+   * @param {*} el 
+   */
+  isOwner(el) {
+    return this.ownerMap.has(el.id || el)
+  },
+
+  ownedObjs: [],
+
+  isOwnedObj(obj) {
+    return this.ownedObjs.includes(obj);
+  },
+
+    /**
+   * Преобразует ownerMap в JSON-объект
+   * @returns {Object} JSON-объект с владельцами и их объектами
+   */
+  toJSON() {
+    const json = {};
+    for (const [ownerId, children] of this.ownerMap) {
+      json[ownerId] = Array.from(children).map(child => child.id);
+    }
+    return json;
+  },
+
+  /**
+   * Загружает ownerMap из JSON-объекта
+   * @param {Object} jsonObj - JSON-объект с владельцами и их объектами
+   * @param {Map} idToObjectMap - Карта соответствия id -> объект
+   */
+  fromJSON(jsonObj) {
+
+    if (!jsonObj) return
+
+    const idToObjectMap = new Map();
+    elements.forEach(obj => {
+      if (obj.id) {
+        idToObjectMap.set(obj.id, obj);
+      }
+    });
+
+    this.ownerMap.clear();
+    for (const ownerId in jsonObj) {
+      const childIds = jsonObj[ownerId];
+      const childrenSet = new Set();
+      for (const childId of childIds) {
+        const childObj = idToObjectMap.get(childId);
+        if (childObj) {
+          childrenSet.add(childObj);
+        }
+        if (!this.isOwnedObj(childObj)) {
+          this.ownedObjs.push(childObj);
+        }
+      }
+      if (childrenSet.size > 0) {
+        this.ownerMap.set(+ownerId, childrenSet);
+      }
+    }
+  },
+
+  /**
+   * Добавляет объект во владение владельцу
+   * @param {string} ownerId - Имя владельца
+   * @param {Object} childObj - Объект, который становится во владение
+   */
+  addChildToOwner(ownerId, childObj) {
+    if (!this.ownerMap.has(ownerId)) {
+      this.ownerMap.set(ownerId, new Set());
+    }
+    this.ownerMap.get(ownerId).add(childObj);
+    if (!this.isOwnedObj(childObj)) {
+      this.ownedObjs.push(childObj);
+    }
+  },
+
+  /**
+   * Удаляет объект из владения владельца
+   * @param {string} ownerId - Имя владельца
+   * @param {Object} childObj - Объект, который нужно удалить из владения
+   */
+  removeChildFromOwner(ownerId, childObj) {
+    if (this.ownerMap.has(ownerId)) {
+      const children = this.ownerMap.get(ownerId);
+      children.delete(childObj);
+
+      if (children.size === 0) {
+        this.ownerMap.delete(ownerId);
+      }
+      
+      // Удаляем из ownedObjs, если больше не принадлежит никому
+      if (!this.isOwnedWithRecount(childObj)) {
+        const index = this.ownedObjs.indexOf(childObj);
+        if (index !== -1) {
+          this.ownedObjs.splice(index, 1);
+        }
+      }
+    }
+  },
+
+  // Вспомогательный метод для проверки, является ли объект чьим-либо потомком
+  isOwnedWithRecount(obj) {
+    for (const children of this.ownerMap.values()) {
+      if (children.has(obj)) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  /**
+ * Удаляет предыдущие отношения владения для объекта
+ * @param {Object} obj - Объект, для которого нужно удалить отношения владения
+ */
+  removePreviousOwnership(obj) {
+    for (const [ownerId, children] of this.ownerMap.entries()) {
+      if (children.has(obj)) {
+        this.removeChildFromOwner(ownerId, obj);
+        break;
+      }
+    }
+  },
+
+  /**
+   * Удаляет владельца и все его объекты во владении
+   * @param {string} ownerId - Имя владельца для удаления
+   */
+  removeOwner(ownerId) {
+    if (this.ownerMap.has(ownerId)) {
+      const children = this.ownerMap.get(ownerId);
+      for (const child of children) {
+        const index = this.ownedObjs.indexOf(child);
+        if (index !== -1) {
+          this.ownedObjs.splice(index, 1);
+        }
+      }
+    }
+    this.ownerMap.delete(ownerId);
+  },
+}
+
 // Обработчики событий мыши/касания
 function handleMouseDown(e) {
   e.preventDefault();
@@ -1029,8 +1274,26 @@ function startDrag(clientX, clientY, mouseButton = 0) {
             return 
           }
 
+        if (isPin) {
+          isPin = false
+          if (element !== selectedElement) { // Не позволяем объекту владеть самим собой
+            Ownership.removePreviousOwnership(selectedElement);
+            Ownership.addChildToOwner(element.id, selectedElement);
+          }
+          return
+        }
+
           selectedElement = element;
           isDraggingElement = true;
+          
+          // Сохраняем начальные координаты дочерних элементов
+          if (Ownership.isOwner(selectedElement)) {
+            const children = Ownership.ownerMap.get(selectedElement.id);
+            for (const child of children) {
+              child.originalX = child.x;
+              child.originalY = child.y;
+            }
+          }
           
           // Показываем панель редактирования
           editPanel.style.display = 'block';
@@ -1149,9 +1412,22 @@ function updateDrag(clientX, clientY) {
   const mouseY = clientY - rect.top;
   
   if (isDraggingElement && selectedElement) {
+      // Вычисляем смещение
+      const deltaX = (mouseX - dragStartX) / scale;
+      const deltaY = (mouseY - dragStartY) / scale;
+      
       // Перемещаем выбранный элемент
-      selectedElement.x = +(tempOffsetX + (mouseX - dragStartX) / scale).toFixed(2);
-      selectedElement.y = +(tempOffsetY + (mouseY - dragStartY) / scale).toFixed(2);
+      selectedElement.x = +(tempOffsetX + deltaX).toFixed(2);
+      selectedElement.y = +(tempOffsetY + deltaY).toFixed(2);
+      
+      // Перемещаем все дочерние элементы синхронно
+      if (Ownership.isOwner(selectedElement)) {
+        const children = Ownership.ownerMap.get(selectedElement.id);
+        for (const child of children) {
+          child.x = +(child.originalX + deltaX).toFixed(2);
+          child.y = +(child.originalY + deltaY).toFixed(2);
+        }
+      }
       
       // Обновляем позицию панели редактирования
       editPanel.style.left = `${mouseX + 10}px`;
@@ -1243,6 +1519,8 @@ function cloneShape() {
   placeShape({selectedElement})
 }
 
+let currentId = 1
+
 /**
  * 
  * @param {{selectedElement: elements[0]}} param0 
@@ -1304,7 +1582,9 @@ function placeShape({spawnNearMenu = false, selectedElement} = {}) {
       : (mousePos.y - canvas.getBoundingClientRect().top - canvasOffsetY - height * scale / 2) / scale
 
   const name = activePreview.dataset.filename
+  /** @type {elements[0]} */
   const shape = {
+      id: currentId++,
       type: 'shape',
       name,
       shape: activeShapeType,
@@ -1720,6 +2000,22 @@ function enableAttackMode() {
   editPanel.style.display = 'none';
 }
 
+let isPin = false
+
+/**
+ * @param {MouseEvent} evt 
+ */
+function enablePinMode(evt) {
+  if(!selectedElement) return
+  // if(evt.button === 1) {
+  //   Ownership.removePreviousOwnership(selectedElement)
+  //   evt.preventDefault();
+  //   return
+  // }
+  isPin = true
+  editPanel.style.display = 'none';
+}
+
 /**
  * @param {typeof elements[0]} obj 
  * @param {number} amount 
@@ -2120,18 +2416,29 @@ function saveMap() {
 }
 
 function saveGame() {
+  const defaultData = elements.filter(e => e.y)
+  defaultData.forEach((el) => {
+    delete el.originalX
+    delete el.originalY
+  })
+  const ownerMap =  Ownership.toJSON()
   const otherData = {
-    scale, canvasOffsetX, canvasOffsetY, shapeColor: getShapeColor()
+    scale, canvasOffsetX, canvasOffsetY, 
+    shapeColor: getShapeColor(), 
   }
   saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
 OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
 USER_RESOURCES=${JSON.stringify(typeof USER_RESOURCES !== 'undefined' ? USER_RESOURCES : {}, 0, 2)};
+OWNER_MAP=${JSON.stringify(typeof ownerMap !== 'undefined' ? ownerMap : {})};
 DEFAULT_DATA=` 
-    + JSON.stringify(elements.filter(e => e.y), 0, 2)
+    + JSON.stringify(defaultData, 0, 2)
   )
 }
 
 function loadGame(e) {
+  // TODO
+  alert('load game from file broken for now')
+  return
   const file = e.target.files[0];
   if (!file) return;
   
