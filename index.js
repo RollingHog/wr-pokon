@@ -254,17 +254,41 @@ function setShapeColor(color) {
   drawCanvas();
 
   info_panel.style.display = ''
-  drawInfoPanel(color)
+  UI.drawInfoPanel(color)
 }
 
-function drawInfoPanel(color = getShapeColor()) {
-  if(!color) return
-  const player = playerByColor(color)
-  const effs = userEffectsObj.sumEffects(player)
-  // TODO add printing tech effects
-  info_panel.querySelector('h3').innerText = player
-  info_panel.querySelector('h3').style.color = color
-  info_panel_body.innerHTML = userEffectsObj.groupBySections(effs).toPrettyHTML(player)
+const UI = {
+  drawInfoPanel(color = getShapeColor()) {
+    if(!color) return
+    const player = playerByColor(color)
+    const effs = userEffectsObj.sumEffects(player)
+    // TODO add printing tech effects
+    info_panel.querySelector('h3').innerText = player
+    info_panel.querySelector('h3').style.color = color
+    info_panel_body.innerHTML = userEffectsObj.groupBySections(effs).toPrettyHTML(player)
+  },
+  drawEditPanel(mouseX, mouseY, element) {
+    editPanel.style.display = 'block';
+    editPanel.style.left = `${mouseX + 10}px`;
+    editPanel.style.top = `${mouseY + 10}px`;
+
+    if(Ownership.isOwner(element)) {
+      document.getElementById('edit-pin-btn').disabled = true
+    } else {
+      document.getElementById('edit-pin-btn').disabled = false
+    }
+
+    if(Ownership.isOwnedObj(element)) {
+      document.getElementById('remove-pin-btn').disabled = false
+    } else {
+      document.getElementById('remove-pin-btn').disabled = true
+    }
+
+    // document.getElementById('edit-color').value = element.color || '#000000';
+    document.getElementById('obj-lvl').value = element.lvl || 1;
+    // document.getElementById('obj-lvl').select();
+    document.getElementById('edit-obj-name').value = element.name || '';
+  },
 }
 
 function addListeners() {
@@ -378,7 +402,7 @@ function onEndTurn() {
   CURRENT_TURN++;
   drawCanvas()
   drawTurnDisplay();
-  drawInfoPanel(getShapeColor())
+  UI.drawInfoPanel(getShapeColor())
 }
 
 function imageObjByObjName(filename) {
@@ -660,7 +684,7 @@ function drawCanvas() {
 
   draw.fogOfWar();
 
-  drawInfoPanel(selectedElement?.color)
+  UI.drawInfoPanel(selectedElement?.color)
 
   // lastPaint = Date.now()
 }
@@ -1295,14 +1319,7 @@ function startDrag(clientX, clientY, mouseButton = 0) {
             }
           }
           
-          // Показываем панель редактирования
-          editPanel.style.display = 'block';
-          editPanel.style.left = `${mouseX + 10}px`;
-          editPanel.style.top = `${mouseY + 10}px`;
-          // document.getElementById('edit-color').value = element.color || '#000000';
-          document.getElementById('obj-lvl').value = element.lvl || 1;
-          document.getElementById('obj-lvl').select()
-          document.getElementById('edit-obj-name').value = element.name || '';
+          UI.drawEditPanel(mouseX, mouseY, element);
           
           // Начинаем перетаскивание
           isDragging = true;
@@ -1928,7 +1945,7 @@ const Player = {
     }
 
     Player.offsetResourcesCurrent(resourceKey, offsetValue)
-    drawInfoPanel()
+    UI.drawInfoPanel()
   },
   offsetResourcesCurrent(resourceKey, offsetValue) {
     Player.offsetResources(Player.getCurrent(), resourceKey, offsetValue)
@@ -2067,7 +2084,7 @@ function killObj(obj) {
     for(let [k, v] of Object.entries(loot)) {
       Player.offsetResourcesCurrent(k, v)
     }
-    drawInfoPanel()
+    UI.drawInfoPanel()
   }
 
   if (DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj)) {

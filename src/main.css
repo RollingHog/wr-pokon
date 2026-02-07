@@ -118,6 +118,10 @@ button:active {
   background-color: #2980b9;
 }
 
+button:disabled {
+  background-color: darkgray;
+}
+
 input, select {
   margin: 2px;
   padding: 4px;
