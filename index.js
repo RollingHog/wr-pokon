@@ -56,8 +56,8 @@ let dragStartX, dragStartY;
 let canvasOffsetX = 0, canvasOffsetY = 0;
 let tempOffsetX = 0, tempOffsetY = 0;
 let mousePos = {
-  x:0, 
-  y:0
+  x: 0,
+  y: 0
 }
 /** 
 * @type {{
@@ -128,7 +128,7 @@ function init() {
     },
     'E': () => {
       selection.switchEndedTurn()
-    }, 
+    },
     'F2': () => {
       selection.setTitle(prompt('new title?', selectedElement?.title))
     },
@@ -139,93 +139,93 @@ function init() {
 
   resizeCanvas();
   drawCanvas();
-  
+
   addListeners();
 
   drawTurnDisplay();
-  
+
   // Предпросмотр фигур
   const shapePreviews = document.querySelectorAll('.shape-preview');
   shapePreviews.forEach(preview => {
-      preview.addEventListener('click', function onShapePreview() {
-          activeShapeType = this.dataset.shape;
-          // document.getElementById('shape-size').value = 50;
-          // Добавляем класс active к выбранной фигуре
-          shapePreviews.forEach(p => p.classList.remove('active'));
-          this.classList.add('active');
-      });
+    preview.addEventListener('click', function onShapePreview() {
+      activeShapeType = this.dataset.shape;
+      // document.getElementById('shape-size').value = 50;
+      // Добавляем класс active к выбранной фигуре
+      shapePreviews.forEach(p => p.classList.remove('active'));
+      this.classList.add('active');
+    });
   });
-  
+
   // Загрузка пользовательских фигур
-  document.getElementById('custom-shape').addEventListener('change', function(e) {
-      const files = e.target.files;
-      if (!files || files.length === 0) return;
-      
-      Array.from(files).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-              const img = new Image();
-              img.onload = _ => onCustomImageLoad(file, event.target.result);
-              img.src = event.target.result;
-          };
-          reader.readAsDataURL(file);
-      });
+  document.getElementById('custom-shape').addEventListener('change', function (e) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const img = new Image();
+        img.onload = _ => onCustomImageLoad(file, event.target.result);
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
   });
-  
+
   // Кнопки модального окна
   document.getElementById('modal-close-btn')?.addEventListener('click', () => {
-      shapeModal.style.display = 'none';
+    shapeModal.style.display = 'none';
   });
-  
+
   // Адаптивное отображение панелей
   if (window.innerWidth < 768) {
-      document.getElementById('shape-panel').style.display = 'none';
-      document.getElementById('text-panel').style.display = 'none';
-      
-      // Для мобильных заменяем стандартные превью на модальное окно
-      const standardShapes = [
-          { type: 'rect', color: 'red', name: 'Квадрат' },
-          { type: 'circle', color: 'green', name: 'Круг' },
-          { type: 'triangle', color: 'blue', name: 'Треугольник' },
-          { type: 'line', color: 'black', name: 'Линия' }
-      ];
-      
-      standardShapes.forEach(shape => {
-          const preview = document.createElement('div');
-          preview.className = 'shape-preview';
-          preview.dataset.shape = shape.type;
-          preview.title = shape.name;
-          
-          if (shape.type === 'rect') {
-              preview.style.backgroundColor = shape.color;
-          } else if (shape.type === 'circle') {
-              preview.style.backgroundColor = shape.color;
-              preview.style.borderRadius = '50%';
-          } else if (shape.type === 'triangle') {
-              preview.style.width = '0';
-              preview.style.height = '0';
-              preview.style.borderLeft = '20px solid transparent';
-              preview.style.borderRight = '20px solid transparent';
-              preview.style.borderBottom = `40px solid ${shape.color}`;
-          } else if (shape.type === 'line') {
-              preview.style.backgroundColor = shape.color;
-              preview.style.width = '40px';
-              preview.style.height = '2px';
-              preview.style.marginTop = '19px';
-          }
-          
-          preview.addEventListener('click', function() {
-              activeShapeType = shape.type;
-              // document.getElementById('shape-size').value = 38;
-              shapeModal.style.display = 'none';
-          });
-          
-          modalShapesContainer.appendChild(preview);
+    document.getElementById('shape-panel').style.display = 'none';
+    document.getElementById('text-panel').style.display = 'none';
+
+    // Для мобильных заменяем стандартные превью на модальное окно
+    const standardShapes = [
+      { type: 'rect', color: 'red', name: 'Квадрат' },
+      { type: 'circle', color: 'green', name: 'Круг' },
+      { type: 'triangle', color: 'blue', name: 'Треугольник' },
+      { type: 'line', color: 'black', name: 'Линия' }
+    ];
+
+    standardShapes.forEach(shape => {
+      const preview = document.createElement('div');
+      preview.className = 'shape-preview';
+      preview.dataset.shape = shape.type;
+      preview.title = shape.name;
+
+      if (shape.type === 'rect') {
+        preview.style.backgroundColor = shape.color;
+      } else if (shape.type === 'circle') {
+        preview.style.backgroundColor = shape.color;
+        preview.style.borderRadius = '50%';
+      } else if (shape.type === 'triangle') {
+        preview.style.width = '0';
+        preview.style.height = '0';
+        preview.style.borderLeft = '20px solid transparent';
+        preview.style.borderRight = '20px solid transparent';
+        preview.style.borderBottom = `40px solid ${shape.color}`;
+      } else if (shape.type === 'line') {
+        preview.style.backgroundColor = shape.color;
+        preview.style.width = '40px';
+        preview.style.height = '2px';
+        preview.style.marginTop = '19px';
+      }
+
+      preview.addEventListener('click', function () {
+        activeShapeType = shape.type;
+        // document.getElementById('shape-size').value = 38;
+        shapeModal.style.display = 'none';
       });
+
+      modalShapesContainer.appendChild(preview);
+    });
   }
-  
+
   window.addEventListener('resize', resizeCanvas);
-  
+
   // Активируем первую фигуру по умолчанию
   document.querySelector('.shape-preview')?.click();
 
@@ -248,7 +248,7 @@ function getShapeColor() {
 function setShapeColor(color) {
   document.getElementById('shape-color').value = color
   document.getElementById('text-color').value = color
-  if(typeof selectedElement !== 'undefined' && selectedElement) {
+  if (typeof selectedElement !== 'undefined' && selectedElement) {
     selectedElement.color = color
   }
   drawCanvas();
@@ -259,7 +259,7 @@ function setShapeColor(color) {
 
 const UI = {
   drawInfoPanel(color = getShapeColor()) {
-    if(!color) return
+    if (!color) return
     const player = playerByColor(color)
     const effs = userEffectsObj.sumEffects(player)
     // TODO add printing tech effects
@@ -272,13 +272,13 @@ const UI = {
     editPanel.style.left = `${mouseX + 10}px`;
     editPanel.style.top = `${mouseY + 10}px`;
 
-    if(Ownership.isOwner(element)) {
+    if (Ownership.isOwner(element)) {
       document.getElementById('edit-pin-btn').disabled = true
     } else {
       document.getElementById('edit-pin-btn').disabled = false
     }
 
-    if(Ownership.isOwnedObj(element)) {
+    if (Ownership.isOwnedObj(element)) {
       document.getElementById('remove-pin-btn').disabled = false
     } else {
       document.getElementById('remove-pin-btn').disabled = true
@@ -299,17 +299,17 @@ function addListeners() {
   canvas.addEventListener('contextmenu', lineActionsObj.finishLineDrawing);
 
   fogCanvas.addEventListener('wheel', handleWheel, { passive: false });
-  
+
   // События касания для мобильных устройств
   canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
   canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
   canvas.addEventListener('touchend', handleTouchEnd);
-  
+
   // Кнопки тулбара
   document.getElementById('load-map-btn').addEventListener('click', () => {
-      document.getElementById('map-file').click();
+    document.getElementById('map-file').click();
   });
-  
+
   document.getElementById('map-file').addEventListener('change', loadMaps);
   document.getElementById('save-map-btn')?.addEventListener('click', saveMap);
   document.getElementById('save-objects-btn')?.addEventListener('click', saveGame);
@@ -317,22 +317,22 @@ function addListeners() {
   document.getElementById('help-btn').addEventListener('click', showHelp);
   document.getElementById('user-effects-btn').addEventListener('click', userEffectsObj.effectsForSelectedUser);
   document.getElementById('count-food-btn').addEventListener('click', calcPopGrowth);
-  
-  
+
+
   // document.getElementById('add-shape-btn').addEventListener('click', showShapePanel);
   // document.getElementById('add-text-btn').addEventListener('click', showTextPanel);
-  
+
   document.getElementById('place-shape-btn').addEventListener('click', placeShape);
   document.getElementById('clone-shape-btn').addEventListener('click', cloneShape);
   document.getElementById('place-text-btn').addEventListener('click', placeText);
   document.getElementById('place-line-btn').addEventListener('click', lineActionsObj.placeLineClick);
-  
+
   // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
-  
+
   // Форма редактирования
   document.getElementById('edit-atk-btn').addEventListener('click', enableAttackMode);
   document.getElementById('edit-pin-btn').addEventListener('click', enablePinMode);
-  document.getElementById('remove-pin-btn').addEventListener('click', () => { Ownership.removePreviousOwnership(selectedElement)});
+  document.getElementById('remove-pin-btn').addEventListener('click', () => { Ownership.removePreviousOwnership(selectedElement) });
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   // document.getElementById('edit-color').addEventListener('input', updateElementColor);
   document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
@@ -341,16 +341,16 @@ function addListeners() {
   scaleSlider.addEventListener('input', updateScale);
 
   const lockBtn = document.getElementById('lockBtn');
-  lockBtn.addEventListener('click', function() {
-      isGlobalLocked = !isGlobalLocked;
-      
-      if (isGlobalLocked) {
-        lockBtn.classList.remove('unlocked');
-        lockBtn.title = "Разблокировать";
-      } else {
-          lockBtn.classList.add('unlocked');
-          lockBtn.title = "Заблокировать";
-      }
+  lockBtn.addEventListener('click', function () {
+    isGlobalLocked = !isGlobalLocked;
+
+    if (isGlobalLocked) {
+      lockBtn.classList.remove('unlocked');
+      lockBtn.title = "Разблокировать";
+    } else {
+      lockBtn.classList.add('unlocked');
+      lockBtn.title = "Заблокировать";
+    }
   });
 
   // Обработчик клика по индикатору хода
@@ -361,7 +361,7 @@ let turnEndChecked = false
 
 function onEndTurn() {
 
-  if(!turnEndChecked) {
+  if (!turnEndChecked) {
     alert('Конец хода, рассчитайте эффекты игроков (и варваров)')
     turnEndChecked = true
     return
@@ -394,7 +394,7 @@ function onEndTurn() {
     }
   });
 
-  if(typeof onEndTurnCb === 'function') {
+  if (typeof onEndTurnCb === 'function') {
     onEndTurnCb()
   }
 
@@ -427,7 +427,7 @@ const Unit = {
   },
 
   getMaxHP(filename) {
-    if(isNoHealth({name: filename})) return 1
+    if (isNoHealth({ name: filename })) return 1
     // DICT_USER[Player.getCurrent()]?.[filename] ||
     return DICT_COMMON?.[filename]?.find(el => el[0] == KW.MAX_HP)?.[1] ||
       MAX_UNIT_HP
@@ -468,15 +468,15 @@ function onCustomImageLoad(filename, src) {
 
   const emojiName = typeof EMOJI_IMAGES !== 'undefined' ? EMOJI_IMAGES[filename] : null
 
-  if(!emojiName) {
+  if (!emojiName) {
     const imageObj = new Image();
     imageObj.src = src;
-  
+
     customShapes.push({
-        id: shapeId,
-        name: filename,
-        src: src,
-        imageObj,
+      id: shapeId,
+      name: filename,
+      src: src,
+      imageObj,
     });
   } else {
 
@@ -485,7 +485,7 @@ function onCustomImageLoad(filename, src) {
   // Создаем превью для пользовательской фигуры
   const preview = document.createElement('div');
   preview.className = 'shape-preview';
-  if(!emojiName) {
+  if (!emojiName) {
     preview.style.backgroundImage = `url(${src})`;
   } else {
     preview.innerHTML = emojiName
@@ -494,21 +494,21 @@ function onCustomImageLoad(filename, src) {
   preview.dataset.shapeId = shapeId;
   preview.dataset.filename = filename;
 
-  
-  preview.title = getUnitDescription(filename)
-    
-  preview.addEventListener('click', function onShapeSelect() {
-      activeShapeType = 'custom';
-      document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
-      this.classList.add('active');
 
-      if(typeof selectedElement !== 'undefined' && selectedElement) {
-        selectedElement.name = this.dataset.filename
-        selectedElement.src = this.style.backgroundImage.replace(/(^url\(|\)$|")/g,'')
-        drawCanvas();
-      } else {
-        // placeShape(true)
-      }
+  preview.title = getUnitDescription(filename)
+
+  preview.addEventListener('click', function onShapeSelect() {
+    activeShapeType = 'custom';
+    document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+
+    if (typeof selectedElement !== 'undefined' && selectedElement) {
+      selectedElement.name = this.dataset.filename
+      selectedElement.src = this.style.backgroundImage.replace(/(^url\(|\)$|")/g, '')
+      drawCanvas();
+    } else {
+      // placeShape(true)
+    }
   });
 
   customShapesContainer.appendChild(preview);
@@ -516,28 +516,28 @@ function onCustomImageLoad(filename, src) {
   // Также добавляем в модальное окно для мобильных
   const modalPreview = preview.cloneNode(true);
   modalPreview.addEventListener('click', function () {
-      activeShapeType = 'custom';
-      document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
-      preview.classList.add('active');
-      shapeModal.style.display = 'none';
+    activeShapeType = 'custom';
+    document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
+    preview.classList.add('active');
+    shapeModal.style.display = 'none';
   });
   modalShapesContainer.appendChild(modalPreview);
 }
 
 function loadDefaultData() {
-  if(typeof DEFAULT_DATA !== 'undefined') {
-      elements = DEFAULT_DATA
+  if (typeof DEFAULT_DATA !== 'undefined') {
+    elements = DEFAULT_DATA
   }
   assignIdsToElements()
 
-  if(typeof OTHER_SAVE_DATA !== 'undefined') {
-      const oth = OTHER_SAVE_DATA
-      scale = oth.scale
-      if(oth.shapeColor) {
-        setTimeout(_=>setShapeColor(oth.shapeColor), 0)
-      }
-      // canvasOffsetX = oth.canvasOffsetX 
-      // canvasOffsetY = oth.canvasOffsetY 
+  if (typeof OTHER_SAVE_DATA !== 'undefined') {
+    const oth = OTHER_SAVE_DATA
+    scale = oth.scale
+    if (oth.shapeColor) {
+      setTimeout(_ => setShapeColor(oth.shapeColor), 0)
+    }
+    // canvasOffsetX = oth.canvasOffsetX 
+    // canvasOffsetY = oth.canvasOffsetY 
   }
 
   if (typeof OWNER_MAP !== 'undefined') {
@@ -548,20 +548,20 @@ function loadDefaultData() {
 
 function assignIdsToElements() {
   let maxId = 0;
-  
+
   // Проходим по всем элементам и находим максимальный ID
-  for(const element of elements) {
-    if(element.id !== undefined && element.id > maxId) {
+  for (const element of elements) {
+    if (element.id !== undefined && element.id > maxId) {
       maxId = element.id;
     }
   }
-  
+
   // Увеличиваем maxId на 1 для следующего ID
   currentId = maxId + 1;
-  
+
   // Устанавливаем ID для элементов, у которых его нет
-  for(const element of elements) {
-    if(element.id === undefined) {
+  for (const element of elements) {
+    if (element.id === undefined) {
       element.id = currentId++;
     }
   }
@@ -570,13 +570,13 @@ function assignIdsToElements() {
 function loadDefaultMap() {
   var defaultMapImg = new Image();
   defaultMapImg.onload = function () {
-      currentMapIndex = 0
-      maps.push({
-          name: 'default',
-          image: defaultMapImg
-      })
-      drawCanvas()
-      renderMapList()
+    currentMapIndex = 0
+    maps.push({
+      name: 'default',
+      image: defaultMapImg
+    })
+    drawCanvas()
+    renderMapList()
   }
   defaultMapImg.src = MAP_PATH;
 }
@@ -588,23 +588,23 @@ function loadDefaultCustomImages() {
     '_none_': 'игромех',
     '_default_': 'Обычные',
   }
-  
+
   // Загружаем здания с категориями
   for (const [category, items] of Object.entries(OBJ_CATEGORIES.BUILDINGS)) {
     // Добавляем заголовок категории
     const categoryDiv = document.createElement('div');
     categoryDiv.className = 'shape-preview category-divider';
-    categoryDiv.textContent = "Здания\n"+ (category2ru[category] || category);
+    categoryDiv.textContent = "Здания\n" + (category2ru[category] || category);
     customShapesContainer.appendChild(categoryDiv);
-    
+
     const modalCategoryDiv = categoryDiv.cloneNode(true);
     modalShapesContainer.appendChild(modalCategoryDiv);
-    
+
     for (const objName of items) {
       onCustomImageLoad(objName, `${root}/images/buildings/${objName}.png`);
     }
   }
-  
+
   // Загружаем юниты с категориями
   for (const [category, items] of Object.entries(OBJ_CATEGORIES.UNITS)) {
     // Добавляем заголовок категории
@@ -612,10 +612,10 @@ function loadDefaultCustomImages() {
     categoryDiv.className = 'shape-preview category-divider';
     categoryDiv.textContent = "Юниты\n" + (category2ru[category] || category);
     customShapesContainer.appendChild(categoryDiv);
-    
+
     const modalCategoryDiv = categoryDiv.cloneNode(true);
     modalShapesContainer.appendChild(modalCategoryDiv);
-    
+
     for (const objName of items) {
       onCustomImageLoad(objName, `${root}/images/units/${objName}.png`);
     }
@@ -635,7 +635,7 @@ function processRuleFile() {
 }
 
 function getCurrentMap() {
-  if(currentMapIndex >= 0 && maps[currentMapIndex])
+  if (currentMapIndex >= 0 && maps[currentMapIndex])
     return maps[currentMapIndex]
 }
 
@@ -643,7 +643,7 @@ function getCurrentMap() {
 function resizeCanvas() {
   canvas.width = canvasContainer.clientWidth;
   canvas.height = canvasContainer.clientHeight;
-  
+
   fogCanvas.width = canvasContainer.clientWidth;
   fogCanvas.height = canvasContainer.clientHeight;
 
@@ -656,27 +656,27 @@ function drawCanvas() {
   // if(Date.now() - lastPaint < 50) return
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
+
   // Рисуем фон (шахматный узор)
   const gridSize = 20;
   for (let x = 0; x < canvas.width; x += gridSize) {
-      for (let y = 0; y < canvas.height; y += gridSize) {
-          const isEven = ((x + y) / gridSize) % 2 === 0;
-          ctx.fillStyle = isEven ? '#eee' : '#ddd';
-          ctx.fillRect(x, y, gridSize, gridSize);
-      }
+    for (let y = 0; y < canvas.height; y += gridSize) {
+      const isEven = ((x + y) / gridSize) % 2 === 0;
+      ctx.fillStyle = isEven ? '#eee' : '#ddd';
+      ctx.fillRect(x, y, gridSize, gridSize);
+    }
   }
-  
+
   // Рисуем фоновое изображение (карту)
   if (currentMapIndex >= 0 && maps[currentMapIndex]) {
-      const map = maps[currentMapIndex];
-      ctx.save();
-      ctx.translate(canvasOffsetX, canvasOffsetY);
-      ctx.scale(scale, scale);
-      ctx.drawImage(map.image, 0, 0, map.image.width, map.image.height);
-      ctx.restore();
+    const map = maps[currentMapIndex];
+    ctx.save();
+    ctx.translate(canvasOffsetX, canvasOffsetY);
+    ctx.scale(scale, scale);
+    ctx.drawImage(map.image, 0, 0, map.image.width, map.image.height);
+    ctx.restore();
   }
-  
+
   // Рисуем все элементы
   elements.forEach(element => {
     draw.element(element)
@@ -699,28 +699,28 @@ const UNIT_SIZE = 38
 const draw = {
 
   // lol nope, it LAGS
-  cutCircle(context, x, y, radius){
+  cutCircle(context, x, y, radius) {
     context.globalCompositeOperation = 'destination-out'
-    context.arc(x, y, radius, 0, Math.PI*2, true);
+    context.arc(x, y, radius, 0, Math.PI * 2, true);
     context.fill();
     context.globalCompositeOperation = ''
   },
 
   fogOfWar() {
     const playerColor = getShapeColor()
-    
+
     const localCtx = fogCtx
-    
+
     const fogColor = 'rgba(100, 100, 100, 1)'; // тёмно-серый непрозрачный туман
-    
-    localCtx.clearRect(0,0, canvas.width, canvas.height);
-    if(!fogCheckbox.checked) {
+
+    localCtx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!fogCheckbox.checked) {
       return
     }
     localCtx.save();
 
     const map = getCurrentMap()
-    if(!map) return
+    if (!map) return
 
     const screenX = 0 * scale + canvasOffsetX;
     const screenY = 0 * scale + canvasOffsetY;
@@ -730,11 +730,11 @@ const draw = {
     // Заливаем весь canvas туманом
     localCtx.fillStyle = fogColor;
     localCtx.fillRect(screenX, screenY, screenWidth, screenHeight);
-    
+
     // localCtx.fillStyle = 'rgba(0, 0, 0, 1)';
     // Меняем режим композиции: следующие рисунки будут "вырезать" (стирать) туман
     // localCtx.globalCompositeOperation = 'destination-out';
-    
+
     // Собираем все юниты своей фракции с visionRadius
     const visibleUnits = elements.filter(el =>
       el.color === playerColor
@@ -746,7 +746,7 @@ const draw = {
     // Для каждого юнита рисуем круг видимости (в локальных координатах)
     visibleUnits.forEach(el => {
       const isCapital = el.name === KW.CAPITAL && SETTINGS.CAPITAL_SPECIAL_VISION
-      const radius = isCapital 
+      const radius = isCapital
         ? CURRENT_TURN * visionRadius * 0.4 * scale
         : visionRadius * scale;
       const x = el.x * scale + canvasOffsetX;
@@ -785,7 +785,7 @@ const draw = {
       bgFigure = 'circle'
     }
 
-    if(SETTINGS.DEFAULT_FIGURE_BG) {
+    if (SETTINGS.DEFAULT_FIGURE_BG) {
       bgFigure = SETTINGS.DEFAULT_FIGURE_BG
     }
 
@@ -816,13 +816,13 @@ const draw = {
     }
     ctx.globalAlpha = 1;
 
-    let img 
-    if(typeof EMOJI_IMAGES !== 'undefined' && EMOJI_IMAGES[el.name]) {
+    let img
+    if (typeof EMOJI_IMAGES !== 'undefined' && EMOJI_IMAGES[el.name]) {
       const emojiFontSize = (el.width * 0.7).toString(10)
       ctx.font = `bold ${emojiFontSize}px "Noto Color Emoji"`;
       ctx.textAlign = 'center';
       ctx.fillText(
-       EMOJI_IMAGES[el.name],
+        EMOJI_IMAGES[el.name],
         x + el.width / 2,
         y + emojiFontSize
       );
@@ -833,11 +833,11 @@ const draw = {
     ///
     if ((el.curr_hp !== Unit.getMaxHP(el.name)) && !isNoHealth(el)) {
       draw.healthBar(
-        ctx, x, y + el.height, el.width, 
+        ctx, x, y + el.height, el.width,
         el.curr_hp || Unit.getMaxHP(el.name), Unit.getMaxHP(el.name)
       )
     }
-    if(el.title) {
+    if (el.title) {
       draw.textBelow(
         ctx, x, y + el.height, el.width,
         el.title
@@ -915,11 +915,11 @@ const draw = {
 
     // Цвета
     const backgroundColor = '#333333';
-    const healthColor = 
+    const healthColor =
       healthPercent > 1 ? 'mediumspringgreen' :  // overheal
-      healthPercent > 0.6 ? '#4CAF50' :  // Зеленый
-      healthPercent > 0.3 ? '#FFC107' :  // Желтый
-        '#F44336';                         // Красный
+        healthPercent > 0.6 ? '#4CAF50' :  // Зеленый
+          healthPercent > 0.3 ? '#FFC107' :  // Желтый
+            '#F44336';                         // Красный
 
     // Рисуем фон полоски
     ctx.fillStyle = backgroundColor;
@@ -971,7 +971,7 @@ const draw = {
   //   const dx = toX - fromX;
   //   const dy = toY - fromY;
   //   const length = Math.sqrt(dx * dx + dy * dy);
-    
+
   //   if (length === 0) return;
 
   //   // Нормализуем вектор
@@ -995,7 +995,7 @@ const draw = {
   //   // Рисуем наконечник стрелки
   //   const arrowSize = 10;
   //   const angle = Math.atan2(dy, dx);
-    
+
   //   ctx.beginPath();
   //   ctx.moveTo(endX, endY);
   //   ctx.lineTo(
@@ -1019,59 +1019,59 @@ function drawShape(shape) {
   ctx.save();
   ctx.translate(shape.x * scale + canvasOffsetX, shape.y * scale + canvasOffsetY);
   ctx.scale(scale, scale);
-  
+
   if (shape.shape === 'custom') {
     draw.customObj(ctx, shape, 0, 0)
 
-      
-      // TODO timed building
-      // if(isBuilding(shape) && !isNoHealth(shape)) {
-      //   const dlt = 5
-      //   ctx.strokeStyle = 'white';
-      //   ctx.lineWidth = 2 
-      //   ctx.beginPath();
-      //   ctx.arc(shape.width/2, shape.height/2, shape.width/2-dlt, 0, Math.PI * 2);
-      //   ctx.stroke();
-      //   ctx.beginPath();
-      //   // ctx.moveTo(dlt, dlt-1);
-      //   // ctx.lineTo(shape.width-dlt, dlt-1);
-      //   ctx.moveTo(shape.width/2, dlt-1);
-      //   ctx.lineTo(shape.width/2, shape.height/2);
-      //   ctx.lineTo(shape.width/2 + dlt * 2, shape.height - dlt * 2);
-      //   // ctx.closePath();
-      //   ctx.stroke();
-      // }
+
+    // TODO timed building
+    // if(isBuilding(shape) && !isNoHealth(shape)) {
+    //   const dlt = 5
+    //   ctx.strokeStyle = 'white';
+    //   ctx.lineWidth = 2 
+    //   ctx.beginPath();
+    //   ctx.arc(shape.width/2, shape.height/2, shape.width/2-dlt, 0, Math.PI * 2);
+    //   ctx.stroke();
+    //   ctx.beginPath();
+    //   // ctx.moveTo(dlt, dlt-1);
+    //   // ctx.lineTo(shape.width-dlt, dlt-1);
+    //   ctx.moveTo(shape.width/2, dlt-1);
+    //   ctx.lineTo(shape.width/2, shape.height/2);
+    //   ctx.lineTo(shape.width/2 + dlt * 2, shape.height - dlt * 2);
+    //   // ctx.closePath();
+    //   ctx.stroke();
+    // }
   } else {
-      ctx.fillStyle = shape.color;
-      
-      switch (shape.shape) {
-          case 'rect':
-              ctx.fillRect(0, 0, shape.width, shape.height);
-              break;
-          case 'circle':
-              ctx.beginPath();
-              ctx.arc(shape.width/2, shape.height/2, shape.width/2, 0, Math.PI * 2);
-              ctx.fill();
-              break;
-          case 'triangle':
-              ctx.beginPath();
-              ctx.moveTo(shape.width/2, 0);
-              ctx.lineTo(shape.width, shape.height);
-              ctx.lineTo(0, shape.height);
-              ctx.closePath();
-              ctx.fill();
-              break;
-          case 'line':
-              ctx.strokeStyle = shape.color;
-              ctx.lineWidth = shape.height;
-              ctx.beginPath();
-              ctx.moveTo(0, 0);
-              ctx.lineTo(shape.width, 0);
-              ctx.stroke();
-              break;
-      }
+    ctx.fillStyle = shape.color;
+
+    switch (shape.shape) {
+      case 'rect':
+        ctx.fillRect(0, 0, shape.width, shape.height);
+        break;
+      case 'circle':
+        ctx.beginPath();
+        ctx.arc(shape.width / 2, shape.height / 2, shape.width / 2, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      case 'triangle':
+        ctx.beginPath();
+        ctx.moveTo(shape.width / 2, 0);
+        ctx.lineTo(shape.width, shape.height);
+        ctx.lineTo(0, shape.height);
+        ctx.closePath();
+        ctx.fill();
+        break;
+      case 'line':
+        ctx.strokeStyle = shape.color;
+        ctx.lineWidth = shape.height;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(shape.width, 0);
+        ctx.stroke();
+        break;
+    }
   }
-  
+
   ctx.restore();
 }
 
@@ -1079,16 +1079,16 @@ function drawText(text) {
   ctx.save();
   ctx.translate(text.x * scale + canvasOffsetX, text.y * scale + canvasOffsetY);
   ctx.scale(scale, scale);
-  
+
   ctx.font = `${text.size}px Arial`;
   ctx.fillStyle = text.color;
   ctx.fillText(text.content, 0, text.size);
-  
+
   // Обновляем размеры текста
   const metrics = ctx.measureText(text.content);
   text.width = metrics.width;
   text.height = text.size;
-  
+
   ctx.restore();
 }
 
@@ -1109,10 +1109,10 @@ const Ownership = {
     return this.ownedObjs.includes(obj);
   },
 
-    /**
-   * Преобразует ownerMap в JSON-объект
-   * @returns {Object} JSON-объект с владельцами и их объектами
-   */
+  /**
+ * Преобразует ownerMap в JSON-объект
+ * @returns {Object} JSON-объект с владельцами и их объектами
+ */
   toJSON() {
     const json = {};
     for (const [ownerId, children] of this.ownerMap) {
@@ -1184,7 +1184,7 @@ const Ownership = {
       if (children.size === 0) {
         this.ownerMap.delete(ownerId);
       }
-      
+
       // Удаляем из ownedObjs, если больше не принадлежит никому
       if (!this.isOwnedWithRecount(childObj)) {
         const index = this.ownedObjs.indexOf(childObj);
@@ -1240,38 +1240,38 @@ const Ownership = {
 function handleMouseDown(e) {
   e.preventDefault();
 
-  if(!lineModeObj.active) {
+  if (!lineModeObj.active) {
     startDrag(e.clientX, e.clientY, e.button);
   } else {
     if (e.button === 0) {
       lineModeObj.active = true;
-      
+
       // Получаем координаты точки
       const rect = canvas.getBoundingClientRect();
       const x = +(e.clientX - rect.left).toFixed(2);
       const y = +(e.clientY - rect.top).toFixed(2);
-      
+
       // Добавляем точку
-      lineModeObj.points.push({x, y});
-      
+      lineModeObj.points.push({ x, y });
+
       // Перерисовываем холст
       lineActionsObj.drawLineCanvas();
-      
+
       e.preventDefault();
-  }
+    }
   }
 }
 
 function handleTouchStart(e) {
   if (e.touches.length === 1) {
-      e.preventDefault();
-      const touch = e.touches[0];
-      touchIdentifier = touch.identifier;
-      startDrag(touch.clientX, touch.clientY);
+    e.preventDefault();
+    const touch = e.touches[0];
+    touchIdentifier = touch.identifier;
+    startDrag(touch.clientX, touch.clientY);
   } else if (e.touches.length === 2) {
-      // Обработка масштабирования двумя пальцами
-      e.preventDefault();
-      touchIdentifier = null;
+    // Обработка масштабирования двумя пальцами
+    e.preventDefault();
+    touchIdentifier = null;
   }
 }
 
@@ -1281,8 +1281,8 @@ function startDrag(clientX, clientY, mouseButton = 0) {
   const rect = canvas.getBoundingClientRect();
   const mouseX = clientX - rect.left;
   const mouseY = clientY - rect.top;
-  
-  if(!isRightClick) {
+
+  if (!isRightClick) {
     // Проверяем, не кликнули ли мы на элемент
     for (let i = elements.length - 1; i >= 0; i--) {
       const element = elements[i];
@@ -1290,13 +1290,13 @@ function startDrag(clientX, clientY, mouseButton = 0) {
       const y = element.y * scale + canvasOffsetY;
       const width = element.width * scale;
       const height = element.height * scale;
-      
+
       if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
-          if(isAttack) {
-            isAttack = false
-            attackObj(selectedElement, element)
-            return 
-          }
+        if (isAttack) {
+          isAttack = false
+          attackObj(selectedElement, element)
+          return
+        }
 
         if (isPin) {
           isPin = false
@@ -1307,39 +1307,39 @@ function startDrag(clientX, clientY, mouseButton = 0) {
           return
         }
 
-        
+
         selectedElement = element;
         UI.drawEditPanel(mouseX, mouseY, element);
 
-        if(Ownership.isOwnedObj(element)) return
-          isDraggingElement = true;
-          
-          // Сохраняем начальные координаты дочерних элементов
-          if (Ownership.isOwner(selectedElement)) {
-            const children = Ownership.ownerMap.get(selectedElement.id);
-            for (const child of children) {
-              child.originalX = child.x;
-              child.originalY = child.y;
-            }
+        // if(Ownership.isOwnedObj(element)) return
+        isDraggingElement = true;
+
+        // Сохраняем начальные координаты дочерних элементов
+        if (Ownership.isOwner(selectedElement)) {
+          const children = Ownership.ownerMap.get(selectedElement.id);
+          for (const child of children) {
+            child.originalX = child.x;
+            child.originalY = child.y;
           }
-          
-          
-          // Начинаем перетаскивание
-          isDragging = true;
-          dragStartTime = Date.now()
-          dragStartX = mouseX;
-          dragStartY = mouseY;
-          tempOffsetX = element.x;
-          tempOffsetY = element.y;
-          
-          drawCanvas();
-          return;
+        }
+
+
+        // Начинаем перетаскивание
+        isDragging = true;
+        dragStartTime = Date.now()
+        dragStartX = mouseX;
+        dragStartY = mouseY;
+        tempOffsetX = element.x;
+        tempOffsetY = element.y;
+
+        drawCanvas();
+        return;
       }
     }
     isAttack = false
   }
-  
-  
+
+
   // Если не кликнули на элемент, начинаем перемещение холста
   isDragging = true;
   dragStartTime = Date.now()
@@ -1348,7 +1348,7 @@ function startDrag(clientX, clientY, mouseButton = 0) {
   dragStartY = clientY;
   tempOffsetX = canvasOffsetX;
   tempOffsetY = canvasOffsetY;
-  
+
   // Скрываем панель редактирования, если ничего не выбрано
   if (selectedElement) {
     selection.drop()
@@ -1357,8 +1357,8 @@ function startDrag(clientX, clientY, mouseButton = 0) {
 
 const selection = {
   drop() {
-      selectedElement = null;
-      editPanel.style.display = 'none';
+    selectedElement = null;
+    editPanel.style.display = 'none';
   },
   damage(amount = 1) {
     if (selectedElement) {
@@ -1392,9 +1392,9 @@ const selection = {
 
   setTitle(newTitle) {
     if (!selectedElement) return
-    if(newTitle === null) return
+    if (newTitle === null) return
 
-    if(newTitle === '') {
+    if (newTitle === '') {
       delete selectedElement.title
       draw.element(selectedElement)
       return
@@ -1406,7 +1406,7 @@ const selection = {
 
 function handleMouseMove(e) {
   mousePos = {
-    x: e.clientX, 
+    x: e.clientX,
     y: e.clientY
   }
   if (!isDragging) return;
@@ -1417,13 +1417,13 @@ function handleMouseMove(e) {
 function handleTouchMove(e) {
   if (!isDragging || !touchIdentifier) return;
   e.preventDefault();
-  
+
   // Находим нужное касание
   for (let i = 0; i < e.touches.length; i++) {
-      if (e.touches[i].identifier === touchIdentifier) {
-          updateDrag(e.touches[i].clientX, e.touches[i].clientY);
-          break;
-      }
+    if (e.touches[i].identifier === touchIdentifier) {
+      updateDrag(e.touches[i].clientX, e.touches[i].clientY);
+      break;
+    }
   }
 }
 
@@ -1431,34 +1431,34 @@ function updateDrag(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
   const mouseX = clientX - rect.left;
   const mouseY = clientY - rect.top;
-  
+
   if (isDraggingElement && selectedElement) {
-      // Вычисляем смещение
-      const deltaX = (mouseX - dragStartX) / scale;
-      const deltaY = (mouseY - dragStartY) / scale;
-      
-      // Перемещаем выбранный элемент
-      selectedElement.x = +(tempOffsetX + deltaX).toFixed(2);
-      selectedElement.y = +(tempOffsetY + deltaY).toFixed(2);
-      
-      // Перемещаем все дочерние элементы синхронно
-      if (Ownership.isOwner(selectedElement)) {
-        const children = Ownership.ownerMap.get(selectedElement.id);
-        for (const child of children) {
-          child.x = +(child.originalX + deltaX).toFixed(2);
-          child.y = +(child.originalY + deltaY).toFixed(2);
-        }
+    // Вычисляем смещение
+    const deltaX = (mouseX - dragStartX) / scale;
+    const deltaY = (mouseY - dragStartY) / scale;
+
+    // Перемещаем выбранный элемент
+    selectedElement.x = +(tempOffsetX + deltaX).toFixed(2);
+    selectedElement.y = +(tempOffsetY + deltaY).toFixed(2);
+
+    // Перемещаем все дочерние элементы синхронно
+    if (Ownership.isOwner(selectedElement)) {
+      const children = Ownership.ownerMap.get(selectedElement.id);
+      for (const child of children) {
+        child.x = +(child.originalX + deltaX).toFixed(2);
+        child.y = +(child.originalY + deltaY).toFixed(2);
       }
-      
-      // Обновляем позицию панели редактирования
-      editPanel.style.left = `${mouseX + 10}px`;
-      editPanel.style.top = `${mouseY + 10}px`;
+    }
+
+    // Обновляем позицию панели редактирования
+    editPanel.style.left = `${mouseX + 10}px`;
+    editPanel.style.top = `${mouseY + 10}px`;
   } else {
-      // Перемещаем холст
-      canvasOffsetX = tempOffsetX + (clientX - dragStartX);
-      canvasOffsetY = tempOffsetY + (clientY - dragStartY);
+    // Перемещаем холст
+    canvasOffsetX = tempOffsetX + (clientX - dragStartX);
+    canvasOffsetY = tempOffsetY + (clientY - dragStartY);
   }
-  
+
   drawCanvas();
 }
 
@@ -1488,24 +1488,24 @@ const MIN_SCALE = 3
 
 function handleWheel(e) {
   e.preventDefault();
-  
+
   const delta = e.deltaY > 0 ? 0.9 : 1.1;
   const newScale = Math.min(Math.max(scale * delta, MAX_SCALE), MIN_SCALE);
-  
+
   if (newScale !== scale) {
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-      
-      // Корректируем смещение для масштабирования относительно курсора
-      canvasOffsetX = mouseX - (mouseX - canvasOffsetX) * (newScale / scale);
-      canvasOffsetY = mouseY - (mouseY - canvasOffsetY) * (newScale / scale);
-      
-      scale = newScale;
-      scaleValue.textContent = `${Math.round(scale * 100)}%`;
-      scaleSlider.value = scale * 100;
-      
-      drawCanvas();
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // Корректируем смещение для масштабирования относительно курсора
+    canvasOffsetX = mouseX - (mouseX - canvasOffsetX) * (newScale / scale);
+    canvasOffsetY = mouseY - (mouseY - canvasOffsetY) * (newScale / scale);
+
+    scale = newScale;
+    scaleValue.textContent = `${Math.round(scale * 100)}%`;
+    scaleSlider.value = scale * 100;
+
+    drawCanvas();
   }
 }
 
@@ -1513,10 +1513,10 @@ function handleWheel(e) {
 // eslint-disable-next-line no-unused-vars
 function showShapePanel() {
   if (window.innerWidth < 768) {
-      shapeModal.style.display = 'flex';
+    shapeModal.style.display = 'flex';
   } else {
-      document.getElementById('shape-panel').style.display = 'block';
-      document.getElementById('text-panel').style.display = 'none';
+    document.getElementById('shape-panel').style.display = 'block';
+    document.getElementById('text-panel').style.display = 'none';
   }
 }
 
@@ -1534,10 +1534,10 @@ function calcPopGrowth() {
 }
 
 function cloneShape() {
-  if(!selectedElement) return
-  
+  if (!selectedElement) return
+
   document.querySelector(`.shape-preview[data-filename="${selectedElement.name}"]`).click()
-  placeShape({selectedElement})
+  placeShape({ selectedElement })
 }
 
 let currentId = 1
@@ -1547,53 +1547,53 @@ let currentId = 1
  * @param {{selectedElement: elements[0]}} param0 
  * @returns 
  */
-function placeShape({spawnNearMenu = false, selectedElement} = {}) {
+function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
   if (currentMapIndex === -1) {
-      // console.warn('Сначала загрузите карту');
-      return;
+    // console.warn('Сначала загрузите карту');
+    return;
   }
 
   const color = document.getElementById('shape-color').value;
   const size = selectedElement?.height || parseInt(document.getElementById('shape-size').value);
-  
+
   let width = size;
   let height = size;
   let src = null;
 
   let activePreview = {}
-  
+
   if (activeShapeType === 'line') {
-      height = 2;
-      width = size * 2;
+    height = 2;
+    width = size * 2;
   } else if (activeShapeType === 'custom') {
-      activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
-      if (activePreview) {
-          const shapeId = activePreview.dataset.shapeId;
-          const customShape = customShapes.find(s => s.id === shapeId);
-          if (customShape) {
-              src = customShape.src;
-              // Сохраняем пропорции изображения
-              const img = new Image();
-              img.src = src;
-              const ratio = img.width / img.height;
-              if(!ratio) {
-                // TODO there is some strange bug here
-                console.warn('ratio bad!!!', customShape, img);
-              }
-              width = size;
-              height = +((size / ratio).toFixed(2));
-              // FIXME ratio checker
-          }
+    activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
+    if (activePreview) {
+      const shapeId = activePreview.dataset.shapeId;
+      const customShape = customShapes.find(s => s.id === shapeId);
+      if (customShape) {
+        src = customShape.src;
+        // Сохраняем пропорции изображения
+        const img = new Image();
+        img.src = src;
+        const ratio = img.width / img.height;
+        if (!ratio) {
+          // TODO there is some strange bug here
+          console.warn('ratio bad!!!', customShape, img);
+        }
+        width = size;
+        height = +((size / ratio).toFixed(2));
+        // FIXME ratio checker
       }
+    }
   }
-  
+
   const isMenu = typeof spawnNearMenu === 'boolean' && spawnNearMenu
   const driftObj = selectedElement
   const x = isMenu
     ? (-canvasOffsetX + canvas.width * 0.05 - width * scale / 2) / scale
-    : 
-      driftObj 
-      ? (+driftObj.x + (width * (Math.random() * 2 - 1))) 
+    :
+    driftObj
+      ? (+driftObj.x + (width * (Math.random() * 2 - 1)))
       : (mousePos.x - canvas.getBoundingClientRect().left - canvasOffsetX - width * scale / 2) / scale
 
   const y = isMenu
@@ -1605,21 +1605,21 @@ function placeShape({spawnNearMenu = false, selectedElement} = {}) {
   const name = activePreview.dataset.filename
   /** @type {elements[0]} */
   const shape = {
-      id: currentId++,
-      type: 'shape',
-      name,
-      shape: activeShapeType,
-      color: color,
-      x,
-      y,
-      width: width,
-      height: height,
-      src: src,
-      curr_hp: Unit.getMaxHP(name),
-      disabled: false,
-      endedTurn: false,
+    id: currentId++,
+    type: 'shape',
+    name,
+    shape: activeShapeType,
+    color: color,
+    x,
+    y,
+    width: width,
+    height: height,
+    src: src,
+    curr_hp: Unit.getMaxHP(name),
+    disabled: false,
+    endedTurn: false,
   };
-  
+
   elements.push(shape);
   draw.element(shape)
   draw.fogOfWar()
@@ -1628,32 +1628,32 @@ function placeShape({spawnNearMenu = false, selectedElement} = {}) {
 function placeText() {
   let content = document.getElementById('text-input').value;
   if (!content) {
-      content = prompt('Введите текст');
-      if(!content) return;
+    content = prompt('Введите текст');
+    if (!content) return;
   }
-  
+
   if (currentMapIndex === -1) {
-      alert('Сначала загрузите карту');
-      return;
+    alert('Сначала загрузите карту');
+    return;
   }
-  
+
   const color = document.getElementById('text-color').value;
   const size = parseInt(document.getElementById('text-size').value);
-  
+
   ctx.font = `${size}px Arial`;
   const metrics = ctx.measureText(content);
-  
+
   const text = {
-      type: 'text',
-      content: content,
-      color: color,
-      size: size,
-      x: (-canvasOffsetX + canvas.width/2 - metrics.width/2) / scale,
-      y: (-canvasOffsetY + canvas.height/2) / scale,
-      width: metrics.width,
-      height: size
+    type: 'text',
+    content: content,
+    color: color,
+    size: size,
+    x: (-canvasOffsetX + canvas.width / 2 - metrics.width / 2) / scale,
+    y: (-canvasOffsetY + canvas.height / 2) / scale,
+    width: metrics.width,
+    height: size
   };
-  
+
   elements.push(text);
   document.getElementById('text-input').value = '';
   draw.element(text);
@@ -1661,7 +1661,7 @@ function placeText() {
 
 const lineActionsObj = {
   updateLineButton() {
-    document.getElementById('place-line-led').textContent = lineModeObj.active 
+    document.getElementById('place-line-led').textContent = lineModeObj.active
       ? 'ВКЛ'
       : 'ВЫКЛ'
   },
@@ -1671,15 +1671,15 @@ const lineActionsObj = {
     lineModeObj.points = []
     lineActionsObj.updateLineButton()
 
-    if(!lineModeObj.active) return
-  
+    if (!lineModeObj.active) return
+
     // Настройки линии
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 4;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
   },
-  
+
   drawLineCanvas() {
     // Рисуем все точки
     lineModeObj.points.forEach((point, index) => {
@@ -1688,12 +1688,12 @@ const lineActionsObj = {
       ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
       ctx.fillStyle = '#ff0000';
       ctx.fill();
-  
+
       // Номер точки
       ctx.fillStyle = '#000000';
       ctx.font = '14px Arial';
       ctx.fillText(index, point.x + 8, point.y + 5);
-  
+
       // Линии между точками
       if (index > 0) {
         ctx.beginPath();
@@ -1703,15 +1703,15 @@ const lineActionsObj = {
       }
     });
   },
-  
+
   finishLineDrawing(e) {
     // ПКМ - закончить рисование
     if (e.button === 2 && lineModeObj.active) {
-        lineModeObj.active = false;
-        lineActionsObj.updateLineButton()
-        // Очищаем массив точек для следующего рисунка
-        lineModeObj.points = [];
-        e.preventDefault();
+      lineModeObj.active = false;
+      lineActionsObj.updateLineButton()
+      // Очищаем массив точек для следующего рисунка
+      lineModeObj.points = [];
+      e.preventDefault();
     }
   }
 }
@@ -1731,7 +1731,7 @@ const userEffectsObj = {
     }
     return effectsDict
   },
-  
+
   effCache: {},
   getCommonEffects(objName) {
 
@@ -1782,14 +1782,14 @@ const userEffectsObj = {
       if (!el) return el
       const [k, v] = el
       if (!k) return el
-      if(k.startsWith('_')) return null
+      if (k.startsWith('_')) return null
       if (typeof v === 'number' || !isNaN(+v)) return [k, v]
       if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || 1]
       if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2 * +obj.lvl || 1]
       if (v === '-ЛВЛ') return [k, -obj.lvl || -1]
       if (v === '-ЛВЛ*2') return [k, 2 * -obj.lvl || -1]
       console.warn('bad DICT rule for', obj.name, [k, v])
-    }).filter(e=>e)
+    }).filter(e => e)
 
     const effectsDict = userEffectsObj.sumEffArr(res)
 
@@ -1819,12 +1819,12 @@ const userEffectsObj = {
       let matched = false;
       for (const section of Object.keys(lookup)) {
         if (lookup[section].has(key)) {
-          result[section].push([key, (+value).toFixed(1).replace('.0','')]);
+          result[section].push([key, (+value).toFixed(1).replace('.0', '')]);
           matched = true;
           break;
         }
       }
-      if(!matched) {
+      if (!matched) {
         console.warn('not matched:', key)
         result._unique_.push([key, value])
       }
@@ -1839,7 +1839,7 @@ const userEffectsObj = {
         const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {}
         return Object.entries(result)
           .map(([section, eff]) => {
-            if(section === 'resources') {
+            if (section === 'resources') {
               const effList = eff.map((arr) => {
                 const currentValue = typeof uRes[arr[0]] !== 'undefined' ? uRes[arr[0]] : '?';
                 return `<span onclick="Player.offsetCurrentFromHTML('${arr[0]}')">${arr[0]}: ${currentValue} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )</span>`;
@@ -1854,7 +1854,7 @@ const userEffectsObj = {
         const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {}
         return Object.entries(result)
           .map(([section, eff]) => {
-            if(section === 'resources') {
+            if (section === 'resources') {
               const effList = eff.map((arr) => `${arr[0]}: ${uRes[arr[0]] || '?'} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )`)
               return `==${section}==\n ${effList.join('\n')}\n`
             }
@@ -1896,11 +1896,11 @@ const userEffectsObj = {
     }
 
     // list resources even if income is zero
-    for(let resName of EFFECT_LISTS.resources) {
+    for (let resName of EFFECT_LISTS.resources) {
       effectsDict[resName] = 0
     }
     //       
-    effectsDict = Object.assign(effectsDict, userEffectsObj.sumEffArr(userEffects, {ignoreLocals: true}))
+    effectsDict = Object.assign(effectsDict, userEffectsObj.sumEffArr(userEffects, { ignoreLocals: true }))
     if (POP_PROP) {
       const popEff = [].concat(
         DICT_USER[username]?._pop_,
@@ -1922,15 +1922,15 @@ const userEffectsObj = {
     const username = document.querySelector(`[data-color="${getShapeColor()}"]`).textContent
     const effectsDict = userEffectsObj.sumEffects(username)
     let warns = ``
-    if(effectsDict[POP_PROP] < 0) {
+    if (effectsDict[POP_PROP] < 0) {
       warns += `МАЛО НАСЕЛЕНИЯ`
     }
     console.log(effectsDict)
     alert(`Игрок ${username}:\n`
       + (userEffectsObj.groupBySections(effectsDict).toPrettyList())
       + '\n' + warns
-    // + JSON.stringify(, 0, 2)
-      )
+      // + JSON.stringify(, 0, 2)
+    )
   }
 }
 
@@ -1956,7 +1956,7 @@ const Player = {
   },
   /** remember to drawInfoPanel */
   offsetResources(playerName, resourceKey, offsetValue) {
-    USER_RESOURCES[playerName][resourceKey] = (USER_RESOURCES[playerName][resourceKey] || 0) 
+    USER_RESOURCES[playerName][resourceKey] = (USER_RESOURCES[playerName][resourceKey] || 0)
       + offsetValue;
   },
   getCurrent() {
@@ -2016,7 +2016,7 @@ function subtractUnitCost(filename, player) {
 
 let isAttack = false
 function enableAttackMode() {
-  if(!selectedElement) return
+  if (!selectedElement) return
   isAttack = true
   editPanel.style.display = 'none';
 }
@@ -2027,7 +2027,7 @@ let isPin = false
  * @param {MouseEvent} evt 
  */
 function enablePinMode(evt) {
-  if(!selectedElement) return
+  if (!selectedElement) return
   // if(evt.button === 1) {
   //   Ownership.removePreviousOwnership(selectedElement)
   //   evt.preventDefault();
@@ -2084,9 +2084,9 @@ function killObj(obj) {
   Ownership.removeOwner(obj.id)
 
   const lootList = Unit.getLoot(obj.name)
-  if(lootList) {
-    const loot =  userEffectsObj.sumEffArr(lootList)
-    for(let [k, v] of Object.entries(loot)) {
+  if (lootList) {
+    const loot = userEffectsObj.sumEffArr(lootList)
+    for (let [k, v] of Object.entries(loot)) {
       Player.offsetResourcesCurrent(k, v)
     }
     UI.drawInfoPanel()
@@ -2115,12 +2115,12 @@ function killObj(obj) {
  */
 function getBattleParams(obj) {
   const list = userEffectsObj.getCachedEffects(obj)
-    .filter(e=>e) || []
+    .filter(e => e) || []
   // ([]).
   return {
-    atk: list.filter(([k,_])=> k === KW.ATK)[0]?.[1] || 0,
-    def: list.filter(([k,_])=> k === KW.DEF)[0]?.[1] || 0,
-    dist: list.filter(([k,_])=> k === KW.DIST)[0]?.[1] || 0,
+    atk: list.filter(([k, _]) => k === KW.ATK)[0]?.[1] || 0,
+    def: list.filter(([k, _]) => k === KW.DEF)[0]?.[1] || 0,
+    dist: list.filter(([k, _]) => k === KW.DIST)[0]?.[1] || 0,
   }
 }
 
@@ -2135,7 +2135,7 @@ function attackObj(atkObj, defObj) {
 Атака ${atkObj.name} ##1d${atk.atk}## + ##1d3## 
 Защита ${defObj.name} ##1d${def.def}##` +
     (def.atk > 0 ?
-`\n${defObj.name} контратакует ${atkObj.name}:
+      `\n${defObj.name} контратакует ${atkObj.name}:
 Атака ${defObj.name} ##1d${def.atk}## + ##1d3## 
 Защита ${atkObj.name} ##1d${atk.def}##
 ` : '')
@@ -2150,8 +2150,8 @@ function closeEditPanel() {
 
 function updateElementLvl() {
   if (selectedElement) {
-      selectedElement.lvl = +document.getElementById('obj-lvl').value || 1;
-      drawCanvas()
+    selectedElement.lvl = +document.getElementById('obj-lvl').value || 1;
+    drawCanvas()
   }
 }
 
@@ -2161,7 +2161,7 @@ function updateScale() {
   drawCanvas();
 }
 
-const NPCPlayers = ['Варвары','Нейтралы']
+const NPCPlayers = ['Варвары', 'Нейтралы']
 
 const TechUtils = {
   parseTechTree(text) {
@@ -2242,7 +2242,7 @@ const TechUtils = {
       return [];
     }
 
-    if(level === 0) {
+    if (level === 0) {
       return []
     }
 
@@ -2267,22 +2267,22 @@ const TechUtils = {
    * @returns {[string, null][]} - effects arr-dict
    */
   processSpecialTechEffects(username) {
-    if(NPCPlayers.includes(username)) return []
+    if (NPCPlayers.includes(username)) return []
     const techLvlsObj = USER_TECH_LVLS[username]
-    if(!techLvlsObj) {
+    if (!techLvlsObj) {
       console.warn('processSpecialTechEffects() wtf:', techLvlsObj)
       return
     }
 
     let acc = []
-    for(let [k,v] of Object.entries(techLvlsObj)) {
+    for (let [k, v] of Object.entries(techLvlsObj)) {
       acc = acc.concat(TechUtils.getTechEffectsUpToLevel(k, v))
     }
     const res = acc
-      .filter(line => 
+      .filter(line =>
         !(line.startsWith('Здание:') || line.startsWith('Юнит:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?'))
       )
-      .map( str => [str, null])
+      .map(str => [str, null])
     // console.log(res)
     return res
   }
@@ -2292,144 +2292,144 @@ const TechUtils = {
 function loadMaps(e) {
   const files = e.target.files;
   if (!files || files.length === 0) return;
-  
+
   Array.from(files).forEach(file => {
-      if (!file.type.match('image.*')) return;
-      
-      const reader = new FileReader();
-      reader.onload = function(event) {
-          const img = new Image();
-          img.onload = function() {
-              const mapId = 'map-' + Date.now() + Math.random().toString(36).substr(2, 5);
-              maps.push({
-                  id: mapId,
-                  name: file.name,
-                  src: event.target.result,
-                  image: img
-              });
-              
-              renderMapList();
-              
-              // Если это первая загруженная карта, автоматически выбираем ее
-              if (maps.length === 1) {
-                  loadMap(0);
-              }
-          };
-          img.src = event.target.result;
+    if (!file.type.match('image.*')) return;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const img = new Image();
+      img.onload = function () {
+        const mapId = 'map-' + Date.now() + Math.random().toString(36).substr(2, 5);
+        maps.push({
+          id: mapId,
+          name: file.name,
+          src: event.target.result,
+          image: img
+        });
+
+        renderMapList();
+
+        // Если это первая загруженная карта, автоматически выбираем ее
+        if (maps.length === 1) {
+          loadMap(0);
+        }
       };
-      reader.readAsDataURL(file);
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   });
 }
 
 function renderMapList() {
   mapList.innerHTML = '';
-  
+
   if (maps.length === 0) {
-      const emptyMsg = document.createElement('div');
-      emptyMsg.textContent = 'Нет загруженных карт';
-      emptyMsg.style.color = '#bdc3c7';
-      emptyMsg.style.padding = '5px';
-      mapList.appendChild(emptyMsg);
-      return;
+    const emptyMsg = document.createElement('div');
+    emptyMsg.textContent = 'Нет загруженных карт';
+    emptyMsg.style.color = '#bdc3c7';
+    emptyMsg.style.padding = '5px';
+    mapList.appendChild(emptyMsg);
+    return;
   }
-  
+
   maps.forEach((map, index) => {
-      const mapItem = document.createElement('div');
-      mapItem.className = `map-item ${index === currentMapIndex ? 'active' : ''}`;
-      mapItem.textContent = map.name.length > 15 ? map.name.substring(0, 15) + '...' : map.name;
-      mapItem.title = map.name;
-      
-      mapItem.addEventListener('click', () => loadMap(index));
-      mapList.appendChild(mapItem);
+    const mapItem = document.createElement('div');
+    mapItem.className = `map-item ${index === currentMapIndex ? 'active' : ''}`;
+    mapItem.textContent = map.name.length > 15 ? map.name.substring(0, 15) + '...' : map.name;
+    mapItem.title = map.name;
+
+    mapItem.addEventListener('click', () => loadMap(index));
+    mapList.appendChild(mapItem);
   });
 }
 
 function loadMap(index) {
   if (index < 0 || index >= maps.length) return;
-  
+
   const map = maps[index];
   currentMapIndex = index;
-  
+
   // Центрируем карту
   canvasOffsetX = (canvas.width - map.image.width * scale) / 2;
   canvasOffsetY = (canvas.height - map.image.height * scale) / 2;
-  
+
   renderMapList();
   drawCanvas();
 }
 
 function saveMap() {
   if (currentMapIndex === -1) {
-      alert('Сначала загрузите карту');
-      return;
+    alert('Сначала загрузите карту');
+    return;
   }
-  
+
   // Создаем временный canvas для сохранения
   const tempCanvas = document.createElement('canvas');
   const tempCtx = tempCanvas.getContext('2d');
   const map = maps[currentMapIndex];
-  
+
   // Определяем границы всех элементов
   let minX = 0, minY = 0;
   let maxX = map.image.width;
   let maxY = map.image.height;
-  
+
   elements.forEach(element => {
-      minX = Math.min(minX, element.x);
-      minY = Math.min(minY, element.y);
-      maxX = Math.max(maxX, element.x + (element.width || 0));
-      maxY = Math.max(maxY, element.y + (element.height || 0));
+    minX = Math.min(minX, element.x);
+    minY = Math.min(minY, element.y);
+    maxX = Math.max(maxX, element.x + (element.width || 0));
+    maxY = Math.max(maxY, element.y + (element.height || 0));
   });
-  
+
   // Устанавливаем размер временного canvas
   const padding = 20;
   tempCanvas.width = (maxX - minX + padding * 2);
   tempCanvas.height = (maxY - minY + padding * 2);
-  
+
   // Отрисовываем фон
   tempCtx.fillStyle = '#ffffff';
   tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-  
+
   // Отрисовываем фоновое изображение (карту)
   tempCtx.drawImage(
-      map.image, 
-      padding - minX, 
-      padding - minY, 
-      map.image.width, 
-      map.image.height
+    map.image,
+    padding - minX,
+    padding - minY,
+    map.image.width,
+    map.image.height
   );
-  
+
   // Отрисовываем все элементы
   elements.forEach(element => {
-      tempCtx.save();
-      tempCtx.translate(padding - minX, padding - minY);
-      
-      if (element.type === 'shape') {
-          if (element.shape === 'custom') {
-             draw.customObj(tempCtx, element, element.x, element.y)
-          } else {
-              tempCtx.fillStyle = element.color;
-              
-              switch (element.shape) {
-                  case 'line':
-                      tempCtx.strokeStyle = element.color;
-                      tempCtx.lineWidth = element.height;
-                      tempCtx.beginPath();
-                      tempCtx.moveTo(element.x, element.y);
-                      tempCtx.lineTo(element.x + element.width, element.y);
-                      tempCtx.stroke();
-                      break;
-              }
-          }
-      } else if (element.type === 'text') {
-          tempCtx.font = `${element.size}px Arial`;
-          tempCtx.fillStyle = element.color;
-          tempCtx.fillText(element.content, element.x, element.y + element.size);
+    tempCtx.save();
+    tempCtx.translate(padding - minX, padding - minY);
+
+    if (element.type === 'shape') {
+      if (element.shape === 'custom') {
+        draw.customObj(tempCtx, element, element.x, element.y)
+      } else {
+        tempCtx.fillStyle = element.color;
+
+        switch (element.shape) {
+          case 'line':
+            tempCtx.strokeStyle = element.color;
+            tempCtx.lineWidth = element.height;
+            tempCtx.beginPath();
+            tempCtx.moveTo(element.x, element.y);
+            tempCtx.lineTo(element.x + element.width, element.y);
+            tempCtx.stroke();
+            break;
+        }
       }
-      
-      tempCtx.restore();
+    } else if (element.type === 'text') {
+      tempCtx.font = `${element.size}px Arial`;
+      tempCtx.fillStyle = element.color;
+      tempCtx.fillText(element.content, element.x, element.y + element.size);
+    }
+
+    tempCtx.restore();
   });
-  
+
   // Создаем ссылку для скачивания
   const link = document.createElement('a');
   link.download = 'map-editor-export.png';
@@ -2443,16 +2443,16 @@ function saveGame() {
     delete el.originalX
     delete el.originalY
   })
-  const ownerMap =  Ownership.toJSON()
+  const ownerMap = Ownership.toJSON()
   const otherData = {
-    scale, canvasOffsetX, canvasOffsetY, 
-    shapeColor: getShapeColor(), 
+    scale, canvasOffsetX, canvasOffsetY,
+    shapeColor: getShapeColor(),
   }
   saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
 OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
 USER_RESOURCES=${JSON.stringify(typeof USER_RESOURCES !== 'undefined' ? USER_RESOURCES : {}, 0, 2)};
 OWNER_MAP=${JSON.stringify(typeof ownerMap !== 'undefined' ? ownerMap : {})};
-DEFAULT_DATA=` 
+DEFAULT_DATA=`
     + JSON.stringify(defaultData, 0, 2)
   )
 }
@@ -2463,22 +2463,22 @@ function loadGame(e) {
   return
   const file = e.target.files[0];
   if (!file) return;
-  
+
   // TODO pretty sure this doesn't work
   const reader = new FileReader();
-  reader.onload = function(event) {
-      const data = event.target.result.replace('DEFAULT_DATA=', '')
-      elements = JSON.parse(data)
-      drawCanvas()
+  reader.onload = function (event) {
+    const data = event.target.result.replace('DEFAULT_DATA=', '')
+    elements = JSON.parse(data)
+    drawCanvas()
   }
   reader.readAsText(file);
 }
 
 // eslint-disable-next-line no-global-assign
-if(typeof CURRENT_TURN === 'undefined') CURRENT_TURN = 1
+if (typeof CURRENT_TURN === 'undefined') CURRENT_TURN = 1
 // Функция для обновления отображения хода
 function drawTurnDisplay() {
-    turnDisplay.textContent = `Текущий ход: ${CURRENT_TURN}`;
+  turnDisplay.textContent = `Текущий ход: ${CURRENT_TURN}`;
 }
 
 function showHelp() {
@@ -2507,7 +2507,7 @@ function getRandomColor() {
   const letters = '0123456789ABCDEF';
   let color = '#';
   for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+    color += letters[Math.floor(Math.random() * 16)];
   }
   return color;
 }
@@ -2527,7 +2527,7 @@ function isUnit(shape) {
 }
 
 function isNoHealth(shapeOrStr) {
-  if(typeof shapeOrStr === 'string') {
+  if (typeof shapeOrStr === 'string') {
     return DEFAULT.noHealth.includes(shapeOrStr)
   }
   return DEFAULT.noHealth.includes(shapeOrStr.name)
@@ -2536,73 +2536,73 @@ function isNoHealth(shapeOrStr) {
 function saveFile(filename, data) {
   var file = new Blob([data], { type: 'text' })
   var a = document.createElement("a"),
-  url = URL.createObjectURL(file)
+    url = URL.createObjectURL(file)
   a.href = url
   a.download = filename
   document.body.appendChild(a)
   a.click()
   setTimeout(function () {
-  document.body.removeChild(a)
-  window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(url)
   }, 0)
 }
 
 const hotkeysLib = {
-hotkeyElsList: {},
+  hotkeyElsList: {},
 
-init(hotkeysList_, kModeHotkeys_) {
-  this.enableHotkeysProcessing(hotkeysList_, kModeHotkeys_)
-  this.processHotkeyAttribute()
-},
+  init(hotkeysList_, kModeHotkeys_) {
+    this.enableHotkeysProcessing(hotkeysList_, kModeHotkeys_)
+    this.processHotkeyAttribute()
+  },
 
-processHotkeyAttribute() {
-  for(let i of document.querySelectorAll('button[hotkey],input[hotkey]')) {
-    const hk = i.getAttribute('hotkey')
-    i.title += '\nHotkey: Alt+' + hk
-    this.hotkeyElsList[`Alt ${hk}`] = i
-  }
-},
-
-enableHotkeysProcessing(hotkeysList_, kModeHotkeys_) {
-  let kMode = false 
-  const hotkeysList = Object.assign({'Alt K': _ => kMode = true}, hotkeysList_)
-  const kModeHotkeys =  Object.assign({}, kModeHotkeys_)
-
-  const ignoreKeys = ['Alt', 'Tab']
-
-  const that = this
-
-  document.body.addEventListener('keydown', function(evt) {
-    if(!evt.code) return
-    if(ignoreKeys.includes(evt.key)) return 
-    const keyComb = 
-      (evt.ctrlKey ? 'Ctrl ' : '')
-      + (evt.altKey ? 'Alt ' : '')
-      + evt.code.replace(/(Key|Digit)/,'')
-    if(hotkeysList[keyComb]) {
-      hotkeysList[keyComb]()
-      evt.stopPropagation()
-      return false
+  processHotkeyAttribute() {
+    for (let i of document.querySelectorAll('button[hotkey],input[hotkey]')) {
+      const hk = i.getAttribute('hotkey')
+      i.title += '\nHotkey: Alt+' + hk
+      this.hotkeyElsList[`Alt ${hk}`] = i
     }
-    if(that.hotkeyElsList[keyComb]) {
-      that.hotkeyElsList[keyComb].click()
-      evt.stopPropagation()
-      return false
-    }
-    if(kMode && kModeHotkeys[keyComb]) {
-      kModeHotkeys[keyComb]()
-      kMode = false
-      evt.stopPropagation()
-      return false
-    }
-    if(evt.altKey) console.log(keyComb)
-  })
-},
+  },
+
+  enableHotkeysProcessing(hotkeysList_, kModeHotkeys_) {
+    let kMode = false
+    const hotkeysList = Object.assign({ 'Alt K': _ => kMode = true }, hotkeysList_)
+    const kModeHotkeys = Object.assign({}, kModeHotkeys_)
+
+    const ignoreKeys = ['Alt', 'Tab']
+
+    const that = this
+
+    document.body.addEventListener('keydown', function (evt) {
+      if (!evt.code) return
+      if (ignoreKeys.includes(evt.key)) return
+      const keyComb =
+        (evt.ctrlKey ? 'Ctrl ' : '')
+        + (evt.altKey ? 'Alt ' : '')
+        + evt.code.replace(/(Key|Digit)/, '')
+      if (hotkeysList[keyComb]) {
+        hotkeysList[keyComb]()
+        evt.stopPropagation()
+        return false
+      }
+      if (that.hotkeyElsList[keyComb]) {
+        that.hotkeyElsList[keyComb].click()
+        evt.stopPropagation()
+        return false
+      }
+      if (kMode && kModeHotkeys[keyComb]) {
+        kModeHotkeys[keyComb]()
+        kMode = false
+        evt.stopPropagation()
+        return false
+      }
+      if (evt.altKey) console.log(keyComb)
+    })
+  },
 }
 
 function onOutputClick(tgtElName) {
   const t = prompt('Value')
-  if(!t) return
+  if (!t) return
   document.getElementById(tgtElName).value = t
 }
 
