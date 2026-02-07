@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 1.0252192174260306,
-  "canvasOffsetX": -497.16588459818945,
-  "canvasOffsetY": -432.0285120708438,
+  "scale": 1.7622942858574333,
+  "canvasOffsetX": -1128.9308282111406,
+  "canvasOffsetY": -1245.4706359072798,
   "shapeColor": "#d3d3d3"
 };
 USER_RESOURCES={
@@ -25,7 +25,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 4,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 1
   },
   {
     "type": "shape",
@@ -39,7 +40,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 2
   },
   {
     "type": "shape",
@@ -53,7 +55,8 @@ DEFAULT_DATA=[
     "src": "../images/units/Жители.png",
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 3
   },
   {
     "type": "shape",
@@ -67,7 +70,8 @@ DEFAULT_DATA=[
     "src": "../images/units/Жители.png",
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 4
   },
   {
     "type": "shape",
@@ -81,7 +85,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 5
   },
   {
     "type": "shape",
@@ -95,7 +100,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 6
   },
   {
     "type": "shape",
@@ -109,7 +115,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 7
   },
   {
     "type": "shape",
@@ -123,7 +130,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 8
   },
   {
     "type": "shape",
@@ -137,7 +145,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 9
   },
   {
     "type": "shape",
@@ -151,7 +160,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 10
   },
   {
     "type": "shape",
@@ -165,7 +175,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 11
   },
   {
     "type": "shape",
@@ -179,7 +190,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 12
   },
   {
     "type": "shape",
@@ -193,7 +205,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 13
   },
   {
     "type": "shape",
@@ -207,7 +220,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 14
   },
   {
     "type": "shape",
@@ -221,7 +235,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 15
   },
   {
     "type": "shape",
@@ -235,7 +250,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 16
   },
   {
     "type": "shape",
@@ -249,7 +265,8 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 17
   },
   {
     "type": "shape",
@@ -263,35 +280,38 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 18
   },
   {
     "type": "shape",
     "name": "Фея",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 792.7749890447759,
-    "y": 784.6865529187493,
+    "x": 794.38,
+    "y": 782.65,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 19
   },
   {
     "type": "shape",
     "name": "Фея",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 793.79,
-    "y": 865.97,
+    "x": 794.91,
+    "y": 867.78,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 20
   },
   {
     "type": "shape",
@@ -305,6 +325,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": false,
+    "id": 21
   }
 ]
