@@ -272,13 +272,13 @@ const UI = {
     editPanel.style.left = `${mouseX + 10}px`;
     editPanel.style.top = `${mouseY + 10}px`;
 
-    if (Ownership.isOwner(element)) {
+    if (Pins.isOwner(element)) {
       document.getElementById('edit-pin-btn').disabled = true
     } else {
       document.getElementById('edit-pin-btn').disabled = false
     }
 
-    if (Ownership.isOwnedObj(element)) {
+    if (Pins.isOwnedObj(element)) {
       document.getElementById('remove-pin-btn').disabled = false
     } else {
       document.getElementById('remove-pin-btn').disabled = true
@@ -332,7 +332,7 @@ function addListeners() {
   // Форма редактирования
   document.getElementById('edit-atk-btn').addEventListener('click', enableAttackMode);
   document.getElementById('edit-pin-btn').addEventListener('click', enablePinMode);
-  document.getElementById('remove-pin-btn').addEventListener('click', () => { Ownership.removePreviousOwnership(selectedElement) });
+  document.getElementById('remove-pin-btn').addEventListener('click', () => { Pins.removePreviousOwnership(selectedElement) });
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   // document.getElementById('edit-color').addEventListener('input', updateElementColor);
   document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
@@ -541,7 +541,7 @@ function loadDefaultData() {
   }
 
   if (typeof OWNER_MAP !== 'undefined') {
-    Ownership.fromJSON(OWNER_MAP)
+    Pins.fromJSON(OWNER_MAP)
 
   }
 }
@@ -844,12 +844,12 @@ const draw = {
       )
     }
 
-    if (Ownership.isOwner(el)) {
+    if (Pins.isOwner(el)) {
       draw.textBelow(
         ctx, x + el.width / 2.2, y, el.width,
         'O'
       )
-    } else if (Ownership.isOwnedObj(el)) {
+    } else if (Pins.isOwnedObj(el)) {
       draw.textBelow(
         ctx, x + el.width / 2.2, y, el.width,
         'X'
@@ -1092,7 +1092,7 @@ function drawText(text) {
   ctx.restore();
 }
 
-const Ownership = {
+const Pins = {
   // Инициализация словаря владельцев
   ownerMap: new Map(), // ownerName -> Set(childObjects)
 
@@ -1107,6 +1107,11 @@ const Ownership = {
 
   isOwnedObj(obj) {
     return this.ownedObjs.includes(obj);
+  },
+
+  listOwnedBy(objId) {
+    if(typeof objId !== 'string') throw new Error()
+    return this.ownerMap.get(objId)
   },
 
   /**
@@ -1301,8 +1306,8 @@ function startDrag(clientX, clientY, mouseButton = 0) {
         if (isPin) {
           isPin = false
           if (element !== selectedElement) { // Не позволяем объекту владеть самим собой
-            Ownership.removePreviousOwnership(selectedElement);
-            Ownership.addChildToOwner(element.id, selectedElement);
+            Pins.removePreviousOwnership(selectedElement);
+            Pins.addChildToOwner(element.id, selectedElement);
           }
           return
         }
@@ -1315,8 +1320,8 @@ function startDrag(clientX, clientY, mouseButton = 0) {
         isDraggingElement = true;
 
         // Сохраняем начальные координаты дочерних элементов
-        if (Ownership.isOwner(selectedElement)) {
-          const children = Ownership.ownerMap.get(selectedElement.id);
+        if (Pins.isOwner(selectedElement)) {
+          const children = Pins.listOwnedBy(selectedElement.id);
           for (const child of children) {
             child.originalX = child.x;
             child.originalY = child.y;
@@ -1382,7 +1387,7 @@ const selection = {
   },
   delete() {
     if (selectedElement) {
-      Ownership.removeOwner(selectedElement.id)
+      Pins.removeOwner(selectedElement.id)
       elements = elements.filter(el => el !== selectedElement);
       selectedElement = null;
       editPanel.style.display = 'none';
@@ -1442,8 +1447,8 @@ function updateDrag(clientX, clientY) {
     selectedElement.y = +(tempOffsetY + deltaY).toFixed(2);
 
     // Перемещаем все дочерние элементы синхронно
-    if (Ownership.isOwner(selectedElement)) {
-      const children = Ownership.ownerMap.get(selectedElement.id);
+    if (Pins.isOwner(selectedElement)) {
+      const children = Pins.listOwnedBy(selectedElement.id);
       for (const child of children) {
         child.x = +(child.originalX + deltaX).toFixed(2);
         child.y = +(child.originalY + deltaY).toFixed(2);
@@ -2081,7 +2086,7 @@ function offsetUnitHp(obj, amount) {
  */
 function killObj(obj) {
   obj.disabled = false
-  Ownership.removeOwner(obj.id)
+  Pins.removeOwner(obj.id)
 
   const lootList = Unit.getLoot(obj.name)
   if (lootList) {
@@ -2443,7 +2448,7 @@ function saveGame() {
     delete el.originalX
     delete el.originalY
   })
-  const ownerMap = Ownership.toJSON()
+  const ownerMap = Pins.toJSON()
   const otherData = {
     scale, canvasOffsetX, canvasOffsetY,
     shapeColor: getShapeColor(),
