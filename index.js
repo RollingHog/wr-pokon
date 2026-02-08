@@ -1094,6 +1094,9 @@ function drawText(text) {
 
 const Pins = {
   // Инициализация словаря владельцев
+  /**
+   * @type {Map<number, elements[0]>}
+   */
   ownerMap: new Map(), // ownerName -> Set(childObjects)
 
   /**
@@ -1109,8 +1112,13 @@ const Pins = {
     return this.ownedObjs.includes(obj);
   },
 
+  /**
+   * @param {string} objId 
+   * @returns {Array<elements[0]>}
+   */
   listOwnedBy(objId) {
-    if(typeof objId !== 'string') throw new Error()
+    objId = +objId
+    if(typeof objId !== 'number') throw new Error()
     return this.ownerMap.get(objId)
   },
 
@@ -1167,6 +1175,7 @@ const Pins = {
    * @param {Object} childObj - Объект, который становится во владение
    */
   addChildToOwner(ownerId, childObj) {
+    ownerId = +ownerId
     if (!this.ownerMap.has(ownerId)) {
       this.ownerMap.set(ownerId, new Set());
     }
@@ -1182,6 +1191,7 @@ const Pins = {
    * @param {Object} childObj - Объект, который нужно удалить из владения
    */
   removeChildFromOwner(ownerId, childObj) {
+    ownerId = +ownerId
     if (this.ownerMap.has(ownerId)) {
       const children = this.ownerMap.get(ownerId);
       children.delete(childObj);
@@ -1781,6 +1791,17 @@ const userEffectsObj = {
     // const obj = {name: objName}
 
     let list = userEffectsObj.getRawEffectsList(obj)
+
+    if(Pins.isOwner(obj)) {
+      const ownedObjects = Pins.listOwnedBy(obj.id);
+      for(const ownedObj of ownedObjects) {
+        const childEffects = userEffectsObj.getRawEffectsList(ownedObj);
+        list = list.concat(childEffects);
+      }
+      // TODO
+      // console.warn(list)
+    }
+
 
     if (!list) return []
     const res = list.flat().map((el) => {
