@@ -138,11 +138,10 @@ function init() {
   })
 
   resizeCanvas();
-  drawCanvas();
+  drawCanvas({infoPanel: true});
+  drawTurnDisplay();
 
   addListeners();
-
-  drawTurnDisplay();
 
   // Предпросмотр фигур
   const shapePreviews = document.querySelectorAll('.shape-preview');
@@ -227,7 +226,7 @@ function init() {
   window.addEventListener('resize', resizeCanvas);
 
   // Активируем первую фигуру по умолчанию
-  document.querySelector('.shape-preview')?.click();
+  document.querySelector('.shape-preview:not(.category-divider)')?.click();
 
   // document.getElementById('add-shape-btn').click()
   document.getElementById('shape-size').dispatchEvent(new Event('input'))
@@ -251,7 +250,7 @@ function setShapeColor(color) {
   if (typeof selectedElement !== 'undefined' && selectedElement) {
     selectedElement.color = color
   }
-  drawCanvas();
+  drawCanvas({infoPanel: true});
 
   info_panel.style.display = ''
   UI.drawInfoPanel(color)
@@ -259,6 +258,8 @@ function setShapeColor(color) {
 
 const UI = {
   drawInfoPanel(color = getShapeColor()) {
+    console.log('drawInfoPanel');
+    
     if (!color) return
     const player = playerByColor(color)
     const effs = userEffectsObj.sumEffects(player)
@@ -400,9 +401,8 @@ function onEndTurn() {
 
   // eslint-disable-next-line no-global-assign
   CURRENT_TURN++;
-  drawCanvas()
+  drawCanvas({infoPanel: true})
   drawTurnDisplay();
-  UI.drawInfoPanel(getShapeColor())
 }
 
 function imageObjByObjName(filename) {
@@ -651,7 +651,7 @@ function resizeCanvas() {
 }
 
 // let lastPaint = Date.now()
-function drawCanvas() {
+function drawCanvas(options = {infoPanel: false}) {
   // TODO?
   // if(Date.now() - lastPaint < 50) return
 
@@ -684,7 +684,9 @@ function drawCanvas() {
 
   draw.fogOfWar();
 
-  UI.drawInfoPanel(selectedElement?.color)
+  if(options.infoPanel) {
+    UI.drawInfoPanel(selectedElement?.color)
+  }
 
   // lastPaint = Date.now()
 }
@@ -1322,7 +1324,6 @@ function startDrag(clientX, clientY, mouseButton = 0) {
           return
         }
 
-
         selectedElement = element;
         UI.drawEditPanel(mouseX, mouseY, element);
 
@@ -1387,13 +1388,13 @@ const selection = {
     if (isNoHealth(selectedElement.name)) return
     if (typeof selectedElement.endedTurn === 'undefined') selectedElement.disabled = false
     selectedElement.endedTurn = !selectedElement.endedTurn
-    drawCanvas();
+    drawCanvas({infoPanel: true});
   },
   switchDisable() {
     if (!selectedElement) return
     if (typeof selectedElement.disabled === 'undefined') selectedElement.disabled = false
     selectedElement.disabled = !selectedElement.disabled
-    drawCanvas();
+    drawCanvas({infoPanel: true});
   },
   delete() {
     if (selectedElement) {
@@ -1401,7 +1402,7 @@ const selection = {
       elements = elements.filter(el => el !== selectedElement);
       selectedElement = null;
       editPanel.style.display = 'none';
-      drawCanvas();
+      drawCanvas({infoPanel: true});
     }
   },
 
@@ -1638,6 +1639,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
   elements.push(shape);
   draw.element(shape)
   draw.fogOfWar()
+  UI.drawInfoPanel()
 }
 
 function placeText() {
@@ -1799,7 +1801,7 @@ const userEffectsObj = {
         list = list.concat(childEffects);
       }
       // TODO
-      // console.warn(list)
+      console.warn()
     }
 
 
@@ -2075,7 +2077,7 @@ function offsetObjLvl(obj, amount) {
   } else {
     obj.lvl = res
   }
-  drawCanvas(obj)
+  drawCanvas({infoPanel: true})
 }
 
 /**
@@ -2099,7 +2101,7 @@ function offsetUnitHp(obj, amount) {
   if (obj.curr_hp <= 0) {
     obj = killObj(obj)
   }
-  drawCanvas(obj);
+  drawCanvas();
 }
 
 /**
@@ -2177,7 +2179,7 @@ function closeEditPanel() {
 function updateElementLvl() {
   if (selectedElement) {
     selectedElement.lvl = +document.getElementById('obj-lvl').value || 1;
-    drawCanvas()
+    drawCanvas({infoPanel: true})
   }
 }
 
@@ -2381,7 +2383,7 @@ function loadMap(index) {
   canvasOffsetY = (canvas.height - map.image.height * scale) / 2;
 
   renderMapList();
-  drawCanvas();
+  drawCanvas({infoPanel: true});
 }
 
 function saveMap() {

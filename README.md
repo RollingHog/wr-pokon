@@ -5,6 +5,8 @@
 * высота гекса при экспорте из Hexographer - 96px
 
 ## Планы по улучшению
+* https://github.com/talsu/vanilla-toast
+* генератор https://watabou.github.io/one-page-dungeon/
 * учет списка юнитов для игрока
 * Блокировка перемещения штук
 * Ctrl+Z - как "сохранили objects перед перемещением/вставкой"
