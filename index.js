@@ -128,6 +128,9 @@ function init() {
     },
     'E': () => {
       selection.switchEndedTurn()
+    },    
+    'B': () => {
+      enablePinMode()
     },
     'F2': () => {
       selection.setTitle(prompt('new title?', selectedElement?.title))
@@ -258,8 +261,6 @@ function setShapeColor(color) {
 
 const UI = {
   drawInfoPanel(color = getShapeColor()) {
-    console.log('drawInfoPanel');
-    
     if (!color) return
     const player = playerByColor(color)
     const effs = userEffectsObj.sumEffects(player)
@@ -542,7 +543,6 @@ function loadDefaultData() {
 
   if (typeof OWNER_MAP !== 'undefined') {
     Pins.fromJSON(OWNER_MAP)
-
   }
 }
 
@@ -851,7 +851,8 @@ const draw = {
         ctx, x + el.width / 2.2, y, el.width,
         'O'
       )
-    } else if (Pins.isOwnedObj(el)) {
+    } 
+    if (Pins.isOwnedObj(el)) {
       draw.textBelow(
         ctx, x + el.width / 2.2, y, el.width,
         'X'
@@ -1024,7 +1025,6 @@ function drawShape(shape) {
 
   if (shape.shape === 'custom') {
     draw.customObj(ctx, shape, 0, 0)
-
 
     // TODO timed building
     // if(isBuilding(shape) && !isNoHealth(shape)) {
@@ -1321,6 +1321,7 @@ function startDrag(clientX, clientY, mouseButton = 0) {
             Pins.removePreviousOwnership(selectedElement);
             Pins.addChildToOwner(element.id, selectedElement);
           }
+          drawCanvas()
           return
         }
 
@@ -1792,16 +1793,24 @@ const userEffectsObj = {
 
     // const obj = {name: objName}
 
-    let list = userEffectsObj.getRawEffectsList(obj)
+    let list = userEffectsObj.getRawEffectsList(obj).filter(e => e)
 
     if(Pins.isOwner(obj)) {
       const ownedObjects = Pins.listOwnedBy(obj.id);
+      let childEffects = []
       for(const ownedObj of ownedObjects) {
-        const childEffects = userEffectsObj.getRawEffectsList(ownedObj);
-        list = list.concat(childEffects);
+        childEffects = childEffects.concat(userEffectsObj.getRawEffectsList(ownedObj))
       }
-      // TODO
-      console.warn()
+      childEffects = childEffects
+        .map(effectGroup => {
+          if (!Array.isArray(effectGroup) || effectGroup.length === 0) {
+            return null;
+          }
+
+          return effectGroup.filter(([effectName]) => EFFECT_LISTS.local.includes(effectName));
+        })
+        .filter(Boolean)
+      list = list.concat(childEffects);
     }
 
 
@@ -2525,6 +2534,7 @@ function showHelp() {
 * Ctrl+End - повредить на величину
 * Q - отключить/включить
 * E - пометить закончившим ход
+* B, Alt + B - bind/pin
 
     `)
 }
