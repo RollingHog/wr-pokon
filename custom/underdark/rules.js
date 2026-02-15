@@ -348,14 +348,12 @@ const DICT_COMMON = {
 
   Пингвин: {
     [KW.LOOT]: {
-      [CORE.PSY]: 1,
+      // [CORE.PSY]: 1,
       // [CORE.WATER]: 1,
     },
     Еда: +2,
-
-    [KW.MAX_HP]: 3,
-    [KW.ATK]: 3,
-    [KW.AP]: 2,
+    [KW.ATK]: 1,
+    [KW.AP]: 1,
   },
 }
 

@@ -436,7 +436,7 @@ const Unit = {
   },
 
   getLoot(filename) {
-    return DICT_COMMON[filename]?.[KW.LOOT]
+    return DICT_COMMON_A[filename]?.find(([k, _]) => k === KW.LOOT)
   },
 }
 
