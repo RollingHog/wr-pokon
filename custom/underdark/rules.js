@@ -20,18 +20,16 @@ userEffectsObj
 */
 
 const SETTINGS = {
-  // DEFAULT_FIGURE_BG: 'circle',
   IS_CUSTOM: true,
+  MAP_PATH: 'underdark/lair.png',
+  // DEFAULT_FIGURE_BG: 'circle',
+
+  MAX_UNIT_HP: 1,
   VISION_RADIUS: 100,
   CAPITAL_SPECIAL_VISION: false,
+  // may be left empty, then _pop_ wont be applied
+  POP_PROP: null,
 } 
-
-const MAP_PATH = 'underdark/lair.png'
-
-const MAX_UNIT_HP = 1
-
-// may be left empty, then _pop_ wont be applied
-const POP_PROP = 'Население'
 
 const DEFAULT = {
   /* filled up later */
@@ -50,7 +48,6 @@ const DEFAULT = {
     "Поле магии"
   ],
   noUpkeep: [
-    "Жители",
   ],
 }
 
@@ -136,14 +133,14 @@ const OBJ_CATEGORIES = {
   UNITS: {
     _none_: [
       "🔴",
-"🟠",
-"🟨",
-"🟢",
-"🔵",
-"🟣",
-"🟤",
-"⚪",
-"⚫",
+      "🟠",
+      "🟨",
+      "🟢",
+      "🔵",
+      "🟣",
+      "🟤",
+      "⚪",
+      "⚫",
     ],
     _default_: [
       'Жители',
@@ -203,14 +200,13 @@ const EFFECT_LISTS = {
   resources: [
     "Еда",
     "Ремесло",
-
-"🟥",
-"🟨",
-"🟩 ",
-"🟦",
-"🟪",
-"⚫",
-"🟫",
+    "🟥",
+    "🟨",
+    "🟩 ",
+    "🟦",
+    "🟪",
+    "⚫",
+    "🟫",
 
     // "Рабы",
     // "Трупы",
@@ -241,6 +237,7 @@ const DICT_COMMON = {
       'Еда': -UNIT_UPKEEP,
     }
   },
+
   '_building_': {
     [KW.REGEN]: 2
   },
@@ -250,6 +247,7 @@ const DICT_COMMON = {
   '_pop_': {
     'Еда': -0.5
   },
+
   [KW.WRECK_UNIT]: {
     [KW.LOOT]: {
       'Ремесло': 2
@@ -265,12 +263,12 @@ const DICT_COMMON = {
   Жители: {
     [KW.COST]: {
       'Еда': 1
-
     },
     [KW.LOOT]: {
         ...LOOT.PSY
     },
-    'Еда': -0.5,
+    // it means it has half of default upkeep
+    'Еда': -0.5+UNIT_UPKEEP,
     'Рабочие': 1
   },
 

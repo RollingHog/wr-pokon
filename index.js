@@ -16,7 +16,6 @@ KW
 DICT_COMMON SETTINGS EMOJI_IMAGES
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
-MAX_UNIT_HP MAP_PATH POP_PROP 
 TECH_EFFECTS 
 onEndTurnCb
 */
@@ -416,9 +415,10 @@ const Unit = {
     const typeKey = isUnit({ name: filename }) ? 'UNITS' : 'BUILDINGS'
     if (OBJ_CATEGORIES[typeKey]._none_.includes(filename)) return null
 
+    const objCost = DICT_COMMON_A[filename]?.find(([k, _]) => k === KW.COST)
+    if (objCost) return objCost[1]
+
     for (let category in OBJ_CATEGORIES[typeKey]) {
-      const objCost = DICT_COMMON_A[filename]?.find(([k, _]) => k === KW.COST)
-      if (objCost) return objCost[1]
       if (OBJ_CATEGORIES[typeKey][category].includes(filename)) {
         const res = CATEGORY_PRICES[typeKey][category]
         if (!res) console.warn(`Неверная категория ${category} `)
@@ -431,12 +431,12 @@ const Unit = {
   getMaxHP(filename) {
     if (isNoHealth({ name: filename })) return 1
     // DICT_USER[Player.getCurrent()]?.[filename] ||
-    return DICT_COMMON_A?.[filename]?.find(el => el[0] == KW.MAX_HP)?.[1] ||
-      MAX_UNIT_HP
+    return DICT_COMMON[filename]?.[KW.MAX_HP] ||
+      SETTINGS.MAX_UNIT_HP
   },
 
   getLoot(filename) {
-    return DICT_COMMON_A?.[filename]?.find(el => el[0] == KW.LOOT)?.[1]
+    return DICT_COMMON[filename]?.[KW.LOOT]
   },
 }
 
@@ -579,7 +579,7 @@ function loadDefaultMap() {
     drawCanvas()
     renderMapList()
   }
-  defaultMapImg.src = MAP_PATH;
+  defaultMapImg.src = SETTINGS.MAP_PATH;
 }
 
 function loadDefaultCustomImages() {
@@ -1826,7 +1826,6 @@ const userEffectsObj = {
         const value = topValue[subKey];
 
         if (typeof value[1] === 'object' && value[1] !== null && !Array.isArray(value[1])) {
-          console.log(value, Object.entries(value))
           // if([KW.LOOT, KW.COST].includes(value[0])) {
           //   continue
           // }
@@ -2033,7 +2032,7 @@ const userEffectsObj = {
     }
     //       
     effectsDict = Object.assign(effectsDict, userEffectsObj.sumEffArr(userEffects, { ignoreLocals: true }))
-    if (POP_PROP) {
+    if (SETTINGS.POP_PROP) {
       const popEff = [].concat(
         DICT_USER[username]?._pop_,
         DICT_COMMON_A?._pop_
@@ -2042,9 +2041,9 @@ const userEffectsObj = {
         if (!k) continue
         if (EFFECT_LISTS.local.includes(k)) continue
         if (effectsDict[k]) {
-          effectsDict[k] += +v * (effectsDict[POP_PROP] || 0)
+          effectsDict[k] += +v * (effectsDict[SETTINGS.POP_PROP] || 0)
         } else {
-          effectsDict[k] = +v * (effectsDict[POP_PROP] || 0)
+          effectsDict[k] = +v * (effectsDict[SETTINGS.POP_PROP] || 0)
         }
       }
     }
