@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Холодное утро - Редактор карт</title>
     <link rel="stylesheet" href="./src/main.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="toolbar">
@@ -33,9 +35,8 @@
                     <input type="color" id="shape-color" value="#ff0000" class="hidden2" style="width: 30px;">
                     <button class="player-btn" data-color="#d3d3d3" onclick="setShapeColor('#d3d3d3')">Нейтралы</button>
                     <button class="player-btn" data-color="#930000" onclick="setShapeColor('#930000')">Варвары</button>
-                    <button class="player-btn" data-color="#ff0000" onclick="setShapeColor('#ff0000')">Вампиры</button>
-                    <button class="player-btn" data-color="#b8860b" onclick="setShapeColor('#b8860b')">Дварфы</button>
-                    <!-- <button class="player-btn" data-color="#9acd32" onclick="setShapeColor('#9acd32')">Орки</button> -->
+                    <button class="player-btn" data-color="#0000ff" onclick="setShapeColor('#0000ff')">Синие</button>
+                    <button class="player-btn" data-color="#ff0000" onclick="setShapeColor('#ff0000')">Красные</button>
                 </div>
                 <div class="color-picker">
                     <span>Размер: </span><output onclick="onOutputClick('shape-size')">__</output>
@@ -90,11 +91,12 @@
         <canvas id="map-canvas" oncontextmenu="return false;"></canvas>
         <canvas id="fog-canvas"  oncontextmenu="return false;"></canvas>
     </div>
-
-    <!-- блок выбранного объекта -->
+    
     <div id="edit-panel">
         <button id="edit-delete-btn" class="mobile-only">Del</button>
         <button id="edit-atk-btn">Атк</button>
+        <button id="edit-pin-btn" title="pin / select owner" hotkey="B">P</button>
+        <button id="remove-pin-btn" title="unpin / unselect owner">U</button>
         <br>
         <input id="edit-obj-name" list="obj-names-list" disabled></input>
         <datalist id="obj-names-list"></datalist>
@@ -122,7 +124,7 @@
     </div>
 
     <!-- панель информации справа внизу -->
-    <div id="info_panel" style="display: none;" onclick="this.style.display = 'none'" title="Click to hide">
+    <div id="info_panel" style="display: none;" title="Click to hide">
       <h3>_</h3>
       <div id="info_panel_body"></div>
     </div>
@@ -132,7 +134,7 @@
 
     <script src="./src/keywords.js"></script>
     <script src="./src/rules.js"></script>
-    <!-- <script src="./data/userParams.js"></script> -->
+    <script src="./data/userParams.js"></script>
     <script src="./data/data.json.js"></script>
     <script src="./index.js"></script>
 </body>

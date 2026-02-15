@@ -14,11 +14,9 @@ KW
 const SETTINGS = {
   DEFAULT_FIGURE_BG: 'circle',
   IS_CUSTOM: true,
+  MAP_PATH: '../map/bnb/bnb.png',
+  MAX_UNIT_HP: 10,
 } 
-
-const MAP_PATH = '../map/bnb/bnb.png'
-
-const MAX_UNIT_HP = 10
 
 // may be left empty, then _pop_ wont be applied
 const POP_PROP = 'Население'
@@ -29,7 +27,7 @@ const DEFAULT = {
   /* filled up later */
   units: [],
   noHealth: [
-    'build_slot',
+    KW.BUILD_SLOT,
     KW.GRAVE_UNIT,
     KW.WRECK_UNIT,
     '_unknown_bonus',
@@ -130,7 +128,7 @@ const OBJ_CATEGORIES = {
   },
   BUILDINGS: {
     _none_: [
-      '_build_slot',
+      KW.BUILD_SLOT,
       KW.GRAVE_UNIT,
       KW.WRECK_UNIT,
       '_unknown_bonus',

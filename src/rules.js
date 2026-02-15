@@ -11,16 +11,85 @@ TECH_EFFECTS
 KW
 */
 
-const MAP_PATH = './map/map.png'
+const SETTINGS = {
+  IS_CUSTOM: false,
+  MAP_PATH:  './map/map.png',
+  // DEFAULT_FIGURE_BG: 'circle',
 
-const GRAVE_UNIT = 'grave'
-const MAX_UNIT_HP = 10
+  MAX_UNIT_HP: 10,
+  // VISION_RADIUS: 100,
+  // CAPITAL_SPECIAL_VISION: false,
+
+  // may be left empty, then _pop_ wont be applied
+  // POP_PROP: null,
+} 
+
 
 const DEFAULT = {
   buildings: [
-    '_build_slot',
-    '_могила',
+   
+  ],
+  units: [
+    'default_unit',
+    'Пехота',
+    'Стрелки',
+    'Инженеры',
+    'Маги',
+    'Разведчики',
+    'Шпион',
+    'Элита',
+
+    'Командир',
+    'Зверь',
+    'Шестеренка',
+    'Демон',
+    'Раб',
+    // 'Дирижабль',
+  ],
+  noHealth: [
+    'build_slot',
+    KW.GRAVE_UNIT,
     '_unknown_bonus',
+  ],
+  noGrave: [
+    'Зверь',
+    'Шестеренка',
+  ]
+}
+
+const CATEGORY_PRICES = {
+  UNITS: {
+    _default_: [
+      ['Еда', 2],
+    ], 
+  },
+  BUILDINGS: {
+    _default_: [
+      ['Дерево', 5],
+    ],
+  }
+}
+
+
+const OBJ_CATEGORIES = {
+  UNITS: {
+    _none_: [
+
+    ],
+    _default_: [
+      'Жители',
+      'Солдат',
+      'Маг',
+    ],
+  },
+  BUILDINGS: {
+    _none_: [
+      KW.GRAVE_UNIT,
+      KW.WRECK_UNIT,
+      '_build_slot',
+      '_unknown_bonus',
+    ],
+    _default_: [
     'Аванпост',
     'Деревня',
     'Город',
@@ -47,33 +116,8 @@ const DEFAULT = {
     'Кузница',
     'Уникальное_здание',
     // 'Ферма_водорослей',
-  ],
-  units: [
-    'default_unit',
-    'Пехота',
-    'Стрелки',
-    'Инженеры',
-    'Маги',
-    'Разведчики',
-    'Шпион',
-    'Элита',
-
-    'Командир',
-    'Зверь',
-    'Шестеренка',
-    'Демон',
-    'Раб',
-    // 'Дирижабль',
-  ],
-  noHealth: [
-    'build_slot',
-    GRAVE_UNIT,
-    'unknown_bonus',
-  ],
-  noGrave: [
-    'Зверь',
-    'Шестеренка',
-  ]
+    ],
+  }
 }
 
 const EFFECT_LISTS = {

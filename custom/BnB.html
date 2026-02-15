@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Кровь и Бронза - Редактор карт</title>
     <link rel="stylesheet" href="../src/main.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="toolbar">
@@ -45,7 +47,7 @@
                 <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разм.</button>
                 <button id="clone-shape-btn" hotkey="C" title="Копировать фигуру" hidden>Копия</button>
                 <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
-                <button id="count-food-btn" title="Калькулятор прироста населения">Еда</button>
+                <button id="count-food-btn" title="Купить юнит и заплатить цену">Куп</button>
                 <label for="ch_fog" title="Туман Войны">
                   <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()" checked>
                   Т.В.
@@ -95,6 +97,8 @@
     <div id="edit-panel">
         <button id="edit-delete-btn" class="mobile-only">Del</button>
         <button id="edit-atk-btn">Атк</button>
+        <button id="edit-pin-btn" title="pin / select owner" hotkey="B">P</button>
+        <button id="remove-pin-btn" title="unpin / unselect owner">U</button>
         <br>
         <input id="edit-obj-name" list="obj-names-list" disabled></input>
         <datalist id="obj-names-list"></datalist>
@@ -122,7 +126,7 @@
     </div>
 
     <!-- панель информации справа внизу -->
-    <div id="info_panel" style="display: none;" onclick="this.style.display = 'none'" title="Click to hide">
+    <div id="info_panel" style="display: none;" title="Click to hide">
       <h3>_</h3>
       <div id="info_panel_body"></div>
     </div>

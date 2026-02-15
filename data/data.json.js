@@ -728,102 +728,102 @@ DEFAULT_DATA=[
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 1526.5426057190277,
     "y": 1741.1174352974526,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 2878.542605719028,
     "y": 1957.1174352974526,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 2177.470821004869,
     "y": 2445.7968970828492,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 729.4613081930879,
     "y": 1697.799114884902,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 1242.5426057190277,
     "y": 1057.1174352974526,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 3688.6289023873283,
     "y": 635.3187941901527,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 4566.542605719028,
     "y": 2513.117435297452,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 2395.1621831636157,
     "y": 312.8281241035482,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
-    "name": "unknown_bonus",
+    "name": "_unknown_bonus",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 1748.1618387739481,
     "y": 1358.169051600053,
     "width": 64,
     "height": 59.43,
-    "src": "images/buildings/unknown_bonus.png"
+    "src": "images/buildings/_unknown_bonus.png"
   },
   {
     "type": "shape",
@@ -915,80 +915,80 @@ DEFAULT_DATA=[
   },
   {
     "type": "shape",
-    "name": "build_slot",
+    "name": "_build_slot",
     "shape": "custom",
     "color": "#ff0000",
     "x": 1806.7889676528189,
     "y": 832.5215987553183,
     "width": 38,
     "height": 38,
-    "src": "images/buildings/build_slot.png"
+    "src": "images/buildings/_build_slot.png"
   },
   {
     "type": "shape",
-    "name": "build_slot",
+    "name": "_build_slot",
     "shape": "custom",
     "color": "#ff0000",
     "x": 1883.5567710166426,
     "y": 789.5735158543329,
     "width": 38,
     "height": 38,
-    "src": "images/buildings/build_slot.png"
+    "src": "images/buildings/_build_slot.png"
   },
   {
     "type": "shape",
-    "name": "build_slot",
+    "name": "_build_slot",
     "shape": "custom",
     "color": "#ff0000",
     "x": 1954.887360865751,
     "y": 833.4692634537843,
     "width": 38,
     "height": 38,
-    "src": "images/buildings/build_slot.png"
+    "src": "images/buildings/_build_slot.png"
   },
   {
     "type": "shape",
-    "name": "build_slot",
+    "name": "_build_slot",
     "shape": "custom",
     "color": "#ff0000",
     "x": 1954.2014898095094,
     "y": 920.5748875964454,
     "width": 38,
     "height": 38,
-    "src": "images/buildings/build_slot.png"
+    "src": "images/buildings/_build_slot.png"
   },
   {
     "type": "shape",
-    "name": "build_slot",
+    "name": "_build_slot",
     "shape": "custom",
     "color": "#ff0000",
     "x": 1807.9868673476938,
     "y": 914.5989797929377,
     "width": 38,
     "height": 38,
-    "src": "images/buildings/build_slot.png"
+    "src": "images/buildings/_build_slot.png"
   },
   {
     "type": "shape",
-    "name": "build_slot",
+    "name": "_build_slot",
     "shape": "custom",
     "color": "#ff0000",
     "x": 1951.6703892090088,
     "y": 999.0345947007245,
     "width": 38,
     "height": 38,
-    "src": "images/buildings/build_slot.png"
+    "src": "images/buildings/_build_slot.png"
   },
   {
     "type": "shape",
-    "name": "build_slot",
+    "name": "_build_slot",
     "shape": "custom",
     "color": "#ff0000",
     "x": 1925.2928918066218,
     "y": 875.6183259157247,
     "width": 38,
     "height": 38,
-    "src": "images/buildings/build_slot.png"
+    "src": "images/buildings/_build_slot.png"
   },
   {
     "type": "shape",

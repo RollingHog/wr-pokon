@@ -37,7 +37,7 @@ const DEFAULT = {
   /* filled up later */
   units: [],
   noHealth: [
-    'build_slot',
+    KW.BUILD_SLOT,
     KW.GRAVE_UNIT,
     KW.WRECK_UNIT,
     '_unknown_bonus',

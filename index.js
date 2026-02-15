@@ -333,8 +333,8 @@ function addListeners() {
 
   // Форма редактирования
   document.getElementById('edit-atk-btn').addEventListener('click', enableAttackMode);
-  document.getElementById('edit-pin-btn').addEventListener('click', enablePinMode);
-  document.getElementById('remove-pin-btn').addEventListener('click', () => { Pins.removePreviousOwnership(selectedElement) });
+  document.getElementById('edit-pin-btn')?.addEventListener('click', enablePinMode);
+  document.getElementById('remove-pin-btn')?.addEventListener('click', () => { Pins.removePreviousOwnership(selectedElement) });
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   // document.getElementById('edit-color').addEventListener('input', updateElementColor);
   document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
@@ -635,6 +635,13 @@ function processRuleFile() {
   )
 
   DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
+
+  // userParams.js
+  for(let playerName of listPlayers()) {
+    if(!USER_TECH_LVLS[playerName]) {
+      USER_TECH_LVLS[playerName] = {}
+    }
+  }
 }
 
 function getCurrentMap() {
@@ -2097,11 +2104,11 @@ const Player = {
 }
 
 function colorFromUsername(username) {
-  return Array.from(document.querySelectorAll('.player-btn')).find(el => el.textContent === username).dataset.color
+  return Array.from(document.querySelectorAll('.player-btn')).find(el => el.textContent === username)?.dataset?.color
 }
 
 function playerByColor(colorStr) {
-  return Array.from(document.querySelectorAll('.player-btn')).find(el => el.dataset.color === colorStr).textContent
+  return Array.from(document.querySelectorAll('.player-btn')).find(el => el.dataset.color === colorStr)?.textContent
 }
 
 function listPlayers() {
