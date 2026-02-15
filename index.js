@@ -59,6 +59,7 @@ let mousePos = {
   x: 0,
   y: 0
 }
+let DICT_COMMON_A = {}
 /** 
 * @type {{
 *     id: number,
@@ -260,7 +261,7 @@ function setShapeColor(color) {
 }
 
 const UI = {
-  drawInfoPanel(color = getShapeColor()) {
+  async drawInfoPanel(color = getShapeColor()) {
     if (!color) return
     const player = playerByColor(color)
     const effs = userEffectsObj.sumEffects(player)
@@ -269,7 +270,7 @@ const UI = {
     info_panel.querySelector('h3').style.color = color
     info_panel_body.innerHTML = userEffectsObj.groupBySections(effs).toPrettyHTML(player)
   },
-  drawEditPanel(mouseX, mouseY, element) {
+  async drawEditPanel(mouseX, mouseY, element) {
     editPanel.style.display = 'block';
     editPanel.style.left = `${mouseX + 10}px`;
     editPanel.style.top = `${mouseY + 10}px`;
@@ -416,7 +417,7 @@ const Unit = {
     if (OBJ_CATEGORIES[typeKey]._none_.includes(filename)) return null
 
     for (let category in OBJ_CATEGORIES[typeKey]) {
-      const objCost = DICT_COMMON[filename]?.find(([k, _]) => k === KW.COST)
+      const objCost = DICT_COMMON_A[filename]?.find(([k, _]) => k === KW.COST)
       if (objCost) return objCost[1]
       if (OBJ_CATEGORIES[typeKey][category].includes(filename)) {
         const res = CATEGORY_PRICES[typeKey][category]
@@ -430,12 +431,12 @@ const Unit = {
   getMaxHP(filename) {
     if (isNoHealth({ name: filename })) return 1
     // DICT_USER[Player.getCurrent()]?.[filename] ||
-    return DICT_COMMON?.[filename]?.find(el => el[0] == KW.MAX_HP)?.[1] ||
+    return DICT_COMMON_A?.[filename]?.find(el => el[0] == KW.MAX_HP)?.[1] ||
       MAX_UNIT_HP
   },
 
   getLoot(filename) {
-    return DICT_COMMON?.[filename]?.find(el => el[0] == KW.LOOT)?.[1]
+    return DICT_COMMON_A?.[filename]?.find(el => el[0] == KW.LOOT)?.[1]
   },
 }
 
@@ -456,8 +457,8 @@ function getUnitDescription(filename) {
     }
   }
 
-  const effStr = typeof DICT_COMMON[filename] !== 'undefined'
-    ? '\n\nЭФФЕКТЫ:\n' + effArrToStr(DICT_COMMON[filename])
+  const effStr = typeof DICT_COMMON_A[filename] !== 'undefined'
+    ? '\n\nЭФФЕКТЫ:\n' + effArrToStr(DICT_COMMON_A[filename])
     : ''
 
   return filename + costStr + effStr
@@ -632,6 +633,8 @@ function processRuleFile() {
     'unit_to_upkeep',
     'build_to_upkeep',
   )
+
+  DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
 }
 
 function getCurrentMap() {
@@ -1755,6 +1758,98 @@ const userEffectsObj = {
 
   },
 
+  // for conversion of old-style rules, remove when unnecessary
+  convertToPlainObject(obj) {
+    const result = {};
+
+    for (const key in obj) {
+      const value = obj[key];
+
+      if (Array.isArray(value)) {
+        result[key] = Object.fromEntries(value);
+      } else {
+        result[key] = value;
+      }
+    }
+
+    if (result._upkeep_) {
+      for (const subKey in result._upkeep_) {
+        const subValue = result._upkeep_[subKey];
+        if (Array.isArray(subValue)) {
+          result._upkeep_[subKey] = Object.fromEntries(subValue);
+        }
+      }
+    }
+
+    for (const key in result) {
+      const value = result[key];
+      for (const subKey in value) {
+        const subValue = value[subKey];
+        if (Array.isArray(subValue) && [KW.LOOT, KW.COST].includes(subKey)) {
+          result[key][subKey] = Object.fromEntries(subValue);
+        }
+      }
+    }
+
+    return result;
+  },
+
+  convertFromPlainObject(plainObj) {
+    const result = {};
+
+    for (const key in plainObj) {
+      const value = plainObj[key];
+
+      if (key === '_upkeep_') {
+        result[key] = value;
+      } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        result[key] = Object.entries(value);
+      } else {
+        result[key] = value;
+      }
+    }
+
+    if (result._upkeep_) {
+      for (const subKey in result._upkeep_) {
+        const subValue = result._upkeep_[subKey];
+        if (typeof subValue === 'object' && !Array.isArray(subValue)) {
+          result._upkeep_[subKey] = Object.entries(subValue);
+        }
+      }
+    }
+
+    for (const key in result) {
+      const topValue = result[key];
+      if(key === '_upkeep_') continue
+
+      for (const subKey in topValue) {
+        const value = topValue[subKey];
+
+        if (typeof value[1] === 'object' && value[1] !== null && !Array.isArray(value[1])) {
+          console.log(value, Object.entries(value))
+          // if([KW.LOOT, KW.COST].includes(value[0])) {
+          //   continue
+          // }
+          result[key][subKey] = [value[0], Object.entries(value[1])]
+        } else {
+          result[key][subKey] = value
+        }
+      }
+    }
+
+    return result;
+  },
+
+  // recodeRulesArr(dict) {
+  //   for (let i of Object.keys(dict)) {
+  //     if (Array.isArray(dict[i])) {
+  //       dict[i] = Object.fromEntries(dict[i])
+  //     }
+  //   }
+
+  //   console.log(JSON.stringify(dict))
+  // },
+
   //getStaticEffects
 
   getRawEffectsList(obj) {
@@ -1762,9 +1857,9 @@ const userEffectsObj = {
 
     const typeKey = isBuilding(obj) ? '_building_' : '_unit_'
     let list = [].concat([
-      DICT_COMMON?.[typeKey],
+      DICT_COMMON_A?.[typeKey],
       DICT_USER[username]?.[typeKey],
-      DICT_COMMON?.[obj.name],
+      DICT_COMMON_A?.[obj.name],
       DICT_USER[username]?.[obj.name],
     ])
 
@@ -1774,7 +1869,7 @@ const userEffectsObj = {
     ) {
       list = list.concat([
         DICT_USER[username]?._upkeep_?.[typeKey],
-        DICT_COMMON?._upkeep_?.[typeKey],
+        DICT_COMMON_A?._upkeep_?.[typeKey],
       ])
     }
 
@@ -1941,7 +2036,7 @@ const userEffectsObj = {
     if (POP_PROP) {
       const popEff = [].concat(
         DICT_USER[username]?._pop_,
-        DICT_COMMON?._pop_
+        DICT_COMMON_A?._pop_
       ).filter(e => e)
       for (let [k, v] of popEff) {
         if (!k) continue

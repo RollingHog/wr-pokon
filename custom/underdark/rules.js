@@ -12,6 +12,13 @@ onEndTurnCb
 KW
 */
 
+/// <reference path="../../index.js"/>
+/* global
+USER_RESOURCES
+NPCPlayers listPlayers
+userEffectsObj
+*/
+
 const SETTINGS = {
   // DEFAULT_FIGURE_BG: 'circle',
   IS_CUSTOM: true,
@@ -219,83 +226,78 @@ const EFFECT_LISTS = {
 }
 
 const LOOT = {
-  PSY: ["🟪", 1],
+  PSY: {"🟪": 1},
 }
 
 const UNIT_UPKEEP = 1
 const UNDO_POP_USAGE = ['Рабочие', 1]
 const DICT_COMMON = {
-  _upkeep_: {
-    _building_: [
-      ['Рабочие', -1],
-    ],
-    _unit_: [
-      ["Еда", -UNIT_UPKEEP],
-    ],
+
+  '_upkeep_': {
+    '_building_': {
+      'Рабочие': -1,
+    },
+    '_unit_': {
+      'Еда': -UNIT_UPKEEP,
+    }
   },
-  _building_: [
-    [KW.REGEN, 2],
-  ],
-  _unit_: [
-    [KW.ATK, 0],
-  ],
-  _pop_: [
-    ["Еда", -0.5],
-  ],
-  [KW.WRECK_UNIT]: [
-    [KW.LOOT, [
-      ["Ремесло", 2],
-    ]]
-  ],
-  [KW.CAPITAL]:
-    [
-      ["Еда", 2],
-      ["Ремесло", 2],
-      [KW.MAX_HP, 4]
-    ],
+  '_building_': {
+    [KW.REGEN]: 2
+  },
+  '_unit_': {
+    [KW.ATK]: 0
+  },
+  '_pop_': {
+    'Еда': -0.5
+  },
+  [KW.WRECK_UNIT]: {
+    [KW.LOOT]: {
+      'Ремесло': 2
+    }
+  },
+  [KW.CAPITAL]: {
+    'Еда': 2,
+    'Ремесло': 2,
+    [KW.MAX_HP]: 4
 
-  Василиск:
-    [
-      [KW.MAX_HP, 4],
-    ],
+  },
 
-  
+  Жители: {
+    [KW.COST]: {
+      'Еда': 1
 
-  Жители:
-    [
-      [KW.COST, [
-        ["Еда", 1],
-      ]],
-      [KW.LOOT, [
-        LOOT.PSY
-      ]],
-      ["Еда", -0.5],
-      ['Рабочие', 1],
-    ],
+    },
+    [KW.LOOT]: {
+        ...LOOT.PSY
+    },
+    'Еда': -0.5,
+    'Рабочие': 1
+  },
 
   //////////////// units
-  
-  Пехота: [
-    [KW.ATK, 2],
-    [KW.AP, 2],
-  ],
+
+  Пехота: {
+    [KW.ATK]: 2,
+    [KW.AP]: 2
+  },
 
   //////////////// monsters
+
+  Василиск: {
+    [KW.MAX_HP]: 4
+
+  },
+
   //////////////// fairies
 
-  Фея:
-    [
-      // [KW.COST, [
-      //   ["Еда", 1],
-      // ]],
-      [KW.LOOT, [
-        LOOT.PSY
-      ]],
-      [KW.ATK, 3],
-      // [KW.DEF, 1],
-      [KW.AP, 3],
-    ],
-};
+  Фея: {
+    [KW.LOOT]: {
+      ...LOOT.PSY
+    },
+    [KW.ATK]: 3,
+    [KW.AP]: 3
+  }
+}
 
 const onEndTurnCb = () => {
   for(let player of listPlayers()) {
