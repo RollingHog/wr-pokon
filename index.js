@@ -641,6 +641,9 @@ function processRuleFile() {
     if(!USER_TECH_LVLS[playerName]) {
       USER_TECH_LVLS[playerName] = {}
     }
+    if(!USER_RESOURCES[playerName]) {
+      USER_RESOURCES[playerName] = {}
+    }
   }
 }
 
@@ -2405,7 +2408,7 @@ const TechUtils = {
    * @returns {[string, null][]} - effects arr-dict
    */
   processSpecialTechEffects(username) {
-    if (NPCPlayers.includes(username)) return []
+    // if (NPCPlayers.includes(username)) return []
     const techLvlsObj = USER_TECH_LVLS[username]
     if (!techLvlsObj) {
       console.warn('processSpecialTechEffects() wtf:', techLvlsObj)
@@ -2586,9 +2589,11 @@ function saveGame() {
     scale, canvasOffsetX, canvasOffsetY,
     shapeColor: getShapeColor(),
   }
+
+  const userResources = typeof USER_RESOURCES !== 'undefined' ? USER_RESOURCES : {}
   saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
 OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
-USER_RESOURCES=${JSON.stringify(typeof USER_RESOURCES !== 'undefined' ? USER_RESOURCES : {}, 0, 2)};
+USER_RESOURCES=${JSON.stringify(userResources, 0, 2)};
 OWNER_MAP=${JSON.stringify(typeof ownerMap !== 'undefined' ? ownerMap : {})};
 DEFAULT_DATA=`
     + JSON.stringify(defaultData, 0, 2)
