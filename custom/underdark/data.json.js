@@ -1,9 +1,9 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 2.5271306683236805,
-  "canvasOffsetX": -1684.6513260276383,
-  "canvasOffsetY": -1834.2754268090935,
-  "shapeColor": "#d3d3d3"
+  "scale": 1.6319216183326728,
+  "canvasOffsetX": -1870.4209818731074,
+  "canvasOffsetY": -700.6367149147216,
+  "shapeColor": "#92d2d3"
 };
 USER_RESOURCES={
   "Синие": {},
@@ -12,7 +12,8 @@ USER_RESOURCES={
     "Ремесло": 0
   },
   "Нейтралы": {},
-  "Варвары": {}
+  "Варвары": {},
+  "Шогготы": {}
 };
 OWNER_MAP={"19":[20]};
 DEFAULT_DATA=[
@@ -26,10 +27,10 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 38,
     "src": null,
-    "curr_hp": 4,
     "disabled": false,
     "endedTurn": false,
-    "id": 1
+    "id": 1,
+    "curr_hp": 4
   },
   {
     "type": "shape",
@@ -41,10 +42,10 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 38,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 2
+    "id": 2,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -56,10 +57,10 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 38,
     "src": "../images/units/Жители.png",
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 3
+    "id": 3,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -71,10 +72,10 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 38,
     "src": "../images/units/Жители.png",
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 4
+    "id": 4,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -86,10 +87,10 @@ DEFAULT_DATA=[
     "width": 38,
     "height": 38,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 5
+    "id": 5,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -101,10 +102,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 6
+    "id": 6,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -116,10 +117,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 7
+    "id": 7,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -131,10 +132,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 8
+    "id": 8,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -146,10 +147,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 9
+    "id": 9,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -161,10 +162,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 10
+    "id": 10,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -176,10 +177,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 11
+    "id": 11,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -191,10 +192,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 12
+    "id": 12,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -206,10 +207,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 13
+    "id": 13,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -221,10 +222,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 14
+    "id": 14,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -236,10 +237,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 15
+    "id": 15,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -251,10 +252,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 16
+    "id": 16,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -266,10 +267,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 17
+    "id": 17,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -281,10 +282,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 18
+    "id": 18,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -296,10 +297,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 19
+    "id": 19,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -311,10 +312,10 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 20
+    "id": 20,
+    "curr_hp": 2
   },
   {
     "type": "shape",
@@ -326,9 +327,174 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "src": null,
-    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
-    "id": 21
+    "id": 21,
+    "curr_hp": 2
+  },
+  {
+    "id": 22,
+    "type": "shape",
+    "name": "Творитель",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1282.27,
+    "y": 647.19,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 2
+  },
+  {
+    "id": 23,
+    "type": "shape",
+    "name": "Творитель",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1329.2819670706972,
+    "y": 559.1144506743458,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 2
+  },
+  {
+    "id": 24,
+    "type": "shape",
+    "name": "Творитель",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1329.28,
+    "y": 601.04,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 2
+  },
+  {
+    "id": 25,
+    "type": "shape",
+    "name": "Пингвин",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1328.206849657338,
+    "y": 643.5111676230518,
+    "width": 40,
+    "height": 40,
+    "src": "",
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 2
+  },
+  {
+    "id": 26,
+    "type": "shape",
+    "name": "Творитель",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1373.36,
+    "y": 646.74,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 2
+  },
+  {
+    "id": 27,
+    "type": "shape",
+    "name": "Творитель",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1416.37,
+    "y": 603.19,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 2
+  },
+  {
+    "id": 28,
+    "type": "shape",
+    "name": "Творитель",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1374.44,
+    "y": 559.65,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 2
+  },
+  {
+    "id": 29,
+    "type": "shape",
+    "name": "Шоггот",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1414.22,
+    "y": 556.96,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 3
+  },
+  {
+    "id": 30,
+    "type": "shape",
+    "name": "Шоггот",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1416.52,
+    "y": 647.27,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 3
+  },
+  {
+    "id": 31,
+    "type": "shape",
+    "name": "Шоггот",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1283.21,
+    "y": 603.49,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 3
+  },
+  {
+    "id": 32,
+    "type": "shape",
+    "name": "Пингвин",
+    "shape": "custom",
+    "color": "#92d2d3",
+    "x": 1285.81,
+    "y": 558.9,
+    "width": 40,
+    "height": 40,
+    "src": "",
+    "disabled": false,
+    "endedTurn": false,
+    "curr_hp": 2
   }
 ]

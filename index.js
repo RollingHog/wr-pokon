@@ -1836,9 +1836,6 @@ const userEffectsObj = {
         const value = topValue[subKey];
 
         if (typeof value[1] === 'object' && value[1] !== null && !Array.isArray(value[1])) {
-          // if([KW.LOOT, KW.COST].includes(value[0])) {
-          //   continue
-          // }
           result[key][subKey] = [value[0], Object.entries(value[1])]
         } else {
           result[key][subKey] = value
@@ -1848,16 +1845,6 @@ const userEffectsObj = {
 
     return result;
   },
-
-  // recodeRulesArr(dict) {
-  //   for (let i of Object.keys(dict)) {
-  //     if (Array.isArray(dict[i])) {
-  //       dict[i] = Object.fromEntries(dict[i])
-  //     }
-  //   }
-
-  //   console.log(JSON.stringify(dict))
-  // },
 
   //getStaticEffects
 
