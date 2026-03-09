@@ -59,6 +59,7 @@ let mousePos = {
   y: 0
 }
 let DICT_COMMON_A = {}
+const DEFAULT_LINE_COLOR = SETTINGS?.DEFAULT_LINE_COLOR || 'black'
 /** 
 * @type {{
 *     id: number,
@@ -189,7 +190,7 @@ function init() {
       { type: 'rect', color: 'red', name: 'Квадрат' },
       { type: 'circle', color: 'green', name: 'Круг' },
       { type: 'triangle', color: 'blue', name: 'Треугольник' },
-      { type: 'line', color: 'black', name: 'Линия' }
+      { type: 'line', color: DEFAULT_LINE_COLOR, name: 'Линия' }
     ];
 
     standardShapes.forEach(shape => {
@@ -850,7 +851,7 @@ const draw = {
 
     let img
     if (typeof EMOJI_IMAGES !== 'undefined' && EMOJI_IMAGES[el.name]) {
-      const emojiFontSize = (el.width * 0.7).toString(10)
+      const emojiFontSize = +(el.width * 0.7).toString(10)
       ctx.font = `bold ${emojiFontSize}px "Noto Color Emoji"`;
       ctx.textAlign = 'center';
       ctx.fillText(
@@ -878,7 +879,8 @@ const draw = {
 
     if (Pins.isOwner(el)) {
       draw.textBelow(
-        ctx, x + el.width / 2.2, y, el.width,
+        ctx, x + el.width / 2.2, y, 
+        el.width, 
         'O'
       )
     } 
@@ -921,7 +923,7 @@ const draw = {
       ctx.font = `${lvlTextSize}px Arial`;
 
       ctx.strokeStyle = 'white';
-      ctx.fillStyle = 'black';
+      ctx.fillStyle = DEFAULT_LINE_COLOR;
       ctx.strokeText(el.lvl, x, y + 5, lvlTextSize);
       ctx.fillText(el.lvl, x, y + 5, lvlTextSize);
     }
@@ -982,7 +984,7 @@ const draw = {
     const TITLE_FONT = '12px Arial'
 
     ctx.font = TITLE_FONT;
-    ctx.fillStyle = 'black';
+    ctx.fillStyle = DEFAULT_LINE_COLOR;
     ctx.textAlign = 'center';
     ctx.fillText(text, x + width / 2, y + offsetY);
   },

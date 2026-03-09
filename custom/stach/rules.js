@@ -31,6 +31,8 @@ const SETTINGS = {
   CAPITAL_SPECIAL_VISION: false,
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
+
+  DEFAULT_LINE_COLOR: 'white',
 } 
 
 const DEFAULT = {
