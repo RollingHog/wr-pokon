@@ -27,7 +27,7 @@ const SETTINGS = {
   // DEFAULT_FIGURE_BG: 'circle',
 
   MAX_UNIT_HP: 1,
-  VISION_RADIUS: CELL_SIZE * 1.5,
+  VISION_RADIUS: CELL_SIZE * 1.6,
   CAPITAL_SPECIAL_VISION: false,
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
@@ -73,12 +73,12 @@ const EMOJI_IMAGES = {
   'Колония': '🏘️',
   'Мир-кузница': '🏭',
 
-  'Король': '♔',
-  'Ферзь': '♕',
+  'Король': '👑',
+  'Ферзь': '⚜️',
   'Ладья': '♖',
-  'Слон': '♗',
+  'Слон': '🐘',
   'Конь': '♘',
-  'Пешка': '♙',
+  'Пешка': '♟️',
   // 🛰️📡
 }
 
@@ -250,4 +250,29 @@ const onEndTurnCb = () => {
   }
 }
 
-const TECH_EFFECTS = {}
+const TECH_EFFECTS = {
+  "МОЩЬ": {
+    "1": [ // 3 * Х
+      "Юнит: Слон",
+    ],
+    "2": [
+      "Юнит: Ладья",
+      "Здание: Мир-кузница",
+    ],
+    "3": [
+      "Юнит: Ферзь",
+    ],
+  },
+  "ХИТРОСТЬ": {
+    "1": [
+      "Юнит: Конь",
+    ],
+    "2": [
+      "Юнит: Дозорный",
+      "Здание: Мир-кузница",
+    ],
+    "3": [
+      "Юнит: Король",
+    ],
+  },
+}

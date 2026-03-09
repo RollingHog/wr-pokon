@@ -365,6 +365,10 @@ let turnEndChecked = false
 function onEndTurn() {
 
   if (!turnEndChecked) {
+    if(elements.some(el => isUnit(el) && !el.endedTurn && !el.disabled)) {
+      alert('Не все юниты походили, нельзя закончить ход')
+      return
+    }
     alert('Конец хода, рассчитайте эффекты игроков (и варваров)')
     turnEndChecked = true
     return
@@ -2453,7 +2457,7 @@ const TechUtils = {
     }
     const res = acc
       .filter(line =>
-        !(line.startsWith('Здание:') || line.startsWith('Юнит:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?'))
+        !(line.startsWith('Здание2:') || line.startsWith('Юнит2:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?'))
       )
       .map(str => [str, null])
     // console.log(res)
