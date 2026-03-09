@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas · сетка с точками и координатами</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #0e1219;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            padding: 16px;
+        }
+        .canvas-card {
+            background: #1e242c;
+            border-radius: 44px;
+            padding: 28px 30px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.9), inset 0 1px 2px rgba(255, 255, 255, 0.05);
+            max-width: 1300px;
+            width: fit-content;
+        }
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            margin-bottom: 28px;
+            background: #2b333f;
+            padding: 20px 28px;
+            border-radius: 48px;
+            border: 1px solid #40506a;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 140px;
+        }
+        .input-group label {
+            color: #b5ceff;
+            font-weight: 500;
+            font-size: 0.8rem;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+        .input-group input {
+            background: #101720;
+            border: 2px solid #3d506b;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 40px;
+            width: 100%;
+            outline: none;
+            transition: 0.15s;
+        }
+        .input-group input:focus {
+            border-color: #96b5fc;
+            box-shadow: 0 0 0 3px rgba(150, 181, 252, 0.3);
+        }
+        .chance-panel {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #1f2835;
+            padding: 5px 20px 5px 26px;
+            border-radius: 60px;
+            border: 1px solid #5f7393;
+        }
+        .chance-panel span {
+            color: #d6e6ff;
+            font-weight: 500;
+        }
+        .chance-panel input {
+            width: 90px;
+            background: #0d1624;
+            border: 2px solid #61799e;
+            border-radius: 40px;
+            padding: 8px 12px;
+            color: white;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        button {
+            background: #c94f4f;
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1.3rem;
+            padding: 14px 36px;
+            border-radius: 50px;
+            cursor: pointer;
+            border-bottom: 5px solid #853232;
+            transition: 0.08s linear;
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.6);
+            margin-left: auto;
+            letter-spacing: 0.5px;
+        }
+        button:hover {
+            background: #dc5f5f;
+            border-bottom-width: 6px;
+            transform: scale(1.02);
+        }
+        button:active {
+            transform: translateY(5px);
+            border-bottom-width: 2px;
+        }
+        .canvas-wrapper {
+            background: black;
+            padding: 18px;
+            border-radius: 48px;
+            display: inline-block;
+            box-shadow: inset 0 0 0 1px #3d4c63, 0 20px 30px -8px black;
+        }
+        canvas {
+            display: block;
+            border-radius: 28px;
+            width: 100%;
+            height: auto;
+            background: black;
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+        }
+        .info-row {
+            color: #9bb5de;
+            margin-top: 22px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .info-row span {
+            background: #262f3d;
+            padding: 5px 14px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+        @media (max-width: 700px) {
+            .controls { flex-direction: column; align-items: stretch; }
+            button { margin-left: 0; }
+            .canvas-card { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-card">
+        <div class="controls">
+            <div class="input-group">
+                <label>📌 Столбцов (ширина)</label>
+                <input type="number" id="widthInput" value="24" min="1" max="30" step="1">
+            </div>
+            <div class="input-group">
+                <label>📏 Строк (высота)</label>
+                <input type="number" id="heightInput" value="24" min="1" max="25" step="1">
+            </div>
+            <div class="chance-panel">
+                <span>🔴 шар %</span>
+                <input type="number" id="chanceInput" value="13" min="0" max="100" step="1">
+            </div>
+            <button id="renderBtn">🎯 Отрисовать</button>
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="gridCanvas" width="700" height="500"></canvas>
+        </div>
+        <div class="info-row">
+            <span>⚫ номер = столбец.строка (внизу) • красная точка с шансом <span id="chanceDisplay">15</span>%</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('gridCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const widthInput = document.getElementById('widthInput');
+            const heightInput = document.getElementById('heightInput');
+            const chanceInput = document.getElementById('chanceInput');
+            const chanceDisplay = document.getElementById('chanceDisplay');
+            const renderBtn = document.getElementById('renderBtn');
+
+            // фиксированные размеры ячейки (пиксели)
+            const CELL_W = 72;   // ширина ячейки
+            const CELL_H = 68;   // высота ячейки (чуть меньше, чтобы номер внизу выглядел пропорционально)
+            const DOT_RADIUS = 9; // радиус шарика
+
+            // обновление текста процентов
+            function updateChanceText() {
+                let val = parseInt(chanceInput.value, 10);
+                if (isNaN(val)) val = 15;
+                if (val < 0) val = 0;
+                if (val > 100) val = 100;
+                chanceDisplay.textContent = val;
+                chanceInput.value = val;
+            }
+
+            // главная функция отрисовки
+            function drawCanvas() {
+                // считываем и корректируем параметры
+                let cols = parseInt(widthInput.value, 10);
+                let rows = parseInt(heightInput.value, 10);
+                if (isNaN(cols) || cols < 1) cols = 1;
+                if (isNaN(rows) || rows < 1) rows = 1;
+                const MAX_COLS = 35;
+                const MAX_ROWS = 30;
+                if (cols > MAX_COLS) cols = MAX_COLS;
+                if (rows > MAX_ROWS) rows = MAX_ROWS;
+                widthInput.value = cols;
+                heightInput.value = rows;
+
+                let chance = parseInt(chanceInput.value, 10);
+                if (isNaN(chance)) chance = 15;
+                if (chance < 0) chance = 0;
+                if (chance > 100) chance = 100;
+                chanceInput.value = chance;
+                chanceDisplay.textContent = chance;
+
+                // устанавливаем размер canvas с небольшим полем (чтобы сетка не впритык)
+                const padding = 16;
+                const canvasWidth = cols * CELL_W + 2 * padding;
+                const canvasHeight = rows * CELL_H + 2 * padding;
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+
+                // 1. Заливаем всё чёрным
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                // 2. Рисуем сетку (линии между ячейками)
+                ctx.strokeStyle = '#2f3a48';
+                ctx.lineWidth = 2.5;
+                ctx.beginPath();
+
+                // вертикальные линии
+                for (let i = 0; i <= cols; i++) {
+                    const x = padding + i * CELL_W;
+                    ctx.moveTo(x, padding);
+                    ctx.lineTo(x, canvasHeight - padding);
+                }
+                // горизонтальные линии
+                for (let i = 0; i <= rows; i++) {
+                    const y = padding + i * CELL_H;
+                    ctx.moveTo(padding, y);
+                    ctx.lineTo(canvasWidth - padding, y);
+                }
+                ctx.strokeStyle = '#3d4a5c';
+                ctx.stroke();
+
+                // 3. Тонкая внутренняя обводка ячеек (беловатый оттенок) — опционально, для красоты
+                ctx.lineWidth = 1.2;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+                ctx.strokeRect(padding, padding, cols * CELL_W, rows * CELL_H);
+
+                // 4. Рисуем ячейки: номера и шарики
+                for (let row = 1; row <= rows; row++) {
+                    for (let col = 1; col <= cols; col++) {
+                        const x = padding + (col - 1) * CELL_W;
+                        const y = padding + (row - 1) * CELL_H;
+
+                        // === красный шарик (рандом) ===
+                        const rnd = Math.random() * 100;
+                        if (rnd < chance) {
+                            ctx.beginPath();
+                            ctx.arc(x + CELL_W / 2, y + CELL_H / 2, DOT_RADIUS, 0, 2 * Math.PI);
+                            // градиент для объёма
+                          const gradient = ctx.createRadialGradient(
+                            x + CELL_W / 2 - 3, y + CELL_H / 2 - 3, 3,
+                            x + CELL_W / 2, y + CELL_H / 2, DOT_RADIUS + 3
+                          );
+                          gradient.addColorStop(0, '#ffb347');  // светлый оранжевый
+                          gradient.addColorStop(0.7, '#ff8c00'); // средний оранжевый
+                          gradient.addColorStop(1, '#c45c00');   // тёмно-оранжевый
+                          ctx.fillStyle = gradient;
+                            ctx.fill();
+                            // блик
+                            ctx.shadowColor = '#ff8888';
+                            ctx.shadowBlur = 12;
+                            ctx.fill(); // повтор для усиления свечения (не страшно)
+                            ctx.shadowBlur = 0;
+                            ctx.shadowColor = 'transparent';
+                            // дополнительная белая точка-блик
+                            ctx.beginPath();
+                            ctx.arc(x + CELL_W / 2 - 3, y + CELL_H / 2 - 3, 2.5, 0, 2 * Math.PI);
+                            ctx.fillStyle = '#fff9f9';
+                            ctx.fill();
+                        }
+
+                        // === номер (столбец.строка) внизу ячейки ===
+                        const text = `${col}.${row}`;
+                        ctx.font = 'bold 17px "JetBrains Mono", "Fira Code", monospace';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        // немного поднимаем текст от нижнего края
+                        const textX = x + CELL_W / 2;
+                        const textY = y + CELL_H;  // отступ 8px от низа
+
+                        // сам текст
+                        ctx.fillStyle = '#f0f4ff';
+                        // ctx.shadowColor = '#aaccff';
+                        // ctx.shadowBlur = 6;
+                        ctx.fillText(text, textX, textY - 2); // маленькая поправка
+                        ctx.shadowBlur = 0;
+                    }
+                }
+
+                // 5. Рисуем внешнюю яркую обводку canvas (стильно)
+                ctx.strokeStyle = '#6d7f9c';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+            }
+
+            // синхронизация отображения шанса
+            chanceInput.addEventListener('input', () => {
+                let val = parseInt(chanceInput.value, 10);
+                if (isNaN(val)) val = 15;
+                if (val < 0) val = 0;
+                if (val > 100) val = 100;
+                chanceDisplay.textContent = val;
+            });
+
+            chanceInput.addEventListener('blur', () => {
+                let val = parseInt(chanceInput.value, 10);
+                if (isNaN(val)) val = 15;
+                if (val < 0) val = 0;
+                if (val > 100) val = 100;
+                chanceInput.value = val;
+                chanceDisplay.textContent = val;
+            });
+
+            // обработчик кнопки
+            renderBtn.addEventListener('click', drawCanvas);
+
+            // enter в любом поле вызывает отрисовку
+            [widthInput, heightInput, chanceInput].forEach(input => {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') drawCanvas();
+                });
+            });
+
+            // защита от дурака для ширины/высоты
+            function clampDimensions() {
+                let w = parseInt(widthInput.value, 10);
+                let h = parseInt(heightInput.value, 10);
+                if (isNaN(w)) w = 1;
+                if (isNaN(h)) h = 1;
+                if (w < 1) w = 1;
+                if (h < 1) h = 1;
+                if (w > 35) w = 35;
+                if (h > 30) h = 30;
+                widthInput.value = w;
+                heightInput.value = h;
+            }
+            widthInput.addEventListener('blur', clampDimensions);
+            heightInput.addEventListener('blur', clampDimensions);
+
+            // начальная отрисовка с дефолтными значениями (9x7, 15%)
+            updateChanceText();
+            drawCanvas();
+
+            // дополнительно: при изменении размера окна не ломаем canvas (но он фиксированного размера)
+        })();
+    </script>
+</body>
+</html>
