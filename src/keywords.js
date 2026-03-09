@@ -22,4 +22,5 @@ const KW = /** @type {const} */ ({
   REGEN: 'Регенерация',
 
   LVL_DRIFT: 'Сдвиг уровня',
+  VISION: 'Радиус зрения',
 })

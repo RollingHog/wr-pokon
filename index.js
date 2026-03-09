@@ -435,6 +435,12 @@ const Unit = {
       SETTINGS.MAX_UNIT_HP
   },
 
+  getVision(filename) {
+    if (isNoHealth({ name: filename })) return 1
+    return DICT_USER[Player.getCurrent()]?.[filename]?.[KW.VISION] ||
+      DICT_COMMON[filename]?.[KW.VISION] || null
+  },
+
   getLoot(filename) {
     return DICT_COMMON_A[filename]?.find(([k, _]) => k === KW.LOOT)?.[1]
   },
@@ -766,9 +772,15 @@ const draw = {
     // Для каждого юнита рисуем круг видимости (в локальных координатах)
     visibleUnits.forEach(el => {
       const isCapital = el.name === KW.CAPITAL && SETTINGS.CAPITAL_SPECIAL_VISION
-      const radius = isCapital
+      let radius = isCapital
         ? CURRENT_TURN * visionRadius * 0.4 * scale
         : visionRadius * scale;
+
+      const vis = Unit.getVision(el.name)
+      if(vis) {
+        radius = vis * scale
+      }
+
       const x = el.x * scale + canvasOffsetX;
       const y = el.y * scale + canvasOffsetY;
 
