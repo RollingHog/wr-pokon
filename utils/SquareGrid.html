@@ -308,7 +308,7 @@
                         }
 
                         // === номер (столбец.строка) внизу ячейки ===
-                        const text = `${col}.${row}`;
+                        const text = `${col.toString(10).padStart(2, 0)}.${row.toString(10).padStart(2, 0)}`;
                         ctx.font = 'bold 17px "JetBrains Mono", "Fira Code", monospace';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'bottom';
