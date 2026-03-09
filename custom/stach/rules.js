@@ -19,13 +19,15 @@ NPCPlayers listPlayers
 userEffectsObj
 */
 
+const CELL_SIZE = 90
+
 const SETTINGS = {
   IS_CUSTOM: true,
   MAP_PATH: 'stach/map.png',
   // DEFAULT_FIGURE_BG: 'circle',
 
   MAX_UNIT_HP: 1,
-  VISION_RADIUS: 100,
+  VISION_RADIUS: CELL_SIZE * 1.5,
   CAPITAL_SPECIAL_VISION: false,
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
@@ -44,6 +46,15 @@ const DEFAULT = {
   wreckUnit: [
   ],
   noGrave: [
+    // 'Колония',
+    // 'Мир-кузница',
+
+    // 'Король',
+    // 'Ферзь',
+    // 'Ладья',
+    // 'Слон',
+    // 'Конь',
+    // 'Пешка',
   ],
   noUpkeep: [
     KW.GRAVE_UNIT,
@@ -54,9 +65,11 @@ const DEFAULT = {
 // https://emojipedia.org/fantasy-magic
 const EMOJI_IMAGES = {
   // здания людей
-  [KW.CAPITAL]: '👑',
-  'Город': '🏘️',
-  'Кузница': '🏭',
+  // [KW.CAPITAL]: '🌟',
+  // 🏙️ 🌃🏛️❔
+  // Аванпост?
+  'Колония': '🏘️',
+  'Мир-кузница': '🏭',
 
   'Король': '♔',
   'Ферзь': '♕',
@@ -98,8 +111,8 @@ const OBJ_CATEGORIES = {
       // '_unknown_bonus',
     ],
     _default_: [
-      "Город",
-      "Кузница",
+      "Колония",
+      "Мир-кузница",
     ],
   }
 }
@@ -110,10 +123,11 @@ const EFFECT_LISTS = {
     // 'Население',
     // 'Недовольство',
     // 'Рабочие',
+    'Очки_командования',
   ],
   // добывается, фактически показывает прибыль ресурса
   resources: [
-    "Пешки",
+    "Минералы",
   ],
   local: [
     // KW.ATK,
@@ -121,7 +135,7 @@ const EFFECT_LISTS = {
     // KW.AP,
     // KW.DIST,
     // "ХП",
-    // KW.REGEN,
+    KW.VISION,
   ],
 }
 
@@ -144,6 +158,72 @@ const DICT_COMMON = {
   },
 
   [KW.WRECK_UNIT]: {
+    // [KW.LOOT]: {
+    //   Минералы: 1
+    // }
+  },
+
+  // здания
+
+  "Колония": {
+    [KW.COST]: {
+      Минералы: 5,
+    },
+    Минералы: 2,
+    Очки_командования: 1,
+  }, 
+
+  "Мир-кузница": {
+    [KW.COST]: {
+      Минералы: 10,
+    },
+    Минералы: 5,
+    Очки_командования: 2,
+  }, 
+  
+  // фигуры
+
+  "Король": {
+    [KW.COST]: {
+      Минералы: 12,
+    },
+    Очки_командования: 1,
+    // [KW.VISION]: CELL_SIZE * 1.5
+  },
+
+  "Ферзь": {
+    [KW.COST]: {
+      Минералы: 9,
+    },
+    [KW.VISION]: CELL_SIZE * 2.7
+  },
+
+  "Ладья": {
+    [KW.COST]: {
+      Минералы: 5,
+    },
+    [KW.VISION]: CELL_SIZE * 2.5
+  },
+  
+  "Слон": {
+    [KW.COST]: {
+      Минералы: 3,
+    },
+    [KW.VISION]: CELL_SIZE * 2
+  },
+
+  "Конь": {
+    [KW.COST]: {
+      Минералы: 3,
+    },
+    // [KW.VISION]: CELL_SIZE * 1.5
+  },
+
+  "Пешка": {
+    [KW.COST]: {
+      Минералы: 1,
+    },
+    [KW.VISION]: CELL_SIZE
   },
 
 }
