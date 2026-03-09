@@ -318,7 +318,7 @@ function addListeners() {
   document.getElementById('load-objects-file').addEventListener('change', loadGame);
   document.getElementById('help-btn').addEventListener('click', showHelp);
   document.getElementById('user-effects-btn').addEventListener('click', userEffectsObj.effectsForSelectedUser);
-  document.getElementById('count-food-btn').addEventListener('click', calcPopGrowth);
+  // document.getElementById('count-food-btn').addEventListener('click', calcPopGrowth);
 
 
   // document.getElementById('add-shape-btn').addEventListener('click', showShapePanel);
@@ -1587,6 +1587,9 @@ function cloneShape() {
   placeShape({ selectedElement })
 }
 
+/** @type {HTMLInputElement} */
+const payCheckbox = document.getElementById('ch_pay') || {}
+
 let currentId = 1
 
 /**
@@ -1600,20 +1603,29 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     return;
   }
 
+  let activePreview = {}
+  if (activeShapeType === 'custom') {
+    activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
+  }
+
+  const name = activePreview.dataset.filename
   const color = document.getElementById('shape-color').value;
   const size = selectedElement?.height || parseInt(document.getElementById('shape-size').value);
+
+  if (payCheckbox.checked) {
+    const costCheck = subtractUnitCost(name, playerByColor(color))
+    if(!costCheck) return
+  }
 
   let width = size;
   let height = size;
   let src = null;
 
-  let activePreview = {}
 
   if (activeShapeType === 'line') {
     height = 2;
     width = size * 2;
   } else if (activeShapeType === 'custom') {
-    activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
     if (activePreview) {
       const shapeId = activePreview.dataset.shapeId;
       const customShape = customShapes.find(s => s.id === shapeId);
@@ -1649,7 +1661,6 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
       ? (+driftObj.y + (height * (Math.random() * 2 - 1)))
       : (mousePos.y - canvas.getBoundingClientRect().top - canvasOffsetY - height * scale / 2) / scale
 
-  const name = activePreview.dataset.filename
   /** @type {elements[0]} */
   const shape = {
     id: currentId++,
@@ -2122,6 +2133,21 @@ function listPlayers() {
   return Array.from(document.querySelectorAll('.player-btn')).map(el => el.textContent)
 }
 
+// Source - https://stackoverflow.com/a/51468627
+
+document.body.insertAdjacentHTML('beforeend', `<div id="el_error" hidden 
+    onclick="this.hidden = true"
+    style="position: fixed; right: 5px; top: 30px; background-color: yellow; padding: 6px; z-index: 20" >
+    <span id="el_error_inner"></span>
+  </div>`);
+
+const warn = (...args) => {
+  if (!document.getElementById('el_error').hidden) return
+  document.getElementById('el_error_inner').innerText = [...args]
+  document.getElementById('el_error').hidden = false
+  setTimeout(_ => document.getElementById('el_error').hidden = true, 4000)
+}
+
 /**
  * Вычитает стоимость юнита/здания из ресурсов игрока.
  *
@@ -2144,7 +2170,7 @@ function subtractUnitCost(filename, player) {
 
     const current = USER_RESOURCES[player][resourceName];
     if (typeof current !== 'number' || current < cost) {
-      console.warn(`Недостаточно ресурса "${resourceName}" для покупки "${filename}" игроком "${player}"`);
+      warn(`Недостаточно ресурса "${resourceName}"\n для покупки "${filename}" игроком "${player}"`);
       return false;
     }
   }
