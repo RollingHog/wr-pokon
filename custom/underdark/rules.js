@@ -48,6 +48,7 @@ const DEFAULT = {
     "Поле магии"
   ],
   noUpkeep: [
+    KW.GRAVE_UNIT,
   ],
 }
 
@@ -280,6 +281,7 @@ const DICT_COMMON = {
   [KW.CAPITAL]: {
     'Еда': 2,
     'Ремесло': 2,
+    Рабочие: 1,
     [KW.MAX_HP]: 4
   },
 

@@ -421,7 +421,7 @@ const Unit = {
     for (let category in OBJ_CATEGORIES[typeKey]) {
       if (OBJ_CATEGORIES[typeKey][category].includes(filename)) {
         const res = CATEGORY_PRICES[typeKey][category]
-        if (!res) console.warn(`Неверная категория ${category} `)
+        if (!res) console.warn(`Не задана цена категории: ${category} `)
         return res
       }
     }
@@ -637,6 +637,11 @@ function processRuleFile() {
   DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
 
   // userParams.js
+  if(typeof USER_RESOURCES === 'undefined') {
+    // eslint-disable-next-line no-global-assign
+    USER_RESOURCES = {}
+  }
+
   for(let playerName of listPlayers()) {
     if(!USER_TECH_LVLS[playerName]) {
       USER_TECH_LVLS[playerName] = {}
@@ -2217,14 +2222,13 @@ function killObj(obj) {
     for (let [k, v] of Object.entries(loot)) {
       Player.offsetResourcesCurrent(k, v)
     }
-    UI.drawInfoPanel()
   }
-
+  
   if (DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj)) {
     selection.delete()
     return
   }
-
+  
   if (isUnit(obj)) {
     if (DEFAULT.wreckUnit.includes(obj.name)) {
       obj.name = KW.WRECK_UNIT
@@ -2234,7 +2238,8 @@ function killObj(obj) {
   } else if (isBuilding(obj)) {
     obj.name = KW.WRECK_UNIT
   }
-
+  
+  UI.drawInfoPanel()
   return obj
 }
 
