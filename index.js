@@ -969,7 +969,7 @@ const draw = {
     ctx.fillRect(barX, barY, width * healthPercent, height);
 
     // Обводка для красоты
-    ctx.strokeStyle = '#000000';
+    ctx.strokeStyle = DEFAULT_LINE_COLOR;
     ctx.lineWidth = 1;
     ctx.strokeRect(barX, barY, width, height);
 
@@ -1739,7 +1739,7 @@ const lineActionsObj = {
     if (!lineModeObj.active) return
 
     // Настройки линии
-    ctx.strokeStyle = '#000000';
+    ctx.strokeStyle = DEFAULT_LINE_COLOR;
     ctx.lineWidth = 4;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -1755,7 +1755,7 @@ const lineActionsObj = {
       ctx.fill();
 
       // Номер точки
-      ctx.fillStyle = '#000000';
+      ctx.fillStyle = DEFAULT_LINE_COLOR;
       ctx.font = '14px Arial';
       ctx.fillText(index, point.x + 8, point.y + 5);
 
@@ -2084,7 +2084,7 @@ const userEffectsObj = {
     const username = document.querySelector(`[data-color="${getShapeColor()}"]`).textContent
     const effectsDict = userEffectsObj.sumEffects(username)
     let warns = ``
-    if (effectsDict[POP_PROP] < 0) {
+    if (effectsDict[SETTINGS.POP_PROP] < 0) {
       warns += `МАЛО НАСЕЛЕНИЯ`
     }
     console.log(effectsDict)
