@@ -418,7 +418,7 @@ function imageObjByObjName(filename) {
 const Unit = {
   getPrice(filename) {
     const typeKey = isUnit({ name: filename }) ? 'UNITS' : 'BUILDINGS'
-    if (OBJ_CATEGORIES[typeKey]._none_.includes(filename)) return null
+    if (OBJ_CATEGORIES[typeKey]?._none_?.includes(filename)) return null
 
     const objCost = DICT_COMMON_A[filename]?.find(([k, _]) => k === KW.COST)
     if (objCost) return objCost[1]
@@ -1681,7 +1681,8 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     src: src,
     curr_hp: Unit.getMaxHP(name),
     disabled: false,
-    endedTurn: false,
+    // can't act on same turn
+    endedTurn: true,
   };
 
   elements.push(shape);
@@ -2409,10 +2410,12 @@ const TechUtils = {
   /**
    * Получить все эффекты технологии до указанного уровня включительно
    * @param {string} techName - Название технологии (например, "ЛЕС")
-   * @param {number} level - Уровень (1, 2 или 3)
+   * @param {number} level - Уровень (от 0 (если есть) или 1 до (MAX_TECH_LVL или 3) включительно)
    * @returns {Array} Массив всех эффектов от уровня 1 до указанного
    */
   getTechEffectsUpToLevel(techName, level) {
+    const MAX_TECH_LVL = SETTINGS?.MAX_TECH_LVL || 3
+
     const tech = TECH_EFFECTS[techName];
     if (!tech) {
       console.warn(`Технология "${techName}" не найдена`);
@@ -2423,13 +2426,13 @@ const TechUtils = {
       return []
     }
 
-    if (![1, 2, 3].includes(level)) {
+    if (!(level > 0 && level <= MAX_TECH_LVL)) {
       console.warn(`Уровень должен быть 1, 2 или 3, получено: ${level}`);
       return [];
     }
 
     const effects = [];
-    for (let lvl = 1; lvl <= level; lvl++) {
+    for (let lvl = 0; lvl <= level; lvl++) {
       if (Array.isArray(tech[lvl])) {
         effects.push(...tech[lvl]);
       }

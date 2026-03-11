@@ -32,6 +32,7 @@ const SETTINGS = {
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
 
+  MAX_TECH_LVL: 3,
   DEFAULT_LINE_COLOR: 'white',
 } 
 
@@ -73,45 +74,39 @@ const EMOJI_IMAGES = {
   'Колония': '🏘️',
   'Мир-кузница': '🏭',
 
+  'Магараджа': '🌞',
   'Король': '👑',
   'Ферзь': '⚜️',
-  'Ладья': '♖',
+  'Ладья': '🗿',
   'Слон': '🐘',
-  'Конь': '♘',
+  'Конь': '🐴',
   'Пешка': '♟️',
+  // 🏛️
   // 🛰️📡
-}
-
-const CATEGORY_PRICES = {
-  UNITS: {
-    _default_: [], 
-  },
-  BUILDINGS: {
-    _default_: [
-    ],
-  }
 }
 
 /** usually it means prices */
 const OBJ_CATEGORIES = {
   UNITS: {
-    _none_: [
-    ],
+    // _none_: [
+    // ],
     _default_: [
-      'Король',
-      'Ферзь',
-      'Ладья',
-      'Слон',
-      'Конь',
       'Пешка',
+      'Конь',
+      'Слон',
+    ],
+    элитное: [
+      'Ладья',
+      'Ферзь',
+      'Король',
     ],
   },
   BUILDINGS: {
-    _none_: [
-      KW.GRAVE_UNIT,
-      KW.WRECK_UNIT,
-      // '_unknown_bonus',
-    ],
+    // _none_: [
+    //   // KW.GRAVE_UNIT,
+    //   // KW.WRECK_UNIT,
+    //   // '_unknown_bonus',
+    // ],
     _default_: [
       "Колония",
       "Мир-кузница",
@@ -119,12 +114,24 @@ const OBJ_CATEGORIES = {
   }
 }
 
+const CATEGORY_PRICES = {
+  UNITS: {
+    _default_: [
+      // ['Обычное_производство', -1]
+    ], 
+    элитное: [
+      // ['Элитное_производство', -1]
+    ], 
+  },
+  BUILDINGS: {
+    _default_: [
+    ],
+  }
+}
+
 const EFFECT_LISTS = {
   // статичные эффекты, нам важно текущее значение
   static: [
-    // 'Население',
-    // 'Недовольство',
-    // 'Рабочие',
     'Очки_командования',
   ],
   // добывается, фактически показывает прибыль ресурса
@@ -132,12 +139,10 @@ const EFFECT_LISTS = {
     "Минералы",
   ],
   local: [
-    // KW.ATK,
-    // KW.DEF,
-    // KW.AP,
-    // KW.DIST,
-    // "ХП",
     KW.VISION,
+    "Обычное_производство",
+    "Элитное_производство",
+    "Строитель",
   ],
 }
 
@@ -147,10 +152,9 @@ const DICT_COMMON = {
 
   '_upkeep_': {
     '_building_': {
-      // 'Рабочие': -1,
     },
     '_unit_': {
-      // 'Еда': -UNIT_UPKEEP,
+      // Очки_командования: -1,
     }
   },
 
@@ -160,9 +164,6 @@ const DICT_COMMON = {
   },
 
   [KW.WRECK_UNIT]: {
-    // [KW.LOOT]: {
-    //   Минералы: 1
-    // }
   },
 
   // здания
@@ -172,15 +173,20 @@ const DICT_COMMON = {
       Минералы: 5,
     },
     Минералы: 2,
-    Очки_командования: 1,
+    // Очки_командования: 1,
+
+    Обычное_производство: 2,
   }, 
 
   "Мир-кузница": {
     [KW.COST]: {
-      Минералы: 10,
+      Минералы: 15,
     },
-    Минералы: 5,
-    Очки_командования: 2,
+    Минералы: 6,
+    // Очки_командования: 3,
+
+    Обычное_производство: 2,
+    Элитное_производство: 1,
   }, 
   
   // фигуры
@@ -189,43 +195,42 @@ const DICT_COMMON = {
     [KW.COST]: {
       Минералы: 12,
     },
-    Очки_командования: 1,
-    // [KW.VISION]: CELL_SIZE * 1.5
+    // Очки_командования: 2,
   },
 
   "Ферзь": {
     [KW.COST]: {
       Минералы: 9,
     },
-    [KW.VISION]: CELL_SIZE * 2.7
+    [KW.VISION]: CELL_SIZE * 2.7,
   },
 
   "Ладья": {
     [KW.COST]: {
       Минералы: 5,
     },
-    [KW.VISION]: CELL_SIZE * 2.5
+    [KW.VISION]: CELL_SIZE * 2.5,
   },
   
   "Слон": {
     [KW.COST]: {
       Минералы: 3,
     },
-    [KW.VISION]: CELL_SIZE * 2
+    [KW.VISION]: CELL_SIZE * 2,
   },
 
   "Конь": {
     [KW.COST]: {
       Минералы: 3,
     },
-    // [KW.VISION]: CELL_SIZE * 1.5
   },
 
   "Пешка": {
     [KW.COST]: {
       Минералы: 1,
     },
-    [KW.VISION]: CELL_SIZE
+    [KW.VISION]: CELL_SIZE,
+    Строитель: 1,
   },
 
 }
@@ -251,8 +256,12 @@ const onEndTurnCb = () => {
 }
 
 const TECH_EFFECTS = {
+  // нулевой уровень
   "МОЩЬ": {
-    "1": [ // 3 * Х
+    [KW.COST]: {
+
+    },
+    "1": [
       "Юнит: Слон",
     ],
     "2": [
