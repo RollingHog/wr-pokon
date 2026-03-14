@@ -599,6 +599,13 @@ function loadDefaultMap() {
   defaultMapImg.src = SETTINGS.MAP_PATH;
 }
 
+const STUFF_EFFECTS = [
+  'unit_count',
+  'build_count',
+  'unit_to_upkeep',
+  'build_to_upkeep',
+]
+
 function loadDefaultCustomImages() {
   const root = SETTINGS.IS_CUSTOM ? '..' : '.';
 
@@ -644,12 +651,7 @@ function processRuleFile() {
   DEFAULT.units = Object.values(OBJ_CATEGORIES.UNITS).flat()
   DEFAULT.buildings = Object.values(OBJ_CATEGORIES.BUILDINGS).flat()
 
-  EFFECT_LISTS.static.push(
-    'unit_count',
-    'build_count',
-    'unit_to_upkeep',
-    'build_to_upkeep',
-  )
+  EFFECT_LISTS.static = EFFECT_LISTS.static.concat(STUFF_EFFECTS)
 
   DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
 
@@ -1965,7 +1967,7 @@ const userEffectsObj = {
     return Object.entries(effectsDict)
   },
   groupBySections(obj) {
-    /**@type {Record<keyof EFFECT_LISTS | '_unique_', [string, number][]>} */
+    /**@type {Record<keyof EFFECT_LISTS | '_unique_' | '_tech_', [string, number][]>} */
     const result = {};
 
     // Инициализируем все секции пустыми массивами
@@ -2004,6 +2006,7 @@ const userEffectsObj = {
       toObj() { return result },
       toPrettyHTML(playerName = null) {
         delete result.local
+        if(playerName) result._tech_ = Object.entries(USER_TECH_LVLS[playerName])
         const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {}
         return Object.entries(result)
           .map(([section, eff]) => {
@@ -2012,9 +2015,9 @@ const userEffectsObj = {
                 const currentValue = typeof uRes[arr[0]] !== 'undefined' ? uRes[arr[0]] : '?';
                 return `<span onclick="Player.offsetCurrentFromHTML('${arr[0]}')">${arr[0]}: ${currentValue} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )</span>`;
               });
-              return `==${section}==<br> ${effList.join('<br>')}<br>`
+              return `== ${section} ==<br> ${effList.join('<br>')}<br><br>`
             }
-            return `==${section}==<br> ${eff.map((arr) => arr.join(': ')).join('<br>')}<br>`
+            return `== ${section} ==<br> ${eff.map((arr) => arr.join(': ')).join('<br>')}<br><br>`
           }).join('')
       },
       toPrettyList(playerName = null) {
