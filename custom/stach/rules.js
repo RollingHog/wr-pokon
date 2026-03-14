@@ -34,6 +34,7 @@ const SETTINGS = {
 
   MAX_TECH_LVL: 3,
   DEFAULT_LINE_COLOR: 'white',
+  CANNOT_ACT_AFTER_PLACEMENT: true,
 } 
 
 const DEFAULT = {

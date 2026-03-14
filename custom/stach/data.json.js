@@ -1,15 +1,15 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 0.9173484326014959,
-  "canvasOffsetX": -249.6057974612654,
-  "canvasOffsetY": -558.751019405023,
+  "scale": 1.0931997389200763,
+  "canvasOffsetX": -473.88826403617486,
+  "canvasOffsetY": -961.6893064486717,
   "shapeColor": "#006699"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Варвары": {},
   "Мамонты": {
-    "Минералы": 0
+    "Минералы": 7
   }
 };
 OWNER_MAP={};

@@ -49,10 +49,14 @@
                     <input type="range" id="shape-size" min="20" max="90" value="40" step="20" oninput="this.previousElementSibling.value = this.value">
 
                 </div>
-                <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разм.</button>
+                <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Р</button>
                 <button id="clone-shape-btn" hotkey="C" title="Копировать фигуру" hidden>Копия</button>
                 <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
                 <!-- <button id="count-food-btn" title="Купить юнит и заплатить цену">Куп</button> -->
+                <label for="ch_switch_edits" title="Переключать параметры выбранного юнита при переключении цвета и типа">
+                  <input type="checkbox" name="ch_switch_edits" id="ch_switch_edits">
+                  Ed
+                </label>                
                 <label for="ch_pay" title="платить цену при расположении юнита">
                   <input type="checkbox" name="ch_pay" id="ch_pay" onclick="drawCanvas({infoPanel: true})" checked>
                   Pay

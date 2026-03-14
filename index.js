@@ -251,7 +251,7 @@ function getShapeColor() {
 function setShapeColor(color) {
   document.getElementById('shape-color').value = color
   document.getElementById('text-color').value = color
-  if (typeof selectedElement !== 'undefined' && selectedElement) {
+  if (typeof selectedElement !== 'undefined' && selectedElement && switchEditsCheckbox.checked) {
     selectedElement.color = color
   }
   drawCanvas({infoPanel: true});
@@ -475,6 +475,9 @@ function getUnitDescription(filename) {
   return filename + costStr + effStr
 }
 
+/** @type {HTMLInputElement} */
+const switchEditsCheckbox = document.getElementById('ch_switch_edits') || {}
+
 // TODO sections
 function onCustomImageLoad(filename, src) {
   const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
@@ -515,7 +518,7 @@ function onCustomImageLoad(filename, src) {
     document.querySelectorAll('.shape-preview').forEach(p => p.classList.remove('active'));
     this.classList.add('active');
 
-    if (typeof selectedElement !== 'undefined' && selectedElement) {
+    if (typeof selectedElement !== 'undefined' && selectedElement && switchEditsCheckbox.checked) {
       selectedElement.name = this.dataset.filename
       selectedElement.src = this.style.backgroundImage.replace(/(^url\(|\)$|")/g, '')
       drawCanvas();
@@ -1599,7 +1602,6 @@ const payCheckbox = document.getElementById('ch_pay') || {}
 let currentId = 1
 
 /**
- * 
  * @param {{selectedElement: elements[0]}} param0 
  * @returns 
  */
@@ -1682,7 +1684,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     curr_hp: Unit.getMaxHP(name),
     disabled: false,
     // can't act on same turn
-    endedTurn: true,
+    endedTurn: SETTINGS?.CANNOT_ACT_AFTER_PLACEMENT || true,
   };
 
   elements.push(shape);
