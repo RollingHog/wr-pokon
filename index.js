@@ -365,16 +365,18 @@ let turnEndChecked = false
 
 function onEndTurn() {
 
-  if (!turnEndChecked) {
-    if(elements.some(el => isUnit(el) && !el.endedTurn && !el.disabled)) {
-      alert('Не все юниты походили, нельзя закончить ход')
-      return
-    }
-    alert('Конец хода, рассчитайте эффекты игроков (и варваров)')
-    turnEndChecked = true
-    return
+  const notEnded = elements.filter(el => isUnit(el) && !el.endedTurn && !el.disabled)
+  if(notEnded.length > 0) {
+    const res = confirm('Не все юниты походили. Закончить ход?')
+    if(!res) return
   }
-  turnEndChecked = false
+
+  // if (!turnEndChecked) {
+  //   alert('Конец хода, рассчитайте эффекты игроков (и варваров)')
+  //   turnEndChecked = true
+  //   return
+  // }
+  // turnEndChecked = false
 
   // Можно добавить дополнительную логику при смене хода
   for (let el of elements) {

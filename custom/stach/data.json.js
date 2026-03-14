@@ -1,17 +1,19 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 1.4980771988797816,
-  "canvasOffsetX": -217.56740695635494,
-  "canvasOffsetY": -2130.4383301879097,
+  "scale": 1.237664377797982,
+  "canvasOffsetX": 374.22677066184474,
+  "canvasOffsetY": -1535.9617822343885,
   "shapeColor": "#ff69b4"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Варвары": {},
   "Мамонты": {
-    "Минералы": 1
+    "Минералы": 7
   },
-  "Нео": {}
+  "Нео": {
+    "Минералы": 3
+  }
 };
 OWNER_MAP={};
 DEFAULT_DATA=[
@@ -81,14 +83,14 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#FF69B4",
-    "x": 319.1,
-    "y": 1661.65,
+    "x": 319.68,
+    "y": 1732.17,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 6,
@@ -96,13 +98,28 @@ DEFAULT_DATA=[
     "name": "Король",
     "shape": "custom",
     "color": "#ff69b4",
-    "x": 464.52,
-    "y": 1663.82,
+    "x": 540.51,
+    "y": 1667.24,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
+  },
+  {
+    "id": 8,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#ff69b4",
+    "x": 390.8,
+    "y": 1727.83,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
   }
 ]
