@@ -245,10 +245,11 @@ function init() {
 }
 
 function getShapeColor() {
-  return document.getElementById('shape-color').value
+  return document.getElementById('shape-color').value.toLowerCase()
 }
 
 function setShapeColor(color) {
+  color = color.toLowerCase()
   document.getElementById('shape-color').value = color
   document.getElementById('text-color').value = color
   if (typeof selectedElement !== 'undefined' && selectedElement && switchEditsCheckbox.checked) {
@@ -1617,7 +1618,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
   }
 
   const name = activePreview.dataset.filename
-  const color = document.getElementById('shape-color').value;
+  const color = getShapeColor();
   const size = selectedElement?.height || parseInt(document.getElementById('shape-size').value);
 
   if (payCheckbox.checked) {
