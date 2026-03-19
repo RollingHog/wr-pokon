@@ -88,7 +88,7 @@ DEFAULT_DATA=[
     "type": "shape",
     "name": "Пешка",
     "shape": "custom",
-    "color": "#FF69B4",
+    "color": "#ff69b4",
     "x": 319.68,
     "y": 1732.17,
     "width": 40,
