@@ -1,15 +1,15 @@
 CURRENT_TURN=3;
 OTHER_SAVE_DATA={
-  "scale": 0.6856122835482734,
-  "canvasOffsetX": 330.3090203700781,
-  "canvasOffsetY": -511.4308369214117,
-  "shapeColor": "#d3d3d3"
+  "scale": 1.1900334192660877,
+  "canvasOffsetX": -114.30483660537254,
+  "canvasOffsetY": -882.1917832914255,
+  "shapeColor": "#006699"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Варвары": {},
   "Мамонты": {
-    "Минералы": 7
+    "Минералы": 0
   },
   "Нео": {
     "Минералы": 4
@@ -54,7 +54,7 @@ DEFAULT_DATA=[
     "src": "",
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 3,
@@ -138,14 +138,14 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#006699",
-    "x": 678.3801951122294,
-    "y": 1048.049836305858,
+    "x": 609.66,
+    "y": 1051.45,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 10,
@@ -463,5 +463,50 @@ DEFAULT_DATA=[
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
+  },
+  {
+    "id": 32,
+    "type": "shape",
+    "name": "Колония",
+    "shape": "custom",
+    "color": "#006699",
+    "x": 535.47,
+    "y": 1256.63,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 33,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#006699",
+    "x": 753.8865549593719,
+    "y": 1047.0585102952416,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 34,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#006699",
+    "x": 752.37,
+    "y": 1187.39,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
   }
 ]
