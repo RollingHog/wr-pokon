@@ -1,9 +1,9 @@
 CURRENT_TURN=3;
 OTHER_SAVE_DATA={
-  "scale": 1.1900334192660877,
-  "canvasOffsetX": -114.30483660537254,
-  "canvasOffsetY": -882.1917832914255,
-  "shapeColor": "#006699"
+  "scale": 0.969923188614669,
+  "canvasOffsetX": 402.47947030139153,
+  "canvasOffsetY": 155.96253574787795,
+  "shapeColor": "#640cff"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -21,7 +21,7 @@ USER_RESOURCES={
     "Минералы": 8
   },
   "Чайки": {
-    "Минералы": 14
+    "Минералы": 13
   }
 };
 OWNER_MAP={};
@@ -303,8 +303,8 @@ DEFAULT_DATA=[
     "name": "Слон",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 380.39,
-    "y": 1123.98,
+    "x": 390.15,
+    "y": 1119.1,
     "width": 40,
     "height": 40,
     "src": null,
@@ -440,14 +440,14 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#640cff",
-    "x": 32.58,
-    "y": 304,
+    "x": 31.9,
+    "y": 368.26,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 31,
@@ -455,14 +455,14 @@ DEFAULT_DATA=[
     "name": "Король",
     "shape": "custom",
     "color": "#640cff",
-    "x": 102.97,
-    "y": 231.3,
+    "x": 175.79,
+    "y": 231.99,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 32,
@@ -502,6 +502,21 @@ DEFAULT_DATA=[
     "color": "#006699",
     "x": 752.37,
     "y": 1187.39,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 35,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#640cff",
+    "x": 29.85,
+    "y": 161.05,
     "width": 40,
     "height": 40,
     "src": null,
