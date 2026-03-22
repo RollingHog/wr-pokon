@@ -436,6 +436,10 @@ const Unit = {
     return CATEGORY_PRICES[typeKey]._default_
   },
 
+  getInitialHP(filename) {
+    return DICT_COMMON[filename]?.[KW.INIT_HP] || Unit.getMaxHP(filename)
+  },
+
   getMaxHP(filename) {
     if (isNoHealth({ name: filename })) return 1
     // DICT_USER[Player.getCurrent()]?.[filename] ||
@@ -861,6 +865,8 @@ const draw = {
     }
     ctx.globalAlpha = 1;
 
+    draw.overhealBorder(el, x, y)
+
     let img
     if (typeof EMOJI_IMAGES !== 'undefined' && EMOJI_IMAGES[el.name]) {
       const emojiFontSize = +(el.width * 0.7).toString(10)
@@ -941,6 +947,61 @@ const draw = {
     }
   },
 
+  overhealBorder(el, x, y) {
+    // === ПРОВЕРКА НА ПЕРЕГРЕВ (ХП > макс) ===
+    const isOverhealed = !isNoHealth(el) && el.curr_hp > SETTINGS.MAX_UNIT_HP;
+
+    // === ЗОЛОТОЙ ОРЕОЛ ДЛЯ ПЕРЕГРЕВА (рисуем ПЕРЕД объектом) ===
+    if (isOverhealed) {
+      ctx.save();
+
+      // Настраиваем золотое свечение
+      ctx.shadowColor = 'rgba(255, 215, 0, 1)'; // яркий золотой
+      ctx.shadowBlur = 15;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Дополнительный внешний контур для объёма
+      ctx.strokeStyle = 'rgba(255, 223, 0, 0.9)';
+      ctx.lineWidth = 3;
+
+      // Рисуем ореол по той же форме, что и объект
+      let bgFigure = 'square';
+      if (isBuilding(el)) {
+        bgFigure = 'square';
+      } else {
+        bgFigure = 'circle';
+      }
+      if (SETTINGS.DEFAULT_FIGURE_BG) {
+        bgFigure = SETTINGS.DEFAULT_FIGURE_BG;
+      }
+
+      switch (bgFigure) {
+        case 'circle':
+          ctx.beginPath();
+          ctx.arc(
+            x + el.width / 2, y + el.height / 2,
+            el.width / 2 + 2, 0, Math.PI * 2 // +2px для выхода за границы
+          );
+          ctx.stroke();
+          break;
+        case 'triangle':
+          ctx.beginPath();
+          ctx.moveTo(x + el.width / 2, y - 2);
+          ctx.lineTo(x + el.width + 2, y + el.height + 2);
+          ctx.lineTo(x - 2, y + el.height + 2);
+          ctx.closePath();
+          ctx.stroke();
+          break;
+        case 'square':
+          ctx.strokeRect(x - 2, y - 2, el.width + 4, el.height + 4);
+          break;
+      }
+
+      ctx.restore();
+    }
+  },
+
   /**
  * Рисует полоску здоровья под юнитом
  * @param {CanvasRenderingContext2D} ctx - Контекст canvas
@@ -968,13 +1029,15 @@ const draw = {
           healthPercent > 0.3 ? '#FFC107' :  // Желтый
             '#F44336';                         // Красный
 
+    if(healthPercent > 1) return
+
     // Рисуем фон полоски
     ctx.fillStyle = backgroundColor;
     ctx.fillRect(barX, barY, width, height);
 
     // Рисуем текущее здоровье
     ctx.fillStyle = healthColor;
-    ctx.fillRect(barX, barY, width * healthPercent, height);
+    ctx.fillRect(barX, barY, width * Math.min(healthPercent, 1), height);
 
     // Обводка для красоты
     ctx.strokeStyle = DEFAULT_LINE_COLOR;
@@ -1686,10 +1749,10 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     width: width,
     height: height,
     src: src,
-    curr_hp: Unit.getMaxHP(name),
+    curr_hp: Unit.getInitialHP(name),
     disabled: false,
     // can't act on same turn
-    endedTurn: SETTINGS?.CANNOT_ACT_AFTER_PLACEMENT || true,
+    endedTurn: !isBuilding({name}) ? (SETTINGS?.CANNOT_ACT_AFTER_PLACEMENT || true): false,
   };
 
   elements.push(shape);
@@ -2277,7 +2340,7 @@ function killObj(obj) {
     }
   }
   
-  if (DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj)) {
+  if (SETTINGS.NO_GRAVES || DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj)) {
     selection.delete()
     return
   }

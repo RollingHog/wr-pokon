@@ -1,9 +1,9 @@
 CURRENT_TURN=3;
 OTHER_SAVE_DATA={
-  "scale": 0.969923188614669,
-  "canvasOffsetX": 402.47947030139153,
-  "canvasOffsetY": 155.96253574787795,
-  "shapeColor": "#640cff"
+  "scale": 1.7182780939453925,
+  "canvasOffsetX": -799.8314850000008,
+  "canvasOffsetY": -1612.365006000001,
+  "shapeColor": "#006699"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -62,14 +62,14 @@ DEFAULT_DATA=[
     "name": "Король",
     "shape": "custom",
     "color": "#006699",
-    "x": 826.98,
-    "y": 1252.29,
+    "x": 898.56,
+    "y": 1187.11,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 4,
