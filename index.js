@@ -236,12 +236,14 @@ function init() {
   document.getElementById('shape-size').dispatchEvent(new Event('input'))
 
   const playerBtns = Array.from(document.querySelectorAll('.player-btn'))
-  playerBtns.forEach(el => {
+  playerBtns.forEach(onPlayerChange)
+  playerBtns[0].click()
+}
+
+function onPlayerChange(el) {
     const color = el.dataset.color
     el.style.backgroundColor = color
     el.onclick = _ => setShapeColor(color)
-  })
-  playerBtns[0].click()
 }
 
 function getShapeColor() {
@@ -2102,7 +2104,7 @@ const userEffectsObj = {
   sumEffects(username) {
     const userColor = colorFromUsername(username)
 
-    const techEffects = TechUtils.processSpecialTechEffects(username)
+    const techEffects = TechUtils.getTechEffects(username)
 
     let userEffects = []
     const userObjs = elements.filter(obj => obj.color === userColor && !isNoHealth(obj))
@@ -2513,31 +2515,45 @@ const TechUtils = {
     return effects;
   },
 
+  techEffectCache: {},
+
   /**
    * 
    * @param {*} username 
    * @returns {[string, null][]} - effects arr-dict
    */
-  processSpecialTechEffects(username) {
-    // if (NPCPlayers.includes(username)) return []
-    const techLvlsObj = USER_TECH_LVLS[username]
-    if (!techLvlsObj) {
-      console.warn('processSpecialTechEffects() wtf:', techLvlsObj)
-      return
-    }
-
-    let acc = []
-    for (let [k, v] of Object.entries(techLvlsObj)) {
-      acc = acc.concat(TechUtils.getTechEffectsUpToLevel(k, v))
-    }
-    const res = acc
-      .filter(line =>
-        !(line.startsWith('Здание2:') || line.startsWith('Юнит2:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?'))
-      )
-      .map(str => [str, null])
-    // console.log(res)
-    return res
+  getTechEffects(username) {
+  const cacheKey = `tech_effects_${username}`;
+  
+  // Проверяем, есть ли результат в кеше
+  if (this.techEffectCache && this.techEffectCache[cacheKey]) {
+    return this.techEffectCache[cacheKey];
   }
+
+  // if (NPCPlayers.includes(username)) return []
+  const techLvlsObj = USER_TECH_LVLS[username];
+  if (!techLvlsObj) {
+    console.warn('processSpecialTechEffects() wtf:', techLvlsObj);
+    return
+  }
+
+  let acc = []
+  for (let [k, v] of Object.entries(techLvlsObj)) {
+    acc = acc.concat(TechUtils.getTechEffectsUpToLevel(k, v));
+  }
+  const res = acc
+    .filter(line =>
+      !(line.startsWith('Здание2:') || line.startsWith('Юнит2:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?'))
+    )
+    .map(str => [str, null]);
+  
+  if (!this.techEffectCache) {
+    this.techEffectCache = {};
+  }
+  this.techEffectCache[cacheKey] = res;
+
+  return res;
+}
 }
 
 // Работа с картами
