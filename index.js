@@ -890,7 +890,8 @@ const draw = {
     }
     if (el.title) {
       draw.textBelow(
-        ctx, x, y + el.height, el.width,
+        //  + el.height
+        ctx, x, y, el.width,
         el.title
       )
     }
