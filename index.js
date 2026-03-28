@@ -257,14 +257,24 @@ function setShapeColor(color) {
   if (typeof selectedElement !== 'undefined' && selectedElement && switchEditsCheckbox.checked) {
     selectedElement.color = color
   }
-  drawCanvas({infoPanel: true});
+
+  const techEffects = TechUtils.getTechEffects(playerByColor(color));
+  const allowedNames = new Set(techEffects.map(effect => effect[0]).map(fullName => fullName.split(': ')[1]));
+  document.querySelectorAll('.shape-preview').forEach(el => {
+    const filename = el.getAttribute('data-filename');
+    if (allowedNames.has(filename)) {
+      el.removeAttribute('disabled')
+    } else {
+      el.setAttribute('disabled', '')
+    }
+  });
 
   info_panel.style.display = ''
-  UI.drawInfoPanel(color)
+  drawCanvas({infoPanel: true});
 }
 
 const UI = {
-  async drawInfoPanel(color = getShapeColor()) {
+  drawInfoPanel(color = getShapeColor()) {
     if (!color) return
     const player = playerByColor(color)
     const effs = userEffectsObj.sumEffects(player)
@@ -1684,7 +1694,8 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
 
   let activePreview = {}
   if (activeShapeType === 'custom') {
-    activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]');
+    activePreview = document.querySelector('.shape-preview.active[data-shape="custom"]:not([disabled])');
+    if(!activePreview) return
   }
 
   const name = activePreview.dataset.filename
@@ -2060,7 +2071,7 @@ const userEffectsObj = {
           break;
         }
       }
-      if (!matched) {
+      if (!matched && !(key.includes(':') && !value && !key.startsWith(":"))) {
         console.warn('not matched:', key)
         result._unique_.push([key, value])
       }
@@ -2496,12 +2507,12 @@ const TechUtils = {
       return [];
     }
 
-    if (level === 0) {
+    if (level === 0 && !tech[0]) {
       return []
     }
 
-    if (!(level > 0 && level <= MAX_TECH_LVL)) {
-      console.warn(`Уровень должен быть 1, 2 или 3, получено: ${level}`);
+    if (!(level >= 0 && level <= MAX_TECH_LVL)) {
+      console.warn(`Уровень должен быть 0, 1, 2 или 3, получено: ${level}`);
       return [];
     }
 
@@ -2543,7 +2554,8 @@ const TechUtils = {
   }
   const res = acc
     .filter(line =>
-      !(line.startsWith('Здание2:') || line.startsWith('Юнит2:') || line.startsWith('НУЖНА ЕЩЕ ТЕХА?'))
+      // !(line.startsWith('Здание:') || line.startsWith('Юнит:') || 
+      !line.startsWith('НУЖНА ЕЩЕ ТЕХА?')
     )
     .map(str => [str, null]);
   

@@ -101,6 +101,11 @@ h3 {
 background-color: lightskyblue;
 }
 
+.shape-preview[disabled]:not(.category-divider) {
+  background-color: grey;
+  opacity: 0.3;
+}
+
 
 button {
   margin: 2px;
