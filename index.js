@@ -1768,7 +1768,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     y,
     width: width,
     height: height,
-    src: src,
+    src: src || undefined,
     curr_hp: Unit.getInitialHP(name),
     disabled: false,
     // can't act on same turn

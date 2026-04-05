@@ -1,27 +1,27 @@
-CURRENT_TURN=5;
+CURRENT_TURN=6;
 OTHER_SAVE_DATA={
-  "scale": 0.9917964049031749,
-  "canvasOffsetX": 135.48101967938015,
-  "canvasOffsetY": -956.2245722082007,
-  "shapeColor": "#d3d3d3"
+  "scale": 1.1539486287312537,
+  "canvasOffsetX": 117.98805835988549,
+  "canvasOffsetY": 135.6150060641314,
+  "shapeColor": "#930000"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Варвары": {},
   "Мамонты": {
-    "Минералы": 1
+    "Минералы": 11
   },
   "Нео": {
-    "Минералы": 0
+    "Минералы": 8
   },
   "Йод": {
-    "Минералы": 10
+    "Минералы": 12
   },
   "Онид": {
-    "Минералы": 13
+    "Минералы": 23
   },
   "Чайки": {
-    "Минералы": 3
+    "Минералы": 5
   }
 };
 OWNER_MAP={};
@@ -36,7 +36,6 @@ DEFAULT_DATA=[
     "y": 1116.2,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -54,7 +53,8 @@ DEFAULT_DATA=[
     "src": "",
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false,
+    "title": "Пешка1"
   },
   {
     "id": 3,
@@ -66,10 +66,9 @@ DEFAULT_DATA=[
     "y": 1054.04,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 4,
@@ -81,7 +80,6 @@ DEFAULT_DATA=[
     "y": 1653.12,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
@@ -97,10 +95,9 @@ DEFAULT_DATA=[
     "y": 1727.87,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 6,
@@ -112,10 +109,9 @@ DEFAULT_DATA=[
     "y": 1532.07,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 8,
@@ -127,10 +123,9 @@ DEFAULT_DATA=[
     "y": 1798.2,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 9,
@@ -142,10 +137,9 @@ DEFAULT_DATA=[
     "y": 985.56,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 10,
@@ -157,7 +151,6 @@ DEFAULT_DATA=[
     "y": 31.13,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -168,11 +161,10 @@ DEFAULT_DATA=[
     "name": "Король",
     "shape": "custom",
     "color": "#930000",
-    "x": 605.86,
-    "y": 298.93,
+    "x": 535.01,
+    "y": 300.05,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -187,7 +179,6 @@ DEFAULT_DATA=[
     "y": 30.09,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -202,10 +193,9 @@ DEFAULT_DATA=[
     "y": 96.47,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 16,
@@ -217,10 +207,9 @@ DEFAULT_DATA=[
     "y": 230.11,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 17,
@@ -228,11 +217,10 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#930000",
-    "x": 680.69,
-    "y": 27,
+    "x": 681.81,
+    "y": 98.98,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -247,7 +235,6 @@ DEFAULT_DATA=[
     "y": 1320.23,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -262,7 +249,6 @@ DEFAULT_DATA=[
     "y": 1392.67,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -277,10 +263,9 @@ DEFAULT_DATA=[
     "y": 1251,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 21,
@@ -292,10 +277,9 @@ DEFAULT_DATA=[
     "y": 1388.76,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 22,
@@ -307,10 +291,9 @@ DEFAULT_DATA=[
     "y": 1388,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 23,
@@ -322,10 +305,9 @@ DEFAULT_DATA=[
     "y": 1184.22,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 24,
@@ -337,7 +319,6 @@ DEFAULT_DATA=[
     "y": 1789.08,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
@@ -353,7 +334,6 @@ DEFAULT_DATA=[
     "y": 981.22,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -368,7 +348,6 @@ DEFAULT_DATA=[
     "y": 1324.3017408631952,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -383,7 +362,6 @@ DEFAULT_DATA=[
     "y": 97.75,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -394,11 +372,10 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#930000",
-    "x": 604.61,
-    "y": 96.59,
+    "x": 608.25,
+    "y": 164.91,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -413,7 +390,6 @@ DEFAULT_DATA=[
     "y": 231.26,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
@@ -429,10 +405,9 @@ DEFAULT_DATA=[
     "y": 367.2,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 31,
@@ -444,10 +419,9 @@ DEFAULT_DATA=[
     "y": 301.64,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 32,
@@ -459,7 +433,6 @@ DEFAULT_DATA=[
     "y": 1256.63,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -474,10 +447,9 @@ DEFAULT_DATA=[
     "y": 978.62,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Пешка3"
   },
   {
@@ -490,10 +462,9 @@ DEFAULT_DATA=[
     "y": 1320.98,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Пешка4"
   },
   {
@@ -506,10 +477,9 @@ DEFAULT_DATA=[
     "y": 1530.55,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 37,
@@ -521,10 +491,9 @@ DEFAULT_DATA=[
     "y": 1999.98,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 38,
@@ -536,7 +505,6 @@ DEFAULT_DATA=[
     "y": 1050.41,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -551,7 +519,6 @@ DEFAULT_DATA=[
     "y": 1182.93,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -566,7 +533,6 @@ DEFAULT_DATA=[
     "y": 1250.43,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -581,10 +547,9 @@ DEFAULT_DATA=[
     "y": 1118.27,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 42,
@@ -596,7 +561,6 @@ DEFAULT_DATA=[
     "y": 1455.77,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -611,7 +575,6 @@ DEFAULT_DATA=[
     "y": 1454.83,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -626,7 +589,6 @@ DEFAULT_DATA=[
     "y": 1458.58,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -637,11 +599,10 @@ DEFAULT_DATA=[
     "name": "Колония",
     "shape": "custom",
     "color": "#930000",
-    "x": 534.8108092810904,
-    "y": 31.55774254280891,
+    "x": 534.81,
+    "y": 29.31,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -656,7 +617,6 @@ DEFAULT_DATA=[
     "y": 29.68,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -671,7 +631,6 @@ DEFAULT_DATA=[
     "y": 1520.64,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false,
@@ -687,10 +646,9 @@ DEFAULT_DATA=[
     "y": 1864.9,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 49,
@@ -702,7 +660,6 @@ DEFAULT_DATA=[
     "y": 1116.988240336864,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -717,7 +674,6 @@ DEFAULT_DATA=[
     "y": 1115.63,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -732,7 +688,6 @@ DEFAULT_DATA=[
     "y": 1324.499379986756,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -747,7 +702,6 @@ DEFAULT_DATA=[
     "y": 1389.88,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -762,7 +716,6 @@ DEFAULT_DATA=[
     "y": 1461.6,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -777,7 +730,6 @@ DEFAULT_DATA=[
     "y": 1254.03,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -792,7 +744,6 @@ DEFAULT_DATA=[
     "y": 1050.630612162309,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -807,7 +758,6 @@ DEFAULT_DATA=[
     "y": 1047.8,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -822,7 +772,6 @@ DEFAULT_DATA=[
     "y": 1049.69,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -837,7 +786,6 @@ DEFAULT_DATA=[
     "y": 28.35,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -852,10 +800,9 @@ DEFAULT_DATA=[
     "y": 164.41,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 61,
@@ -863,11 +810,10 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#930000",
-    "x": 392.75,
-    "y": 163.17,
+    "x": 393.87,
+    "y": 237.4,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -878,11 +824,10 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#930000",
-    "x": 680.79,
+    "x": 749.39,
     "y": 97.99,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
@@ -897,10 +842,9 @@ DEFAULT_DATA=[
     "y": 165.1920695952486,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 64,
@@ -912,10 +856,9 @@ DEFAULT_DATA=[
     "y": 231.18,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 65,
@@ -927,10 +870,9 @@ DEFAULT_DATA=[
     "y": 1799.27,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Астра"
   },
   {
@@ -943,10 +885,9 @@ DEFAULT_DATA=[
     "y": 1727.26,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 67,
@@ -954,14 +895,13 @@ DEFAULT_DATA=[
     "name": "Колония",
     "shape": "custom",
     "color": "#006699",
-    "x": 607.49,
+    "x": 608.53,
     "y": 983.28,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 68,
@@ -973,7 +913,6 @@ DEFAULT_DATA=[
     "y": 1456.85,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -988,7 +927,6 @@ DEFAULT_DATA=[
     "y": 1048.64,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
     "disabled": false,
     "endedTurn": false
@@ -1003,8 +941,91 @@ DEFAULT_DATA=[
     "y": 1119.75,
     "width": 40,
     "height": 40,
-    "src": null,
     "curr_hp": 2,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 71,
+    "type": "shape",
+    "name": "Колония",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 610.25,
+    "y": 233.74,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 72,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 247.02663424401106,
+    "y": 24.87061893001676,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 73,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 248.15,
+    "y": 100.22,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 74,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 323.5,
+    "y": 160.95,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 75,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 389.85,
+    "y": 167.7,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 76,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 389.31,
+    "y": 99.71,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
   }
