@@ -1,9 +1,9 @@
 CURRENT_TURN=5;
 OTHER_SAVE_DATA={
-  "scale": 1.1420253327748273,
-  "canvasOffsetX": -234.1407994019071,
-  "canvasOffsetY": -942.7362137452176,
-  "shapeColor": "#006699"
+  "scale": 0.9917964049031749,
+  "canvasOffsetX": 135.48101967938015,
+  "canvasOffsetY": -956.2245722082007,
+  "shapeColor": "#d3d3d3"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -273,14 +273,14 @@ DEFAULT_DATA=[
     "name": "Ладья",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 170.65,
-    "y": 1251.73,
+    "x": 177.96,
+    "y": 1251,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 21,
@@ -295,7 +295,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 22,
@@ -303,14 +303,14 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 175.84,
-    "y": 1390.49,
+    "x": 244.28,
+    "y": 1388,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 23,
@@ -325,7 +325,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 24,
@@ -532,8 +532,8 @@ DEFAULT_DATA=[
     "name": "Барьер",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 245.09353930282393,
-    "y": 1184.8012443980442,
+    "x": 321,
+    "y": 1050.41,
     "width": 40,
     "height": 40,
     "src": null,
@@ -577,14 +577,14 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 247.17,
-    "y": 1117.03,
+    "x": 246.21,
+    "y": 1118.27,
     "width": 40,
     "height": 40,
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 42,
@@ -758,8 +758,8 @@ DEFAULT_DATA=[
     "name": "Барьер",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 245.89,
-    "y": 1388.18,
+    "x": 318.06,
+    "y": 1461.6,
     "width": 40,
     "height": 40,
     "src": null,
@@ -962,5 +962,50 @@ DEFAULT_DATA=[
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": true
+  },
+  {
+    "id": 68,
+    "type": "shape",
+    "name": "Барьер",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 246.63,
+    "y": 1456.85,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "curr_hp": 2,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 69,
+    "type": "shape",
+    "name": "Барьер",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 248.26,
+    "y": 1048.64,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "curr_hp": 2,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 70,
+    "type": "shape",
+    "name": "Барьер",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 320.82,
+    "y": 1119.75,
+    "width": 40,
+    "height": 40,
+    "src": null,
+    "curr_hp": 2,
+    "disabled": false,
+    "endedTurn": false
   }
 ]
