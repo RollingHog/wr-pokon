@@ -1,27 +1,27 @@
-CURRENT_TURN=4;
+CURRENT_TURN=5;
 OTHER_SAVE_DATA={
-  "scale": 0.8802957278711007,
-  "canvasOffsetX": -78.27390305376133,
-  "canvasOffsetY": 74.03490970347059,
+  "scale": 0.9395650709033614,
+  "canvasOffsetX": 134.56877599999996,
+  "canvasOffsetY": 76.8449622999999,
   "shapeColor": "#930000"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Варвары": {},
   "Мамонты": {
-    "Минералы": 1
+    "Минералы": 9
   },
   "Нео": {
-    "Минералы": 0
+    "Минералы": 6
   },
   "Йод": {
-    "Минералы": 0
+    "Минералы": 10
   },
   "Онид": {
-    "Минералы": 3
+    "Минералы": 13
   },
   "Чайки": {
-    "Минералы": 12
+    "Минералы": 14
   }
 };
 OWNER_MAP={};
@@ -54,7 +54,7 @@ DEFAULT_DATA=[
     "src": "",
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 3,
@@ -69,7 +69,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 4,
@@ -100,7 +100,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 6,
@@ -115,7 +115,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 8,
@@ -130,7 +130,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 9,
@@ -145,7 +145,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 10,
@@ -175,7 +175,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 12,
@@ -190,7 +190,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 14,
@@ -220,7 +220,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 16,
@@ -235,7 +235,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 17,
@@ -250,7 +250,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 18,
@@ -295,7 +295,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 21,
@@ -310,7 +310,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 22,
@@ -325,7 +325,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 23,
@@ -340,7 +340,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 24,
@@ -416,7 +416,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 29,
@@ -447,7 +447,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 31,
@@ -462,7 +462,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 32,
@@ -492,7 +492,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Пешка3"
   },
   {
@@ -508,7 +508,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 35,
@@ -523,7 +523,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 36,
@@ -538,7 +538,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 37,
@@ -553,7 +553,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 38,
@@ -613,7 +613,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 42,
@@ -688,7 +688,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 47,
@@ -719,7 +719,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 49,
@@ -734,7 +734,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 50,
@@ -884,7 +884,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 61,
@@ -899,7 +899,7 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 62,
@@ -914,6 +914,6 @@ DEFAULT_DATA=[
     "src": null,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": true
+    "endedTurn": false
   }
 ]
