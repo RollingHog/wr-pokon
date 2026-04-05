@@ -60,6 +60,7 @@ let mousePos = {
 }
 let DICT_COMMON_A = {}
 const DEFAULT_LINE_COLOR = SETTINGS?.DEFAULT_LINE_COLOR || 'black'
+const EFFECTS_TO_IGNORE = [KW.COST, KW.LOOT, KW.INIT_HP2]
 /** 
 * @type {{
 *     id: number,
@@ -258,8 +259,10 @@ function setShapeColor(color) {
     selectedElement.color = color
   }
 
-  const techEffects = TechUtils.getTechEffects(playerByColor(color));
-  const allowedNames = new Set(techEffects.map(effect => effect[0]).map(fullName => fullName.split(': ')[1]));
+  const techEffects = TechUtils.getTechEffects(playerByColor(color), { notUnitEffects: true });
+  const allowedNames = new Set(techEffects
+    .map(effect => effect[0])
+    .map(fullName => fullName.split(': ')[1]));
   document.querySelectorAll('.shape-preview').forEach(el => {
     const filename = el.getAttribute('data-filename');
     if (allowedNames.has(filename)) {
@@ -277,7 +280,7 @@ const UI = {
   drawInfoPanel(color = getShapeColor()) {
     if (!color) return
     const player = playerByColor(color)
-    const effs = userEffectsObj.sumEffects(player)
+    const effs = userEffectsObj.sumPlayerEffects(player)
     // TODO add printing tech effects
     info_panel.querySelector('h3').innerText = player
     info_panel.querySelector('h3').style.color = color
@@ -449,13 +452,16 @@ const Unit = {
   },
 
   getInitialHP(filename) {
-    return DICT_COMMON[filename]?.[KW.INIT_HP] || Unit.getMaxHP(filename)
+    return DICT_USER[filename]?.[KW.INIT_HP] ||
+      DICT_COMMON[filename]?.[KW.INIT_HP] || 
+      Unit.getMaxHP(filename)
   },
 
   getMaxHP(filename) {
     if (isNoHealth({ name: filename })) return 1
     // DICT_USER[Player.getCurrent()]?.[filename] ||
-    return DICT_COMMON[filename]?.[KW.MAX_HP] ||
+    return DICT_USER[filename]?.[KW.MAX_HP] ||
+      DICT_COMMON[filename]?.[KW.MAX_HP] ||
       SETTINGS.MAX_UNIT_HP
   },
 
@@ -1988,7 +1994,7 @@ const userEffectsObj = {
       ])
     }
 
-    return list
+    return list.filter(e => e)
   },
   /**
    * @param {elements[0]} obj 
@@ -2003,7 +2009,7 @@ const userEffectsObj = {
 
     // const obj = {name: objName}
 
-    let list = userEffectsObj.getRawEffectsList(obj).filter(e => e)
+    let list = userEffectsObj.getRawEffectsList(obj)
 
     if(Pins.isOwner(obj)) {
       const ownedObjects = Pins.listOwnedBy(obj.id);
@@ -2023,13 +2029,13 @@ const userEffectsObj = {
       list = list.concat(childEffects);
     }
 
-
     if (!list) return []
     const res = list.flat().map((el) => {
       if (!el) return el
       const [k, v] = el
       if (!k) return el
-      if (k.startsWith('_')) return null
+      // if (k.startsWith('_')) return null
+      if (EFFECTS_TO_IGNORE.includes(k)) return null
       if (typeof v === 'number' || !isNaN(+v)) return [k, v]
       if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || 1]
       if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2 * +obj.lvl || 1]
@@ -2072,7 +2078,7 @@ const userEffectsObj = {
         }
       }
       if (!matched && !(key.includes(':') && !value && !key.startsWith(":"))) {
-        console.warn('not matched:', key)
+        console.warn('not matched:', key, obj)
         result._unique_.push([key, value])
       }
       // Если не подошёл ни к одной — можно игнорировать или добавить в "другие"
@@ -2112,7 +2118,7 @@ const userEffectsObj = {
     };
   },
 
-  sumEffects(username) {
+  sumPlayerEffects(username) {
     const userColor = colorFromUsername(username)
 
     const techEffects = TechUtils.getTechEffects(username)
@@ -2168,7 +2174,7 @@ const userEffectsObj = {
   },
   effectsForSelectedUser() {
     const username = document.querySelector(`[data-color="${getShapeColor()}"]`).textContent
-    const effectsDict = userEffectsObj.sumEffects(username)
+    const effectsDict = userEffectsObj.sumPlayerEffects(username)
     let warns = ``
     if (effectsDict[SETTINGS.POP_PROP] < 0) {
       warns += `МАЛО НАСЕЛЕНИЯ`
@@ -2531,41 +2537,54 @@ const TechUtils = {
   /**
    * 
    * @param {*} username 
+   * @param {{notUnitEffects: boolean; onlyUnitEffects: boolean }} options 
    * @returns {[string, null][]} - effects arr-dict
    */
-  getTechEffects(username) {
-  const cacheKey = `tech_effects_${username}`;
-  
-  // Проверяем, есть ли результат в кеше
-  if (this.techEffectCache && this.techEffectCache[cacheKey]) {
-    return this.techEffectCache[cacheKey];
-  }
+  getTechEffects(username, options = {}) {
+    const cacheKey = `tech_effects_${username}`;
 
-  // if (NPCPlayers.includes(username)) return []
-  const techLvlsObj = USER_TECH_LVLS[username];
-  if (!techLvlsObj) {
-    console.warn('processSpecialTechEffects() wtf:', techLvlsObj);
-    return
-  }
+    const filterByOptions = el => {
+      if (Array.isArray(el) && el[1] !== null) {
+        return !options.notUnitEffects
+      }
+      if (options.onlyUnitEffects) {
+        return false
+      } else {
+        return true
+      }
+    }
 
-  let acc = []
-  for (let [k, v] of Object.entries(techLvlsObj)) {
-    acc = acc.concat(TechUtils.getTechEffectsUpToLevel(k, v));
-  }
-  const res = acc
-    .filter(line =>
-      // !(line.startsWith('Здание:') || line.startsWith('Юнит:') || 
-      !line.startsWith('НУЖНА ЕЩЕ ТЕХА?')
-    )
-    .map(str => [str, null]);
-  
-  if (!this.techEffectCache) {
-    this.techEffectCache = {};
-  }
-  this.techEffectCache[cacheKey] = res;
+    // Проверяем, есть ли результат в кеше
+    if (this.techEffectCache && this.techEffectCache[cacheKey]) {
+      return this.techEffectCache[cacheKey].filter(filterByOptions);
+    }
 
-  return res;
-}
+    // if (NPCPlayers.includes(username)) return []
+    const techLvlsObj = USER_TECH_LVLS[username];
+    if (!techLvlsObj) {
+      console.warn('processSpecialTechEffects() wtf:', techLvlsObj);
+      return
+    }
+
+    let acc = []
+    for (let [k, v] of Object.entries(techLvlsObj)) {
+      acc = acc.concat(TechUtils.getTechEffectsUpToLevel(k, v));
+    }
+    const res = acc
+      .filter(line => {
+
+        return Array.isArray(line) || !line.startsWith('НУЖНА ЕЩЕ ТЕХА?')
+      }
+      )
+      .map(str => [str, null]);
+
+    if (!this.techEffectCache) {
+      this.techEffectCache = {};
+    }
+    this.techEffectCache[cacheKey] = res;
+
+    return res.filter(filterByOptions);
+  }
 }
 
 // Работа с картами

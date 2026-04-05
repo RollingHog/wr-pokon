@@ -1,5 +1,5 @@
 /* exported 
-KW
+KW KW_LOCALS
 */
 
 const KW = /** @type {const} */ ({
@@ -25,3 +25,8 @@ const KW = /** @type {const} */ ({
   LVL_DRIFT: 'Сдвиг уровня',
   VISION: 'Радиус зрения',
 })
+
+const KW_LOCALS = [
+  KW.VISION,
+  KW.INIT_HP,
+]

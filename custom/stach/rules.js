@@ -9,7 +9,7 @@ onEndTurnCb
 
 /// <reference path="../../src/keywords.js"/>
 /* global
-KW
+KW KW_LOCALS
 */
 
 /// <reference path="../../index.js"/>
@@ -148,7 +148,7 @@ const EFFECT_LISTS = {
     "Минералы",
   ],
   local: [
-    KW.VISION,
+    ...KW_LOCALS,
     "Производство",
     "Элитное_производство",
     "Строитель",
@@ -271,7 +271,7 @@ const DICT_COMMON = {
 const onEndTurnCb = () => {
   for(let player of listPlayers()) {
     if(NPCPlayers.includes(player)) continue
-    const sum = userEffectsObj.sumEffects(player)
+    const sum = userEffectsObj.sumPlayerEffects(player)
     for(let [effName, v] of Object.entries(sum)) {
       if(EFFECT_LISTS.resources.includes(effName)) {
         if(typeof USER_RESOURCES[player][effName] !== 'number') {
