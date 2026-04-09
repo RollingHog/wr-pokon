@@ -1,9 +1,9 @@
 CURRENT_TURN=7;
 OTHER_SAVE_DATA={
-  "scale": 0.6444269500470998,
-  "canvasOffsetX": 0.36817384150168664,
-  "canvasOffsetY": -208.92670947334648,
-  "shapeColor": "#006699"
+  "scale": 1.1416416520523907,
+  "canvasOffsetX": 247.1208734188245,
+  "canvasOffsetY": 68.25812863868879,
+  "shapeColor": "#640cff"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -865,8 +865,8 @@ DEFAULT_DATA=[
     "name": "Конь",
     "shape": "custom",
     "color": "#640cff",
-    "x": 103.46,
-    "y": 231.18,
+    "x": 29.88,
+    "y": 93.66,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
