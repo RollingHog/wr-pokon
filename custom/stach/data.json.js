@@ -1,9 +1,9 @@
 CURRENT_TURN=6;
 OTHER_SAVE_DATA={
-  "scale": 0.7953215370918559,
-  "canvasOffsetX": 162.5603914594186,
-  "canvasOffsetY": -711.3102926914929,
-  "shapeColor": "#d3d3d3"
+  "scale": 1.9739617529274234,
+  "canvasOffsetX": -468.3276299526765,
+  "canvasOffsetY": 94.03497212542814,
+  "shapeColor": "#ff4500"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -22,6 +22,18 @@ USER_RESOURCES={
   },
   "Чайки": {
     "Минералы": 2
+  },
+  "Паксе": {
+    "Минералы": 30
+  },
+  "Эгмат": {
+    "Минералы": 26
+  },
+  "Авпац": {
+    "Минералы": 30
+  },
+  "Гешксен": {
+    "Минералы": 30
   }
 };
 OWNER_MAP={};
@@ -1109,6 +1121,188 @@ DEFAULT_DATA=[
     "color": "#930000",
     "x": 609.6449318192889,
     "y": 301.8248806284996,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 83,
+    "type": "shape",
+    "name": "Колония",
+    "shape": "custom",
+    "color": "#ffa500",
+    "x": 1255.81,
+    "y": 437.39,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 84,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#ffa500",
+    "x": 1181.74,
+    "y": 439.29,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 85,
+    "type": "shape",
+    "name": "Король",
+    "shape": "custom",
+    "color": "#ffa500",
+    "x": 1330.84,
+    "y": 436.13,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 86,
+    "type": "shape",
+    "name": "Колония",
+    "shape": "custom",
+    "color": "#9acd32",
+    "x": 1185.2,
+    "y": 1049.41,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 87,
+    "type": "shape",
+    "name": "Король",
+    "shape": "custom",
+    "color": "#9acd32",
+    "x": 1257.76,
+    "y": 1045.43,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 88,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#9acd32",
+    "x": 1114.62,
+    "y": 1049.41,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 89,
+    "type": "shape",
+    "name": "Колония",
+    "shape": "custom",
+    "color": "#808000",
+    "x": 1906.98,
+    "y": 236.04,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": false
+  },
+  {
+    "id": 90,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#808000",
+    "x": 1830.76,
+    "y": 230.39,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 91,
+    "type": "shape",
+    "name": "Король",
+    "shape": "custom",
+    "color": "#808000",
+    "x": 1972.86,
+    "y": 229.45,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 92,
+    "type": "shape",
+    "name": "Король",
+    "shape": "custom",
+    "color": "#ff4500",
+    "x": 321.08,
+    "y": 27.56,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 93,
+    "type": "shape",
+    "name": "Пешка",
+    "shape": "custom",
+    "color": "#ff4500",
+    "x": 248.59,
+    "y": 28.47,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 94,
+    "type": "shape",
+    "name": "Слон",
+    "shape": "custom",
+    "color": "#ff4500",
+    "x": 536.72,
+    "y": 96.57,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
+  },
+  {
+    "id": 97,
+    "type": "shape",
+    "name": "Король",
+    "shape": "custom",
+    "color": "#ff4500",
+    "x": 466.91,
+    "y": 29.36,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
