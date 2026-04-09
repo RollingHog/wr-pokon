@@ -1,9 +1,9 @@
 CURRENT_TURN=6;
 OTHER_SAVE_DATA={
-  "scale": 1.1539486287312537,
-  "canvasOffsetX": 117.98805835988549,
-  "canvasOffsetY": 135.6150060641314,
-  "shapeColor": "#930000"
+  "scale": 0.8981692968789925,
+  "canvasOffsetX": 46.41732631814534,
+  "canvasOffsetY": -1152.1876522077837,
+  "shapeColor": "#ff69b4"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -12,7 +12,7 @@ USER_RESOURCES={
     "Минералы": 11
   },
   "Нео": {
-    "Минералы": 8
+    "Минералы": 3
   },
   "Йод": {
     "Минералы": 12
@@ -91,13 +91,13 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#ff69b4",
-    "x": 33.25,
-    "y": 1727.87,
+    "x": 31.45,
+    "y": 1801.82,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 6,
@@ -105,13 +105,13 @@ DEFAULT_DATA=[
     "name": "Король",
     "shape": "custom",
     "color": "#ff69b4",
-    "x": 749.54,
-    "y": 1532.07,
+    "x": 823.49,
+    "y": 1590.69,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 8,
@@ -119,13 +119,13 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#ff69b4",
-    "x": 613.69,
-    "y": 1798.2,
+    "x": 608.28,
+    "y": 1869.44,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 9,
@@ -642,13 +642,13 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#ff69b4",
-    "x": 249.9,
-    "y": 1864.9,
+    "x": 319.34,
+    "y": 1863.1,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 49,
@@ -887,7 +887,7 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 67,
@@ -1028,5 +1028,20 @@ DEFAULT_DATA=[
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
+  },
+  {
+    "id": 77,
+    "type": "shape",
+    "name": "Колония",
+    "shape": "custom",
+    "color": "#ff69b4",
+    "x": 174.79,
+    "y": 1727.46,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true,
+    "title": "Тарандия"
   }
 ]
