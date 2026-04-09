@@ -1,9 +1,9 @@
 CURRENT_TURN=6;
 OTHER_SAVE_DATA={
-  "scale": 1.0751941809205723,
-  "canvasOffsetX": 56.020856551770294,
-  "canvasOffsetY": 48.16672920277955,
-  "shapeColor": "#930000"
+  "scale": 0.7953215370918559,
+  "canvasOffsetX": 162.5603914594186,
+  "canvasOffsetY": -711.3102926914929,
+  "shapeColor": "#d3d3d3"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -18,7 +18,7 @@ USER_RESOURCES={
     "Минералы": 3
   },
   "Онид": {
-    "Минералы": 23
+    "Минералы": 20
   },
   "Чайки": {
     "Минералы": 2
@@ -266,7 +266,7 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 21,
@@ -280,7 +280,7 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 22,
@@ -294,7 +294,7 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 23,
@@ -308,7 +308,7 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 24,
@@ -544,13 +544,13 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 246.21,
-    "y": 1118.27,
+    "x": 247.47,
+    "y": 1184.91,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 42,
