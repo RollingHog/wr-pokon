@@ -67,6 +67,7 @@ const EMOJI_IMAGES = {
   'Колония': '🏘️',
   'Мир-кузница': '🏭',
   
+  // ⛰️
   'Боевая_станция': '🛡️',
   // жрет снабжение
   // 🔰🌐🏵️🌜
@@ -234,6 +235,7 @@ const DICT_COMMON = {
       Минералы: 9,
     },
     [KW.VISION]: CELL_SIZE * 2.7,
+    [KW.INIT_HP]: SETTINGS.MAX_UNIT_HP + 2,
   },
 
   "Ладья": {
@@ -241,6 +243,7 @@ const DICT_COMMON = {
       Минералы: 5,
     },
     [KW.VISION]: CELL_SIZE * 2.5,
+    [KW.INIT_HP]: SETTINGS.MAX_UNIT_HP + 1,
   },
 
   // обычные
