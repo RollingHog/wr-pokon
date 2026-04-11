@@ -1,9 +1,9 @@
 CURRENT_TURN=7;
 OTHER_SAVE_DATA={
-  "scale": 1.1416416520523907,
-  "canvasOffsetX": 247.1208734188245,
-  "canvasOffsetY": 68.25812863868879,
-  "shapeColor": "#640cff"
+  "scale": 0.7449009736035815,
+  "canvasOffsetX": 106.85639970095622,
+  "canvasOffsetY": 136.10527913527991,
+  "shapeColor": "#930000"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -174,13 +174,13 @@ DEFAULT_DATA=[
     "name": "Король",
     "shape": "custom",
     "color": "#930000",
-    "x": 464.43,
-    "y": 371.52,
+    "x": 393.82,
+    "y": 372.23,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 14,
@@ -216,13 +216,13 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#930000",
-    "x": 320,
-    "y": 303.7,
+    "x": 247.25,
+    "y": 300.85,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 17,
@@ -626,13 +626,13 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#930000",
-    "x": 105.39,
-    "y": 96.06,
+    "x": 30.5,
+    "y": 165.24,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 47,
@@ -1058,20 +1058,6 @@ DEFAULT_DATA=[
     "title": "Тарандия"
   },
   {
-    "id": 78,
-    "type": "shape",
-    "name": "Слон",
-    "shape": "custom",
-    "color": "#640cff",
-    "x": 32.35,
-    "y": 162.54,
-    "width": 40,
-    "height": 40,
-    "curr_hp": 1,
-    "disabled": false,
-    "endedTurn": false
-  },
-  {
     "id": 79,
     "type": "shape",
     "name": "Колония",
@@ -1287,8 +1273,8 @@ DEFAULT_DATA=[
     "name": "Слон",
     "shape": "custom",
     "color": "#ff4500",
-    "x": 683.42,
-    "y": 232.47,
+    "x": 609.43,
+    "y": 163.77,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
