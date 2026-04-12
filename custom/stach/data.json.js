@@ -1,15 +1,15 @@
 CURRENT_TURN=7;
 OTHER_SAVE_DATA={
-  "scale": 0.7449009736035815,
-  "canvasOffsetX": 106.85639970095622,
-  "canvasOffsetY": 136.10527913527991,
-  "shapeColor": "#930000"
+  "scale": 0.831697639732946,
+  "canvasOffsetX": -8.47914992122162,
+  "canvasOffsetY": -577.5400009238733,
+  "shapeColor": "#006699"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Варвары": {},
   "Мамонты": {
-    "Минералы": 15
+    "Минералы": 6
   },
   "Нео": {
     "Минералы": 13
@@ -58,14 +58,14 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#006699",
-    "x": 393.84,
-    "y": 1255.78,
+    "x": 461.33,
+    "y": 1253.15,
     "width": 40,
     "height": 40,
     "src": "",
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false,
+    "endedTurn": true,
     "title": "Пешка1"
   },
   {
@@ -74,13 +74,13 @@ DEFAULT_DATA=[
     "name": "Король",
     "shape": "custom",
     "color": "#006699",
-    "x": 895.08,
-    "y": 981.27,
+    "x": 968.66,
+    "y": 1053.77,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 4,
@@ -145,13 +145,13 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#006699",
-    "x": 534.02,
-    "y": 915.32,
+    "x": 607.65,
+    "y": 916.2,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false,
+    "endedTurn": true,
     "title": "Пешка2"
   },
   {
@@ -442,8 +442,8 @@ DEFAULT_DATA=[
     "name": "Колония",
     "shape": "custom",
     "color": "#006699",
-    "x": 535.47,
-    "y": 1256.63,
+    "x": 538.98,
+    "y": 1254.88,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -462,7 +462,7 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false,
+    "endedTurn": true,
     "title": "Пешка3"
   },
   {
@@ -472,12 +472,12 @@ DEFAULT_DATA=[
     "shape": "custom",
     "color": "#006699",
     "x": 753.11,
-    "y": 1320.98,
+    "y": 1386.72,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false,
+    "endedTurn": true,
     "title": "Пешка4"
   },
   {
@@ -1294,5 +1294,19 @@ DEFAULT_DATA=[
     "curr_hp": 1,
     "disabled": false,
     "endedTurn": false
+  },
+  {
+    "id": 98,
+    "type": "shape",
+    "name": "Слон",
+    "shape": "custom",
+    "color": "#006699",
+    "x": 681.28,
+    "y": 911.39,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "disabled": false,
+    "endedTurn": true
   }
 ]
