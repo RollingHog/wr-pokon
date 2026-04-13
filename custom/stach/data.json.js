@@ -1,8 +1,8 @@
 CURRENT_TURN=7;
 OTHER_SAVE_DATA={
-  "scale": 0.771181250803002,
-  "canvasOffsetX": 218.0749229500724,
-  "canvasOffsetY": -921.354906735874,
+  "scale": 0.7187913208290484,
+  "canvasOffsetX": -192.39257330465944,
+  "canvasOffsetY": -793.3365738209366,
   "shapeColor": "#ff69b4"
 };
 USER_RESOURCES={
@@ -123,7 +123,7 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "disabled": false,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 8,
