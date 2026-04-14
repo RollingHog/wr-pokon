@@ -75,7 +75,7 @@ const EFFECTS_TO_IGNORE = [KW.COST, KW.LOOT, KW.INIT_HP2]
 *     src: src
 *     curr_hp?: number,
 *     lvl?: number,
-*     disabled?: boolean,
+*     disabled?: true | undefined,
 *     endedTurn?: boolean,
 *     title?: string,
 * }[]} 
@@ -1519,8 +1519,11 @@ const selection = {
   },
   switchDisable() {
     if (!selectedElement) return
-    if (typeof selectedElement.disabled === 'undefined') selectedElement.disabled = false
-    selectedElement.disabled = !selectedElement.disabled
+    if (typeof selectedElement.disabled === 'undefined' || !selectedElement.disabled) {
+      selectedElement.disabled = true
+    } else {
+      delete selectedElement.disabled
+    }
     drawCanvas({infoPanel: true});
   },
   delete() {
@@ -1770,7 +1773,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     height: height,
     src: src || undefined,
     curr_hp: Unit.getInitialHP(name),
-    disabled: false,
+    disabled: undefined,
     // can't act on same turn
     endedTurn: !isBuilding({name}) ? (SETTINGS?.CANNOT_ACT_AFTER_PLACEMENT || true): false,
   };
@@ -2099,6 +2102,8 @@ const userEffectsObj = {
                 return `<span onclick="Player.offsetCurrentFromHTML('${arr[0]}')">${arr[0]}: ${currentValue} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )</span>`;
               });
               return `== ${section} ==<br> ${effList.join('<br>')}<br><br>`
+            } else if (section === '_tech_') {
+              return `== ${section} ==<br> <span onclick=alert('add me')>${eff.map((arr) => arr.join(': ')).join('<br>')}</span><br><br>`
             }
             return `== ${section} ==<br> ${eff.map((arr) => arr.join(': ')).join('<br>')}<br><br>`
           }).join('')
@@ -2335,7 +2340,7 @@ function offsetUnitHp(obj, amount) {
   if (res / maxHP < 0.3) {
     obj.disabled = true
   } else if (res / maxHP >= 0.3 && curr / maxHP < 0.3) {
-    obj.disabled = false
+    obj.disabled = undefined
   }
   obj.curr_hp = res
 
@@ -2349,7 +2354,7 @@ function offsetUnitHp(obj, amount) {
  * @param {typeof elements[0]} obj 
  */
 function killObj(obj) {
-  obj.disabled = false
+  obj.disabled = undefined
   Pins.removeOwner(obj.id)
 
   const lootList = Unit.getLoot(obj.name)

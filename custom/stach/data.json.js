@@ -1,8 +1,8 @@
 CURRENT_TURN=7;
 OTHER_SAVE_DATA={
-  "scale": 1.0751941809205725,
-  "canvasOffsetX": -1594.8271602554762,
-  "canvasOffsetY": -48.5264128551525,
+  "scale": 0.3036665941444658,
+  "canvasOffsetX": 60.17934942906797,
+  "canvasOffsetY": 81.74213850630895,
   "shapeColor": "#808000"
 };
 USER_RESOURCES={
@@ -49,7 +49,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -64,7 +63,6 @@ DEFAULT_DATA=[
     "height": 40,
     "src": "",
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true,
     "title": "Пешка1"
   },
@@ -79,7 +77,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -93,7 +90,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false,
     "title": "Нэко-ворлд"
   },
@@ -108,7 +104,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -122,7 +117,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -136,7 +130,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -150,7 +143,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true,
     "title": "Пешка2"
   },
@@ -165,7 +157,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -179,7 +170,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -193,7 +183,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -207,7 +196,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -221,7 +209,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -235,7 +222,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -249,7 +235,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -263,7 +248,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -277,7 +261,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -291,7 +274,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -305,7 +287,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false,
     "title": "Мяфандия"
   },
@@ -320,7 +301,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -334,7 +314,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -348,7 +327,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -362,7 +340,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -376,7 +353,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false,
     "title": "Роккенджима"
   },
@@ -391,7 +367,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -405,7 +380,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -419,7 +393,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -433,7 +406,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true,
     "title": "Пешка3"
   },
@@ -448,7 +420,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true,
     "title": "Пешка4"
   },
@@ -463,7 +434,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -477,7 +447,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -491,7 +460,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -505,7 +473,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -519,7 +486,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -533,7 +499,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -547,7 +512,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -561,7 +525,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -575,7 +538,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -589,7 +551,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -603,7 +564,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -617,7 +577,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false,
     "title": "Альфа-108"
   },
@@ -632,7 +591,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -646,7 +604,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -660,7 +617,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -674,7 +630,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -688,7 +643,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -702,7 +656,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -716,7 +669,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -730,7 +682,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -744,7 +695,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -758,7 +708,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -772,7 +721,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -786,7 +734,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -800,7 +747,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -814,7 +760,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -828,7 +773,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -842,7 +786,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -856,7 +799,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false,
     "title": "Астра"
   },
@@ -871,7 +813,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -885,7 +826,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -899,7 +839,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -913,7 +852,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -927,7 +865,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 2,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -941,7 +878,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -955,7 +891,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -969,7 +904,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -983,7 +917,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -997,7 +930,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1011,7 +943,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1025,7 +956,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false,
     "title": "Тарандия"
   },
@@ -1040,7 +970,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1054,7 +983,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1068,7 +996,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1082,7 +1009,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1096,7 +1022,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1110,7 +1035,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1124,7 +1048,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1138,7 +1061,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1152,7 +1074,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1166,7 +1087,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1180,7 +1100,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false,
     "title": "Улей Ноль"
   },
@@ -1195,7 +1114,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1209,7 +1127,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1223,7 +1140,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1237,7 +1153,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1251,7 +1166,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1265,7 +1179,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1279,7 +1192,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1293,7 +1205,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1307,7 +1218,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1321,7 +1231,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1335,7 +1244,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1349,7 +1257,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1363,7 +1270,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1377,7 +1283,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1391,7 +1296,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1405,7 +1309,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1419,7 +1322,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1433,7 +1335,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1447,7 +1348,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1461,7 +1361,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1475,7 +1374,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1489,7 +1387,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   },
   {
@@ -1503,7 +1400,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": false
   },
   {
@@ -1517,7 +1413,6 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "disabled": false,
     "endedTurn": true
   }
 ]
