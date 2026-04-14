@@ -1,9 +1,9 @@
 CURRENT_TURN=8;
 OTHER_SAVE_DATA={
-  "scale": 0.5946415491023279,
-  "canvasOffsetX": -466.1788678689993,
-  "canvasOffsetY": 170.67983496517064,
-  "shapeColor": "#808000"
+  "scale": 0.8729308697532019,
+  "canvasOffsetX": -328.43892201903236,
+  "canvasOffsetY": -466.7309308700692,
+  "shapeColor": "#006699"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -36,7 +36,7 @@ USER_RESOURCES={
     "Минералы": 22
   }
 };
-OWNER_MAP={"92":[93]};
+OWNER_MAP={"92":[93],"98":[33]};
 DEFAULT_DATA=[
   {
     "id": 1,
@@ -401,8 +401,8 @@ DEFAULT_DATA=[
     "name": "Пешка",
     "shape": "custom",
     "color": "#006699",
-    "x": 753.11,
-    "y": 911.62,
+    "x": 758.84,
+    "y": 903.6,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -1187,12 +1187,13 @@ DEFAULT_DATA=[
     "name": "Слон",
     "shape": "custom",
     "color": "#006699",
-    "x": 681.28,
-    "y": 911.39,
+    "x": 740.85,
+    "y": 923.98,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": false
+    "endedTurn": false,
+    "title": "Слон1"
   },
   {
     "id": 99,
