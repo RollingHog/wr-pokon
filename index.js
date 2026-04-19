@@ -283,7 +283,7 @@ const UI = {
     const effs = userEffectsObj.sumPlayerEffects(player)
     
     if (typeof onPlayerEffectChangeCb === 'function') {
-      onPlayerEffectChangeCb()
+      onPlayerEffectChangeCb(player, effs)
     }
 
     // TODO add printing tech effects
