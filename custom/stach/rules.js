@@ -337,6 +337,12 @@ const onEndTurnCb = () => {
   }
 }
 
+const onPlayerEffectChangeCb = (player, effs) => {
+  if (effs.Снабжение < 0) {
+    alert(`Игрок ${player}: нехватка Снабжения (${effs.Снабжение})`)
+  }
+}
+
 const TECH_EFFECTS = {
   // нулевой уровень
   "МОЩЬ": {

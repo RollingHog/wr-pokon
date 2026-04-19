@@ -281,6 +281,11 @@ const UI = {
     if (!color) return
     const player = playerByColor(color)
     const effs = userEffectsObj.sumPlayerEffects(player)
+    
+    if (typeof onPlayerEffectChangeCb === 'function') {
+      onPlayerEffectChangeCb()
+    }
+
     // TODO add printing tech effects
     info_panel.querySelector('h3').innerText = player
     info_panel.querySelector('h3').style.color = color
