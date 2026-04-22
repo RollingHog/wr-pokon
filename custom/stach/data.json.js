@@ -1,39 +1,39 @@
-CURRENT_TURN=8;
+CURRENT_TURN=9;
 OTHER_SAVE_DATA={
-  "scale": 0.6540852230444065,
-  "canvasOffsetX": 83.647978953402,
-  "canvasOffsetY": -551.888377653926,
+  "scale": 0.5486851538799358,
+  "canvasOffsetX": 93.26543478938908,
+  "canvasOffsetY": -391.18405501870325,
   "shapeColor": "#ff69b4"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Варвары": {},
   "Мамонты": {
-    "Минералы": 1
+    "Минералы": 23
   },
   "Нео": {
-    "Минералы": 17
+    "Минералы": 31
   },
   "Йод": {
-    "Минералы": 0
+    "Минералы": 20
   },
   "Онид": {
-    "Минералы": 8
+    "Минералы": 22
   },
   "Чайки": {
-    "Минералы": 6
+    "Минералы": 8
   },
   "Паксе": {
-    "Минералы": 0
+    "Минералы": 12
   },
   "Эгмат": {
     "Минералы": 26
   },
   "Авпац": {
-    "Минералы": 4
+    "Минералы": 14
   },
   "Гешксен": {
-    "Минералы": 1
+    "Минералы": 9
   }
 };
 OWNER_MAP={"64":[30],"92":[93]};
@@ -63,7 +63,7 @@ DEFAULT_DATA=[
     "height": 40,
     "src": "",
     "curr_hp": 1,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Пешка1"
   },
   {
@@ -77,7 +77,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 4,
@@ -104,7 +104,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 6,
@@ -117,7 +117,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 8,
@@ -130,7 +130,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 9,
@@ -143,7 +143,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Пешка2"
   },
   {
@@ -170,7 +170,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 14,
@@ -196,7 +196,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 16,
@@ -209,7 +209,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 17,
@@ -222,7 +222,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 19,
@@ -248,7 +248,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 23,
@@ -261,7 +261,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 24,
@@ -327,7 +327,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 29,
@@ -354,7 +354,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 31,
@@ -367,7 +367,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 32,
@@ -393,7 +393,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Пешка3"
   },
   {
@@ -407,7 +407,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Пешка4"
   },
   {
@@ -421,7 +421,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 37,
@@ -434,7 +434,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 38,
@@ -486,7 +486,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 42,
@@ -551,7 +551,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 47,
@@ -578,7 +578,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 49,
@@ -721,7 +721,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 61,
@@ -734,7 +734,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 62,
@@ -747,7 +747,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 63,
@@ -760,7 +760,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 64,
@@ -773,7 +773,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 65,
@@ -800,7 +800,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 67,
@@ -878,7 +878,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 73,
@@ -891,7 +891,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 74,
@@ -904,7 +904,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 75,
@@ -917,7 +917,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 76,
@@ -930,7 +930,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 77,
@@ -996,7 +996,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 83,
@@ -1022,7 +1022,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 85,
@@ -1035,7 +1035,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 86,
@@ -1061,7 +1061,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 88,
@@ -1074,7 +1074,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 89,
@@ -1101,7 +1101,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 91,
@@ -1114,7 +1114,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 92,
@@ -1127,7 +1127,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 93,
@@ -1140,7 +1140,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 94,
@@ -1153,7 +1153,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 97,
@@ -1166,7 +1166,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 98,
@@ -1179,7 +1179,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Слон1"
   },
   {
@@ -1206,7 +1206,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 102,
@@ -1219,7 +1219,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 103,
@@ -1232,7 +1232,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 104,
@@ -1245,7 +1245,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 105,
@@ -1284,7 +1284,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 108,
@@ -1310,7 +1310,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 110,
@@ -1323,7 +1323,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 111,
@@ -1349,7 +1349,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 113,
@@ -1362,7 +1362,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 114,
@@ -1375,7 +1375,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 117,
@@ -1388,7 +1388,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 118,
@@ -1440,7 +1440,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 122,
@@ -1466,7 +1466,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 124,
@@ -1479,7 +1479,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 125,
@@ -1492,7 +1492,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 126,
@@ -1505,7 +1505,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 128,
@@ -1518,7 +1518,7 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 129,
