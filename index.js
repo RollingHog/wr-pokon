@@ -387,7 +387,8 @@ function onEndTurn() {
 
   const notEnded = elements.filter(el => isUnit(el) && !el.endedTurn && !el.disabled)
   if(notEnded.length > 0) {
-    const res = confirm('Не все юниты походили. Закончить ход?')
+    const playerList =  [...new Set(notEnded.map(el => playerByColor(el.color)))].join(', ')
+    const res = confirm(`Не все юниты игроков ${playerList} походили. Закончить ход?`)
     if(!res) return
   }
 
