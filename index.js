@@ -1425,13 +1425,13 @@ function handleTouchStart(e) {
 }
 
 function startDrag(clientX, clientY, mouseButton = 0) {
-  const isRightClick = mouseButton === 2
+  const isLeftClick = mouseButton === 0
 
   const rect = canvas.getBoundingClientRect();
   const mouseX = clientX - rect.left;
   const mouseY = clientY - rect.top;
 
-  if (!isRightClick) {
+  if (isLeftClick) {
     // Проверяем, не кликнули ли мы на элемент
     for (let i = elements.length - 1; i >= 0; i--) {
       const element = elements[i];
