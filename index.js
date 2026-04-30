@@ -496,6 +496,8 @@ function getUnitDescription(filename) {
 
     if (categoryPrice) {
       costStr += effArrToStr(categoryPrice)
+    } else {
+      costStr = ''
     }
   }
 
