@@ -145,6 +145,12 @@ input, select {
   display: none;
 }
 
+#edit-obj-name {
+  border: 1px solid black;
+  padding: 2px;
+  margin-top: 2px;
+}
+
 #custom-shapes-container {
   display: flex;
   flex-wrap: wrap;

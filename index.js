@@ -311,7 +311,7 @@ const UI = {
     // document.getElementById('edit-color').value = element.color || '#000000';
     document.getElementById('obj-lvl').value = element.lvl || 1;
     // document.getElementById('obj-lvl').select();
-    document.getElementById('edit-obj-name').value = element.name || '';
+    document.getElementById('edit-obj-name').textContent = element.name || '';
   },
 }
 
