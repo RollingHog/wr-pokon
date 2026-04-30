@@ -59,7 +59,11 @@ let mousePos = {
   y: 0
 }
 let DICT_COMMON_A = {}
+
+// SETTINGS fallback section
 const DEFAULT_LINE_COLOR = SETTINGS?.DEFAULT_LINE_COLOR || 'black'
+/** minimal level */
+const MIN_LVL = typeof SETTINGS?.MIN_LVL !== 'undefined' ? SETTINGS?.MIN_LVL : 1
 const EFFECTS_TO_IGNORE = [KW.COST, KW.LOOT, KW.INIT_HP2]
 /** 
 * @type {{
@@ -309,7 +313,7 @@ const UI = {
     }
 
     // document.getElementById('edit-color').value = element.color || '#000000';
-    document.getElementById('obj-lvl').value = element.lvl || 1;
+    document.getElementById('obj-lvl').value = element.lvl || MIN_LVL;
     // document.getElementById('obj-lvl').select();
     document.getElementById('edit-obj-name').textContent = element.name || '';
   },
@@ -719,8 +723,8 @@ function resizeCanvas() {
 
 // let lastPaint = Date.now()
 function drawCanvas(options = {infoPanel: false}) {
-  // TODO?
-  // if(Date.now() - lastPaint < 50) return
+
+  // console.time('draw')
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -755,7 +759,7 @@ function drawCanvas(options = {infoPanel: false}) {
     UI.drawInfoPanel(selectedElement?.color)
   }
 
-  // lastPaint = Date.now()
+  // console.timeEnd('draw')
 }
 
 const fogCheckbox = document.getElementById('ch_fog')
@@ -916,8 +920,8 @@ const draw = {
     }
     if (el.title) {
       draw.textBelow(
-        //  + el.height
-        ctx, x, y, el.width,
+        // TODO performance?
+        ctx, x, y + (SETTINGS?.TITLE_ABOVE ? 0 : el.height), el.width,
         el.title
       )
     }
@@ -964,13 +968,12 @@ const draw = {
       // ctx.closePath();
       ctx.stroke();
     }
-    if (typeof el.lvl === 'number' && +el.lvl !== 1) {
+    if (typeof el.lvl === 'number' && +el.lvl !== MIN_LVL) {
       ctx.font = `${lvlTextSize}px Arial`;
-
-      ctx.strokeStyle = 'white';
       ctx.fillStyle = DEFAULT_LINE_COLOR;
-      ctx.strokeText(el.lvl, x, y + 5, lvlTextSize);
       ctx.fillText(el.lvl, x, y + 5, lvlTextSize);
+      ctx.strokeStyle = 'white';
+      ctx.strokeText(el.lvl, x, y + 5, lvlTextSize);
     }
   },
 
@@ -1082,7 +1085,8 @@ const draw = {
     // );
   },
 
-  textBelow(ctx, x, y, width, text, height = 5, offsetY = 4) {
+  textBelow(ctx, x, y, width, text) {
+    const offsetY = 4
     const TITLE_FONT = '12px Arial'
 
     ctx.font = TITLE_FONT;
@@ -2048,10 +2052,10 @@ const userEffectsObj = {
       // if (k.startsWith('_')) return null
       if (EFFECTS_TO_IGNORE.includes(k)) return null
       if (typeof v === 'number' || !isNaN(+v)) return [k, v]
-      if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || 1]
-      if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2 * +obj.lvl || 1]
-      if (v === '-ЛВЛ') return [k, -obj.lvl || -1]
-      if (v === '-ЛВЛ*2') return [k, 2 * -obj.lvl || -1]
+      if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || MIN_LVL]
+      if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2 * +obj.lvl || MIN_LVL]
+      if (v === '-ЛВЛ') return [k, -obj.lvl || -MIN_LVL]
+      if (v === '-ЛВЛ*2') return [k, 2 * -obj.lvl || -MIN_LVL]
       console.warn('bad DICT rule for', obj.name, [k, v])
     }).filter(e => e)
 
@@ -2432,7 +2436,7 @@ function closeEditPanel() {
 
 function updateElementLvl() {
   if (selectedElement) {
-    selectedElement.lvl = +document.getElementById('obj-lvl').value || 1;
+    selectedElement.lvl = +document.getElementById('obj-lvl').value || MIN_LVL;
     drawCanvas({infoPanel: true})
   }
 }

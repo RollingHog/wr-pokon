@@ -1,9 +1,9 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 0.6201502452279822,
-  "canvasOffsetX": 164,
-  "canvasOffsetY": -86,
-  "shapeColor": "#cc6600"
+  "scale": 0.5663276147555228,
+  "canvasOffsetX": 30.79010647908376,
+  "canvasOffsetY": 92.47165973153187,
+  "shapeColor": "#006699"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -44,7 +44,7 @@ USER_RESOURCES={
   "Игротехи": {},
   "Жители": {}
 };
-OWNER_MAP={"64":[30]};
+OWNER_MAP={};
 DEFAULT_DATA=[
   {
     "id": 1,
@@ -91,8 +91,8 @@ DEFAULT_DATA=[
     "name": "Сборщик налогов",
     "shape": "custom",
     "color": "#006699",
-    "x": 492.3536602103076,
-    "y": 747.486720975197,
+    "x": 1007.84,
+    "y": 727.13,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -104,8 +104,8 @@ DEFAULT_DATA=[
     "name": "Глашатай",
     "shape": "custom",
     "color": "#006699",
-    "x": 1000.68,
-    "y": 697.12,
+    "x": 1003.15,
+    "y": 670.77,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -677,8 +677,8 @@ DEFAULT_DATA=[
     "name": "Местный житель/проповедница",
     "shape": "custom",
     "color": "#009999",
-    "x": 224.2,
-    "y": 1067.81,
+    "x": 247.82,
+    "y": 1061.37,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -729,8 +729,8 @@ DEFAULT_DATA=[
     "name": "Мастер мертвятника",
     "shape": "custom",
     "color": "#009999",
-    "x": 334.43,
-    "y": 1176.8,
+    "x": 333.71,
+    "y": 1176.08,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -795,7 +795,7 @@ DEFAULT_DATA=[
     "shape": "custom",
     "color": "#009999",
     "x": 105.32,
-    "y": 1162.99,
+    "y": 1162.27,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -833,7 +833,7 @@ DEFAULT_DATA=[
     "name": "Дикая прокаженная",
     "shape": "custom",
     "color": "#009999",
-    "x": 270.09,
+    "x": 270.81,
     "y": 1207.53,
     "width": 40,
     "height": 40,

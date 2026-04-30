@@ -32,6 +32,7 @@ const SETTINGS = {
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
   NO_GRAVES: true, 
+  MIN_LVL: 0,
 
   MAX_TECH_LVL: 3,
   DEFAULT_LINE_COLOR: 'white',
