@@ -1,15 +1,15 @@
 CURRENT_TURN=10;
 OTHER_SAVE_DATA={
-  "scale": 0.5870963610727216,
-  "canvasOffsetX": 283.6115253501838,
-  "canvasOffsetY": -323.41227387694084,
+  "scale": 0.6109739276873134,
+  "canvasOffsetX": 288.3830416634487,
+  "canvasOffsetY": -341.32957249818276,
   "shapeColor": "#006699"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Варвары": {},
   "Мамонты": {
-    "Минералы": 5
+    "Минералы": 0
   },
   "Нео": {
     "Минералы": 28
@@ -1784,17 +1784,31 @@ DEFAULT_DATA=[
     "title": "Пешка8"
   },
   {
-    "id": 149,
+    "id": 150,
     "type": "shape",
-    "name": "Пешка",
+    "name": "Слон",
     "shape": "custom",
     "color": "#006699",
-    "x": 685.52,
-    "y": 1590.46,
+    "x": 897.7826377652559,
+    "y": 1322.662848309225,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "endedTurn": true,
-    "title": "Пешка9"
+    "title": "Слон2"
+  },
+  {
+    "id": 151,
+    "type": "shape",
+    "name": "Слон",
+    "shape": "custom",
+    "color": "#006699",
+    "x": 897.78,
+    "y": 1388.31,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": true,
+    "title": "Слон3"
   }
 ]
