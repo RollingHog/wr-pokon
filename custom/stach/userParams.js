@@ -24,7 +24,7 @@ const DICT_USER = {
 
 const USER_TECH_LVLS = {
   Мамонты: {
-    МОЩЬ: 2,
+    МОЩЬ: 3,
     ХИТРОСТЬ: 0,
   },
   Нео: {
