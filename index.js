@@ -973,6 +973,7 @@ const draw = {
       ctx.fillStyle = DEFAULT_LINE_COLOR;
       ctx.fillText(el.lvl, x, y + 5, lvlTextSize);
       ctx.strokeStyle = 'white';
+      ctx.lineWidth = 1
       ctx.strokeText(el.lvl, x, y + 5, lvlTextSize);
     }
   },
