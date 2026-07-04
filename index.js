@@ -264,12 +264,13 @@ function setShapeColor(color) {
   }
 
   const techEffects = TechUtils.getTechEffects(playerByColor(color), { notUnitEffects: true });
+  const noTech = techEffects.length === 0
   const allowedNames = new Set(techEffects
     .map(effect => effect[0])
     .map(fullName => fullName.split(': ')[1]));
   document.querySelectorAll('.shape-preview').forEach(el => {
     const filename = el.getAttribute('data-filename');
-    if (allowedNames.has(filename)) {
+    if (allowedNames.has(filename) || noTech) {
       el.removeAttribute('disabled')
     } else {
       el.setAttribute('disabled', '')

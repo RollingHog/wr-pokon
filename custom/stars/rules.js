@@ -11,12 +11,24 @@ TECH_EFFECTS
 KW
 */
 
+const CELL_SIZE = 90
+
 const SETTINGS = {
   IS_CUSTOM: true,
-  MAP_PATH: '../map/stars/map.png',
-  MAX_UNIT_HP: 10,
-  POP_PROP: 'Население',
-  DEFAULT_FIGURE_BG: 'circle',
+  MAP_PATH: 'stars/map.png',
+  // DEFAULT_FIGURE_BG: 'circle',
+
+  MAX_UNIT_HP: 5,
+  VISION_RADIUS: CELL_SIZE * 1.6,
+  CAPITAL_SPECIAL_VISION: false,
+  // may be left empty, then _pop_ wont be applied
+  POP_PROP: null,
+  NO_GRAVES: true, 
+
+  MAX_TECH_LVL: 3,
+  DEFAULT_LINE_COLOR: 'white',
+  TITLE_ABOVE: true,
+  CANNOT_ACT_AFTER_PLACEMENT: true,
 } 
 
 
@@ -40,74 +52,104 @@ const DEFAULT = {
 }
 
 const EMOJI_IMAGES = {
-  'Царь_птица': '🪸'
+  // персонажи
+  "Пси-клинок": "⚔️",
+  "Созерцатель": "👁️",
+  "Кровотворец": "🙌",
+  "Хранитель": "🎓",
+
+  // здания
+  "Алтарь_Покоя":"🕯️",
+  "Обсерватория_Пустоты":"🌌",
+  "Кровоточащий_Колодец":"🩸",
+  "Чертог_Скрижалей":"📜",
+  "Пульсар_Душ":"🔮",
+  "Оранжерея_Костей":"🌿",
+  "Звёздная_Арка":"💫",
+  "Разрыв":"🕳️",
+
+  // враги
+  "Тень_Усопшего":"👤",
+  "Огонёк-искуситель":"😈",
+  "Костяной_паук":"🕷️",
+
+  "Звёздный_зомби":"🧟",
+  "Удав_Пустоты":"🐍",
+  "Демон-диверсант":"👹",
+
+  // "Лёгкие_Станции":"🕳️",
+  // "Король_Склепа":"💀👑",
+  "Око_Аннигиляции":"👁️",
 }
 
 const WEATHER_EFF = {}
 
-const CATEGORY_PRICES = {
+
+/** usually it means prices */
+const OBJ_CATEGORIES = {
   UNITS: {
+    // _none_: [
+    // ],
     _default_: [
-      ['Население', 3],
-      ['Железо', 1],
     ],
-    Корабль: [
-      ['Население', 'ЛВЛ'],
-      ['Дерево', 'ЛВЛ*2'],
-      ['Железо', 'ЛВЛ'],
+    Персонажи: [
+      "Пси-клинок",
+      "Созерцатель",
+      "Кровотворец",
+      "Хранитель",
+    ],
+    Предметы: [
+    ],
+    Враги: [
+      "Тень_Усопшего",
+      "Огонёк-искуситель",
+      "Костяной_паук",
+
+      "Звёздный_зомби",
+      "Удав_Пустоты",
+      "Демон-диверсант",
+
+      "Лёгкие_Станции",
+      "Король_Склепа",
+      "Око_Аннигиляции",
     ],
   },
   BUILDINGS: {
+    // _none_: [
+    // ],
     _default_: [
-      ['Дерево', 5],
+
     ],
   }
 }
 
-const OBJ_CATEGORIES = {
+const CATEGORY_PRICES = {
   UNITS: {
-    _none_: [
-    ],
     _default_: [
-      'Царь_птица',
-      'Щитовик',
-    ],
+      // ['Обычное_производство', -1]
+    ], 
+    элитные: [
+      // ['Элитное_производство', -1]
+    ], 
   },
   BUILDINGS: {
-    _none_: [
-      // '_build_slot',
-      KW.WRECK_UNIT,
-      // '_unknown_bonus',
-    ],
-    Город: [
-      "Кузница"
-    ],
     _default_: [
-      'Стена',
     ],
-
+    пристройки: [
+    ],
   }
 }
 
 const EFFECT_LISTS = {
   // статичные эффекты, нам важно текущее значение
   static: [
-    // 'Лимит населения',
-    'unit_count',
-    'build_count',
-    'unit_to_upkeep',
-    'build_to_upkeep',
-
-    'Население',
-    'Недовольство',
-    'Рабочие',
   ],
   // добывается, фактически показывает прибыль ресурса
   resources: [
-    "Еда",
-    "Железо",
-    "Дерево",
-    "Рабы",
+    // "Еда",
+    // "Железо",
+    // "Дерево",
+    // "Рабы",
   ],
   local: [
     KW.ATK,
@@ -122,42 +164,33 @@ const EFFECT_LISTS = {
 const UNIT_UPKEEP = 3
 const UNDO_POP_USAGE = ['Рабочие', 1]
 const DICT_COMMON = {
-  _upkeep_: {
-    _building_: [
-      ['Рабочие', -1],
-    ],
-    _unit_: [
-      ["Еда", -UNIT_UPKEEP],
-    ],
+   '_upkeep_': {
+    '_building_': {
+    },
+    '_unit_': {
+      Снабжение: -1,
+    }
   },
-  _building_: [
-    [KW.REGEN, 2],
-  ],
-  _unit_: [
-    [KW.ATK, 0],
-    [KW.DEF, 0],
-  ],
-  _pop_: [
-    ["Еда", -0.5],
-  ],
-  [KW.CAPITAL]:
-    [
-      [SETTINGS.POP_PROP, '+ЛВЛ'],
-      ["Еда", 25],
-      ["Дерево", 3],
-    ],
 
-  Стена:
-    [
-    ],
+  '_building_': {
+  },
+  '_unit_': {
+  },
 
-  //////////////// units
+  [KW.WRECK_UNIT]: {
+  },
 
-  Пехота: [
-    [KW.ATK, 2],
-    [KW.DEF, 2],
-    [KW.AP, 2],
-  ],
+  // здания
+
+  "Колония": {
+    [KW.COST]: {
+      Минералы: 5,
+    },
+    Минералы: 2,
+    Снабжение: 3,
+
+    Производство: 1,
+  }, 
 };
 
 const TECH_EFFECTS = {}

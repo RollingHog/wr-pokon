@@ -8,13 +8,8 @@ KW
 */
 
 const DICT_USER = {
-  Нью_Лоуландс: {
-    [KW.CAPITAL]:
-      [
-      ],
-  },
 
-  Синие: {
+  Десант: {
     [KW.CAPITAL]:
       [
       ],
@@ -23,8 +18,6 @@ const DICT_USER = {
 };
 
 const USER_TECH_LVLS = {
-  Нью_Лоуландс: {
-  },
-  Синие: {
+  Десант: {
   },
 }
