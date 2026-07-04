@@ -24,6 +24,7 @@ const KW = /** @type {const} */ ({
 
   LVL_DRIFT: 'Сдвиг уровня',
   VISION: 'Радиус зрения',
+  NO_VISION: -1,
 })
 
 const KW_LOCALS = [

@@ -479,7 +479,7 @@ const Unit = {
   },
 
   getVision(filename) {
-    if (isNoHealth({ name: filename })) return 1
+    if (isNoHealth({ name: filename })) return KW.NO_VISION
     return DICT_USER[Player.getCurrent()]?.[filename]?.[KW.VISION] ||
       DICT_COMMON[filename]?.[KW.VISION] || null
   },
@@ -827,6 +827,8 @@ const draw = {
         : visionRadius * scale;
 
       const vis = Unit.getVision(el.name)
+
+      if(vis === KW.NO_VISION) return
       if(vis) {
         radius = vis * scale
       }
