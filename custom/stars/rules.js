@@ -217,7 +217,8 @@ const EFFECT_LISTS = {
 }
 
 const PLAYER_COMMON = {
-  [KW.VISION]: CELL_SIZE * 2.1,
+  [KW.VISION]: CELL_SIZE * 1.8,
+  "Экипаж": 1,
 }
 const DICT_COMMON = {
    '_upkeep_': {
