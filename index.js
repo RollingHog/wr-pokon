@@ -945,7 +945,7 @@ const draw = {
 
     if (el.disabled) {
       ctx.strokeStyle = 'white';
-      ctx.lineWidth = 2
+      ctx.lineWidth = el.width / 18
 
       ctx.beginPath();
       ctx.arc(x + el.width / 2, y + el.height / 2, el.width / 2, 0, Math.PI * 2);
@@ -1091,7 +1091,7 @@ const draw = {
 
   textBelow(ctx, x, y, width, text) {
     const offsetY = 4
-    const TITLE_FONT = '12px Arial'
+    const TITLE_FONT = `${Math.ceil(width/3)}px Arial`
 
     ctx.font = TITLE_FONT;
     ctx.fillStyle = DEFAULT_LINE_COLOR;
