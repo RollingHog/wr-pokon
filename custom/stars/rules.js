@@ -258,6 +258,11 @@ const DICT_COMMON = {
   'Обзор': {
     [KW.VISION]: CELL_SIZE * 1.6
   },
+
+  'Закрытая_дверь': {
+    [KW.INIT_HP]: 6,
+    [KW.MAX_HP]: 6,
+  },
 };
 
 KW_RULES.setCommon(
