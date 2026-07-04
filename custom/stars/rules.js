@@ -8,7 +8,7 @@ TECH_EFFECTS
 
 /// <reference path="../../src/keywords.js"/>
 /* global
-KW
+KW KW_RULES
 */
 
 const CELL_SIZE = 120
@@ -179,6 +179,7 @@ const OBJ_CATEGORIES = {
       "Контур_ответчик",
       "Карта_корабля",
       "Закрытая_дверь",
+      "Звёздная_Арка",
     ],
     Декор: [
       "Контрольное_кресло",
@@ -188,7 +189,6 @@ const OBJ_CATEGORIES = {
       "Провод2",
       "Кровать",
       "Кровь_колодца",
-      "Звёздная_Арка",
 
       "Разрыв",
     ],
@@ -236,12 +236,8 @@ const EFFECT_LISTS = {
   ],
 }
 
-const PLAYER_COMMON = {
-  [KW.VISION]: CELL_SIZE * 1.8,
-  "Экипаж": 1,
-}
 const DICT_COMMON = {
-   '_upkeep_': {
+  '_upkeep_': {
     '_building_': {
     },
     '_unit_': {
@@ -250,22 +246,8 @@ const DICT_COMMON = {
   },
 
   '_building_': {
-    [KW.VISION]: CELL_SIZE * 2.7
   },
   '_unit_': {
-  },
-
-  "Пси-клинок": {
-    ...PLAYER_COMMON
-  },
-  "Созерцатель": {
-    ...PLAYER_COMMON
-  },
-  "Кровотворец": {
-    ...PLAYER_COMMON
-  },
-  "Хранитель": {
-    ...PLAYER_COMMON
   },
 
   [KW.WRECK_UNIT]: {
@@ -274,8 +256,21 @@ const DICT_COMMON = {
   // здания
 
   'Обзор': {
-    [KW.VISION]: CELL_SIZE * 1.5
+    [KW.VISION]: CELL_SIZE * 1.6
   },
 };
+
+KW_RULES.setCommon(
+  OBJ_CATEGORIES.BUILDINGS.Устройства,
+  { [KW.VISION]: KW.NO_VISION }
+)
+
+KW_RULES.setCommon(
+  OBJ_CATEGORIES.UNITS.Персонажи,
+  {
+    [KW.VISION]: CELL_SIZE * 1.8, 
+    "Экипаж": 1,
+  }
+)
 
 const TECH_EFFECTS = {}
