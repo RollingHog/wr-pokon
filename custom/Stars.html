@@ -33,13 +33,14 @@
                 <div class="color-picker" style="flex-wrap: wrap;">
                     <span>Цвет:</span>
                     <input type="color" id="shape-color" value="#ff0000" class="hidden2" style="width: 30px;">
-                    <button class="player-btn" data-color="#d3d3d3" onclick="setShapeColor('#d3d3d3')">Нейтралы</button>
-                    <button class="player-btn" data-color="#930000" onclick="setShapeColor('#930000')">Враги</button>
-                    <button class="player-btn" data-color="#0000ff" onclick="setShapeColor('#0000ff')">Десант</button>
+                    <button class="player-btn" data-color="#d3d3d3">Нейтралы</button>
+                    <button class="player-btn" data-color="#ffd700">Эл-во</button>
+                    <button class="player-btn" data-color="#930000">Враги</button>
+                    <button class="player-btn" data-color="#0000ff">Десант</button>
                 </div>
                 <div class="color-picker">
                     <span>Размер: </span><output onclick="onOutputClick('shape-size')">__</output>
-                    <input type="range" id="shape-size" min="20" max="90" value="40" step="20" oninput="this.previousElementSibling.value = this.value">
+                    <input type="range" id="shape-size" min="20" max="90" value="60" step="20" oninput="this.previousElementSibling.value = this.value">
 
                 </div>
                 <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Р</button>
