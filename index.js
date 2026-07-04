@@ -441,7 +441,9 @@ function onEndTurn() {
 }
 
 function imageObjByObjName(filename) {
-  return customShapes.find(({ name }) => name === filename).imageObj
+  const obj = customShapes.find(({ name }) => name === filename)
+  if(!obj) throw new Error(filename)
+  return obj.imageObj
 }
 
 const Unit = {
