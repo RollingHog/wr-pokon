@@ -11,7 +11,7 @@ TECH_EFFECTS
 KW
 */
 
-const CELL_SIZE = 90
+const CELL_SIZE = 120
 
 const SETTINGS = {
   IS_CUSTOM: true,
@@ -216,7 +216,9 @@ const EFFECT_LISTS = {
   ],
 }
 
-const PLAYER_VISION = CELL_SIZE * 2.1
+const PLAYER_COMMON = {
+  [KW.VISION]: CELL_SIZE * 2.1,
+}
 const DICT_COMMON = {
    '_upkeep_': {
     '_building_': {
@@ -233,16 +235,16 @@ const DICT_COMMON = {
   },
 
   "Пси-клинок": {
-    [KW.VISION]: PLAYER_VISION
+    ...PLAYER_COMMON
   },
   "Созерцатель": {
-    [KW.VISION]: PLAYER_VISION
+    ...PLAYER_COMMON
   },
   "Кровотворец": {
-    [KW.VISION]: PLAYER_VISION
+    ...PLAYER_COMMON
   },
   "Хранитель": {
-    [KW.VISION]: PLAYER_VISION
+    ...PLAYER_COMMON
   },
 
   [KW.WRECK_UNIT]: {

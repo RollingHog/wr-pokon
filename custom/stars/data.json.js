@@ -1,14 +1,15 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 0.9981184407689617,
-  "canvasOffsetX": -2788.1432617575288,
-  "canvasOffsetY": -1085.7232976642376,
-  "shapeColor": "#0000ff"
+  "scale": 0.5013256704038761,
+  "canvasOffsetX": -1697.3169899411364,
+  "canvasOffsetY": -496.7492247167396,
+  "shapeColor": "#d3d3d3"
 };
 USER_RESOURCES={
   "Нейтралы": {},
   "Враги": {},
-  "Десант": {}
+  "Десант": {},
+  "Эл-во": {}
 };
 OWNER_MAP={};
 DEFAULT_DATA=[
@@ -413,8 +414,8 @@ DEFAULT_DATA=[
     "name": "Портальный_чертог",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2874.37,
-    "y": 1188.01,
+    "x": 2869.3,
+    "y": 1183.78,
     "width": 80,
     "height": 80,
     "curr_hp": 3,
@@ -452,8 +453,8 @@ DEFAULT_DATA=[
     "name": "Звёздная_Арка",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2782.44,
-    "y": 1397.32,
+    "x": 2779.1,
+    "y": 1393.98,
     "width": 60,
     "height": 60,
     "curr_hp": 3,
@@ -609,8 +610,8 @@ DEFAULT_DATA=[
     "name": "Звёздная_Арка",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 4595.61,
-    "y": 987.43,
+    "x": 4597.23,
+    "y": 787.73,
     "width": 60,
     "height": 60,
     "curr_hp": 3,
@@ -875,5 +876,18 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 3,
     "endedTurn": true
+  },
+  {
+    "id": 115,
+    "type": "shape",
+    "name": "Звёздная_Арка",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 4599.79,
+    "y": 2199.31,
+    "width": 60,
+    "height": 60,
+    "curr_hp": 3,
+    "endedTurn": false
   }
 ]
