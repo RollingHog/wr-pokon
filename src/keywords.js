@@ -14,14 +14,15 @@ const KW = /** @type {const} */ ({
 
   INIT_HP: '_init_hp_',
   MAX_HP: '_max_hp_',
-
+  
   ATK: "Атака",
   DEF: 'Защита',
   /** action points */
   AP: 'АР',
   DIST: 'Дистанция',
   REGEN: 'Регенерация',
-
+  
+  INIT_LVL: '_init_lvl_',
   LVL_DRIFT: 'Сдвиг уровня',
   VISION: 'Радиус зрения',
   NO_VISION: -1,
@@ -31,6 +32,8 @@ const KW_LOCALS = [
   KW.VISION,
   KW.INIT_HP,
   KW.MAX_HP,
+  KW.INIT_LVL,
+  KW.LVL_DRIFT,
 ]
 
 const KW_RULES = {

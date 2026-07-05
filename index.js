@@ -478,6 +478,12 @@ const Unit = {
       SETTINGS.MAX_UNIT_HP
   },
 
+  /** only if lvl not equal to MIN_LVL */
+  getInitialLvl(filename) {
+    return DICT_USER[filename]?.[KW.INIT_LVL] ||
+      DICT_COMMON[filename]?.[KW.INIT_LVL]
+  },
+
   getVision(filename) {
     if (isNoHealth({ name: filename })) return KW.NO_VISION
     return DICT_USER[Player.getCurrent()]?.[filename]?.[KW.VISION] ||
@@ -1525,6 +1531,7 @@ const selection = {
       if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = Unit.getMaxHP(selectedElement.name)
       offsetUnitHp(selectedElement, -amount)
     }
+    drawCanvas({infoPanel: true});
   },
   switchEndedTurn() {
     if (!selectedElement) return
@@ -1793,6 +1800,11 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     // can't act on same turn
     endedTurn: !isBuilding({name}) && !isNoHealth(name) ? (SETTINGS?.CANNOT_ACT_AFTER_PLACEMENT || true): false,
   };
+
+  const lvl = Unit.getInitialLvl(name)
+  if(lvl) {
+    shape.lvl = lvl
+  }
 
   elements.push(shape);
   draw.element(shape)
@@ -2328,6 +2340,7 @@ function enablePinMode(evt) {
 }
 
 /**
+ *  does not perform redraw!
  * @param {typeof elements[0]} obj 
  * @param {number} amount 
  */
@@ -2339,10 +2352,10 @@ function offsetObjLvl(obj, amount) {
   } else {
     obj.lvl = res
   }
-  drawCanvas({infoPanel: true})
 }
 
 /**
+ * does not perform redraw!
  * @param {typeof elements[0]} obj 
  * @param {number} amount 
  */
@@ -2363,12 +2376,11 @@ function offsetUnitHp(obj, amount) {
   if (obj.curr_hp <= 0) {
     obj = killObj(obj)
   }
-  drawCanvas();
 }
 
 /**
- * @param {typeof elements[0]} obj
  * doesn't do any redraw 
+ * @param {typeof elements[0]} obj
  */
 function killObj(obj) {
   obj.disabled = undefined
@@ -2384,7 +2396,7 @@ function killObj(obj) {
   
   if (SETTINGS.NO_GRAVES || DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj)) {
     // selection.delete()
-    elements = elements.filter(el => el !== selectedElement);
+    elements = elements.filter(el => el !== obj);
     return
   }
   
