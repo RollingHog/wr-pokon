@@ -1791,7 +1791,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     curr_hp: Unit.getInitialHP(name),
     disabled: undefined,
     // can't act on same turn
-    endedTurn: !isBuilding({name}) ? (SETTINGS?.CANNOT_ACT_AFTER_PLACEMENT || true): false,
+    endedTurn: !isBuilding({name}) && !isNoHealth(name) ? (SETTINGS?.CANNOT_ACT_AFTER_PLACEMENT || true): false,
   };
 
   elements.push(shape);
@@ -2332,7 +2332,7 @@ function enablePinMode(evt) {
  * @param {number} amount 
  */
 function offsetObjLvl(obj, amount) {
-  const curr = obj.lvl
+  const curr = obj.lvl || MIN_LVL
   let res = curr + amount
   if (res <= 0) {
     obj = killObj(obj)
@@ -2367,7 +2367,8 @@ function offsetUnitHp(obj, amount) {
 }
 
 /**
- * @param {typeof elements[0]} obj 
+ * @param {typeof elements[0]} obj
+ * doesn't do any redraw 
  */
 function killObj(obj) {
   obj.disabled = undefined
@@ -2382,7 +2383,8 @@ function killObj(obj) {
   }
   
   if (SETTINGS.NO_GRAVES || DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj)) {
-    selection.delete()
+    // selection.delete()
+    elements = elements.filter(el => el !== selectedElement);
     return
   }
   
@@ -2396,7 +2398,6 @@ function killObj(obj) {
     obj.name = KW.WRECK_UNIT
   }
   
-  UI.drawInfoPanel()
   return obj
 }
 
@@ -2808,7 +2809,7 @@ function showHelp() {
   alert(`ПОМОЩЬ. 
   Ну, когда-нибудь.
 * Как правило хоткеи - с Alt
-* Переключение цвета при выбранной фигуре меняет её цвет
+* Переключение цвета/типа при выбранной фигуре меняет её цвет, если установлена галочка "Ed"
 * После перемещения юнитов сделайте "Экспортировать объекты" и запостите файл в тред, я обновлю
 * ПКМ - перетаскивание карты без риска выделения юнитов
 
@@ -2820,6 +2821,7 @@ function showHelp() {
 * Q - отключить/включить
 * E - пометить закончившим ход
 * B, Alt + B - bind/pin
+* F2 - редактировать название
 
     `)
 }
