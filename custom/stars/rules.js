@@ -297,6 +297,7 @@ const DICT_COMMON = {
 
   'Соль': {
     [KW.LVL_DRIFT]: -1,
+    [KW.INIT_LVL]: 2,
   },
 
   'Закрытая_дверь': {
