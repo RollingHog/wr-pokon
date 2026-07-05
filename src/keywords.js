@@ -30,6 +30,7 @@ const KW = /** @type {const} */ ({
 const KW_LOCALS = [
   KW.VISION,
   KW.INIT_HP,
+  KW.MAX_HP,
 ]
 
 const KW_RULES = {

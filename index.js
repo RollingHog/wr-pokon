@@ -768,9 +768,7 @@ function drawCanvas(options = {infoPanel: false}) {
 const fogCheckbox = document.getElementById('ch_fog')
 const visionRadius = SETTINGS.VISION_RADIUS || 160
 
-const lvlTextSize = 20
-
-const UNIT_SIZE = 38
+const lvlTextSize = Math.floor(parseInt(document.getElementById('shape-size').value) / 2.2)
 
 const draw = {
 
@@ -836,7 +834,7 @@ const draw = {
       const x = el.x * scale + canvasOffsetX;
       const y = el.y * scale + canvasOffsetY;
 
-      const delta = UNIT_SIZE / 2 * scale;
+      const delta = el.width / 2 * scale;
       localCtx.clearRect(x - radius + delta, y - radius + delta, radius * 2, radius * 2);
     });
 
@@ -975,11 +973,11 @@ const draw = {
     }
     if (typeof el.lvl === 'number' && +el.lvl !== MIN_LVL) {
       ctx.font = `${lvlTextSize}px Arial`;
-      ctx.fillStyle = DEFAULT_LINE_COLOR;
-      ctx.fillText(el.lvl, x, y + 5, lvlTextSize);
       ctx.strokeStyle = 'white';
       ctx.lineWidth = 1
       ctx.strokeText(el.lvl, x, y + 5, lvlTextSize);
+      ctx.fillStyle = DEFAULT_LINE_COLOR;
+      ctx.fillText(el.lvl, x, y + 5, lvlTextSize);
     }
   },
 
