@@ -2024,7 +2024,7 @@ DEFAULT_DATA=[
   {
     "id": 226,
     "type": "shape",
-    "name": "Костяной_паук",
+    "name": "Голем_паук",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 2466.84,
@@ -2037,7 +2037,7 @@ DEFAULT_DATA=[
   {
     "id": 227,
     "type": "shape",
-    "name": "Костяной_паук",
+    "name": "Голем_паук",
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 2269.14,

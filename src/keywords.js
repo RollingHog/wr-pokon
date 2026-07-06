@@ -6,6 +6,8 @@ const KW = /** @type {const} */ ({
   GRAVE_UNIT: '_могила',
   WRECK_UNIT: '_обломки',
   BUILD_SLOT: '_build_slot',
+  INFO_UNIT: '_info_',
+  TIMER_UNIT: '_timer_',
   
   CAPITAL: 'Столица',
 
