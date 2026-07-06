@@ -140,6 +140,9 @@ function init() {
     },
     'E': () => {
       selection.switchEndedTurn()
+    },   
+    'I': () => {
+      selection.info()
     },    
     'B': () => {
       enablePinMode()
@@ -368,6 +371,7 @@ function addListeners() {
   document.getElementById('edit-atk-btn').addEventListener('click', enableAttackMode);
   document.getElementById('edit-pin-btn')?.addEventListener('click', enablePinMode);
   document.getElementById('remove-pin-btn')?.addEventListener('click', () => { Pins.removePreviousOwnership(selectedElement) });
+  document.getElementById('sel-info-btn')?.addEventListener('click', selection.info);
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   // document.getElementById('edit-color').addEventListener('input', updateElementColor);
   document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
@@ -1584,6 +1588,11 @@ const selection = {
     selectedElement.title = newTitle
     draw.element(selectedElement)
   },
+
+  info() {
+    if(!selectedElement) return
+    alert(JSON.stringify(selectedElement))
+  }
 }
 
 function handleMouseMove(e) {
