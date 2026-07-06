@@ -117,17 +117,23 @@ function init() {
   loadDefaultData()
   loadDefaultCustomImages()
   hotkeysLib.init({
+    'Escape': () => {
+      selection.drop()
+    },
     'Delete': () => {
       selection.delete()
     },
     'End': () => {
       selection.damage()
     },
-    'Escape': () => {
-      selection.drop()
-    },
     'Ctrl End': () => {
       selection.damage(prompt('Damage amount? Minus to heal'))
+    },
+    'PageDown': () => {
+      selection.dropLevel()
+    },
+    'Ctrl PageDown': () => {
+      selection.dropLevel(prompt('Drop level amount? Minus to lvl up'))
     },
     'Q': () => {
       selection.switchDisable()
@@ -1526,11 +1532,18 @@ const selection = {
     editPanel.style.display = 'none';
   },
   damage(amount = 1) {
-    if (selectedElement) {
-      // if (isNoHealth(selectedElement)) return
-      if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = Unit.getMaxHP(selectedElement.name)
-      offsetUnitHp(selectedElement, -amount)
-    }
+    if (!selectedElement) return
+    // if (isNoHealth(selectedElement)) return
+    if (typeof selectedElement.lvl === 'undefined') selectedElement.lvl = MIN_LVL
+    offsetUnitHp(selectedElement, -amount)
+
+    drawCanvas({infoPanel: true});
+  },
+  dropLevel(amount = 1) {
+    if (!selectedElement) return
+
+    if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = Unit.getMaxHP(selectedElement.name)
+    offsetObjLvl(selectedElement, -amount)
     drawCanvas({infoPanel: true});
   },
   switchEndedTurn() {
@@ -2830,6 +2843,7 @@ function showHelp() {
 * Alt + Delete - удалить
 * End - повредить
 * Ctrl+End - повредить на величину
+* PageDown и Ctrl+PageDown - аналогично, но снизить уровень
 * Q - отключить/включить
 * E - пометить закончившим ход
 * B, Alt + B - bind/pin
