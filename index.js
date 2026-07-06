@@ -1591,7 +1591,7 @@ const selection = {
 
   info() {
     if(!selectedElement) return
-    alert(JSON.stringify(selectedElement))
+    alert(JSON.stringify(selectedElement, 0, 2))
   }
 }
 
