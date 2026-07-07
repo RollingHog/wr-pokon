@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 0.8853666719887164,
-  "canvasOffsetX": -1409.5173737562518,
-  "canvasOffsetY": -788.9599313292413,
+  "scale": 1.0287346927546739,
+  "canvasOffsetX": -1716.6764841544,
+  "canvasOffsetY": -862.2231543968751,
   "shapeColor": "#d3d3d3"
 };
 USER_RESOURCES={
@@ -11,7 +11,7 @@ USER_RESOURCES={
   "Десант": {},
   "Эл-во": {}
 };
-OWNER_MAP={"122":[353]};
+OWNER_MAP={"122":[353],"491":[524,526,523,525]};
 DEFAULT_DATA=[
   {
     "id": 5,
@@ -2748,8 +2748,8 @@ DEFAULT_DATA=[
     "name": "Звёздная_Арка",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2276.86,
-    "y": 1296.36,
+    "x": 2283.2,
+    "y": 1298.26,
     "width": 60,
     "height": 60,
     "curr_hp": 3,
@@ -2944,16 +2944,17 @@ DEFAULT_DATA=[
   {
     "id": 491,
     "type": "shape",
-    "name": "Созерцатель",
+    "name": "И_Эктор",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2280.42,
-    "y": 1207.6,
+    "x": 2282.94,
+    "y": 1205.91,
     "width": 60,
     "height": 60,
     "src": "",
     "curr_hp": 3,
-    "endedTurn": false
+    "endedTurn": false,
+    "title": "Эктор"
   },
   {
     "id": 492,
@@ -3039,13 +3040,13 @@ DEFAULT_DATA=[
     "name": "Кровемёт",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2167.43,
+    "x": 2166.59,
     "y": 1126.61,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
     "endedTurn": false,
-    "lvl": 5
+    "lvl": 4
   },
   {
     "id": 503,
@@ -3059,7 +3060,7 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "endedTurn": false,
-    "lvl": 5
+    "lvl": 4
   },
   {
     "id": 505,
@@ -3214,7 +3215,7 @@ DEFAULT_DATA=[
     "shape": "custom",
     "color": "#d3d3d3",
     "x": 2353.62,
-    "y": 1215.65,
+    "y": 1219.87,
     "width": 60,
     "height": 60,
     "src": "",
@@ -3224,11 +3225,11 @@ DEFAULT_DATA=[
   {
     "id": 520,
     "type": "shape",
-    "name": "Созерцатель",
+    "name": "Кровотворец",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2412.73,
-    "y": 1216.78,
+    "x": 2419.49,
+    "y": 1218.46,
     "width": 60,
     "height": 60,
     "src": "",
@@ -3238,14 +3239,69 @@ DEFAULT_DATA=[
   {
     "id": 521,
     "type": "shape",
-    "name": "Созерцатель",
+    "name": "Хранитель",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 2483.27,
-    "y": 1207.35,
+    "x": 2484.11,
+    "y": 1206.51,
     "width": 60,
     "height": 60,
     "curr_hp": 3,
+    "endedTurn": false,
+    "src": ""
+  },
+  {
+    "id": 523,
+    "type": "shape",
+    "name": "Кровемёт",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 2250.34,
+    "y": 1190.88,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "lvl": 4
+  },
+  {
+    "id": 524,
+    "type": "shape",
+    "name": "Дыхательная_маска",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 2317.59,
+    "y": 1177.55,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 525,
+    "type": "shape",
+    "name": "Парализующий_амулет",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 2245.26,
+    "y": 1236.55,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "lvl": 3
+  },
+  {
+    "id": 526,
+    "type": "shape",
+    "name": "Соляная_граната",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 2282.06,
+    "y": 1165.49,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
     "endedTurn": false
   }
 ]

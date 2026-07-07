@@ -66,6 +66,8 @@ const EMOJI_IMAGES = {
   "Кровотворец": "🙌",
   "Хранитель": "🎓",
 
+  "И_Эктор": "⚔️",
+
   // враги
   "Тень_Усопшего":"👤",
   "Огонёк-искуситель":"😈",
@@ -160,6 +162,8 @@ const OBJ_CATEGORIES = {
       "Созерцатель",
       "Кровотворец",
       "Хранитель",
+
+      "И_Эктор",
     ],
     Предметы: [
       "Скрижаль",
@@ -250,8 +254,9 @@ const OBJ_CATEGORIES = {
   }
 }
 
-DEFAULT.noHealth = DEFAULT.noHealth.concat(OBJ_CATEGORIES.UNITS.Предметы)
-DEFAULT.noHealth = DEFAULT.noHealth.concat(OBJ_CATEGORIES.BUILDINGS.Декор)
+DEFAULT.noHealth = DEFAULT.noHealth
+  .concat(OBJ_CATEGORIES.UNITS.Предметы)
+  .concat(OBJ_CATEGORIES.BUILDINGS.Декор)
 
 const CATEGORY_PRICES = {
   UNITS: {
@@ -275,12 +280,14 @@ const EFFECT_LISTS = {
     // "Рабы",
   ],
   local: [
-    KW.ATK,
-    KW.DEF,
-    KW.AP,
-    KW.DIST,
+    // KW.ATK,
+    // KW.DEF,
+    // KW.AP,
+    // KW.DIST,
+    // KW.REGEN,
+    "Вместилище",
+    "Искра",
     "ХП",
-    KW.REGEN,
     ...KW_LOCALS
   ],
 }
@@ -300,6 +307,13 @@ const DICT_COMMON = {
   },
 
   [KW.WRECK_UNIT]: {
+  },
+
+  // игроки
+  'И_Эктор': {
+    "Вместилище": 3,
+    [KW.MAX_HP]: 3,
+    "Искра": 2,
   },
 
   // враги
