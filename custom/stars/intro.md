@@ -23,3 +23,4 @@
 
 
 Правила https://docs.google.com/document/d/10Z_YwHuLqeqkaqf2X2GLK0XWSPc9TPj5BxZhY3vk8p0/edit?usp=sharing
+Персонажи https://docs.google.com/document/d/1x_YF5Ue-JROB5RUoMxBYJIEyArQHEfmZLTYi7QQsK4s/edit?tab=t.0

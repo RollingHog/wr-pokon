@@ -132,7 +132,7 @@ function init() {
     'PageDown': () => {
       selection.dropLevel()
     },
-    'Ctrl PageDown': () => {
+    'Alt PageDown': () => {
       selection.dropLevel(prompt('Drop level amount? Minus to lvl up'))
     },
     'Q': () => {
@@ -2852,7 +2852,7 @@ function showHelp() {
 * Alt + Delete - удалить
 * End - повредить
 * Ctrl+End - повредить на величину
-* PageDown и Ctrl+PageDown - аналогично, но снизить уровень
+* PageDown и Alt+PageDown - аналогично, но снизить уровень
 * Q - отключить/включить
 * E - пометить закончившим ход
 * B, Alt + B - bind/pin
