@@ -8,17 +8,17 @@ TECH_EFFECTS
 
 /// <reference path="../../src/keywords.js"/>
 /* global
-KW KW_RULES
+KW KW_RULES KW_LOCALS
 */
 
 const CELL_SIZE = 120
 
 const SETTINGS = {
   IS_CUSTOM: true,
-  MAP_PATH: 'stars/map.png',
+  MAP_PATH: 'stars/vr.png',
   // DEFAULT_FIGURE_BG: 'circle',
 
-  MAX_UNIT_HP: 3,
+  MAX_UNIT_HP: 5,
   VISION_RADIUS: CELL_SIZE * 1.5,
   CAPITAL_SPECIAL_VISION: false,
   // may be left empty, then _pop_ wont be applied
@@ -68,6 +68,9 @@ const EMOJI_IMAGES = {
 
   "И_Эктор": "⚔️",
   "И_ТТ": "🙌",
+  "И_SUN": "🎓",
+  "NPC_Си": "⚔️",
+  "NPC_Ляо": "🙌",
 
   // враги
   "Тень_Усопшего":"👤",
@@ -166,6 +169,9 @@ const OBJ_CATEGORIES = {
 
       "И_Эктор",
       "И_ТТ",
+      "И_SUN",
+      "NPC_Си",
+      "NPC_Ляо",
     ],
     Предметы: [
       "Скрижаль",
@@ -319,12 +325,33 @@ const DICT_COMMON = {
   },
 
   'И_ТТ': {
+    "Вместилище": 4,
+    [KW.MAX_HP]: 4,
+    "Искра": 1,
+  },
+
+  'И_SUN': {
+    "Вместилище": 3,
+    [KW.MAX_HP]: 3,
+    "Искра": 2,
+  },
+
+  'NPC_Си': {
+    "Вместилище": 4,
+    [KW.MAX_HP]: 4,
+    "Искра": 1,
+  },
+
+  'NPC_Ляо': {
     "Вместилище": 3,
     [KW.MAX_HP]: 3,
     "Искра": 2,
   },
 
   // враги
+  'Тень_Усопшего': {
+    [KW.MAX_HP]: 2,
+  },
 
   // предметы
   'Соль': {
@@ -370,6 +397,17 @@ KW_RULES.setCommon(
 KW_RULES.setCommon(
   ["Звёздный_зомби"],
   { Зомби: 1 }
+)
+
+KW_RULES.setCommon(
+  [].concat(
+    OBJ_CATEGORIES.UNITS.Персонажи,
+    OBJ_CATEGORIES.UNITS.Враги,
+    // OBJ_CATEGORIES.BUILDINGS.Декор,
+    OBJ_CATEGORIES.BUILDINGS._default_,
+    OBJ_CATEGORIES.BUILDINGS.Устройства,
+  ),
+  { [KW.MAX_HP]: 3 }
 )
 
 KW_RULES.setCommon(
