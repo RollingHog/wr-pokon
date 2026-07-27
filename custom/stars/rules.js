@@ -298,6 +298,7 @@ const EFFECT_LISTS = {
     "Вместилище",
     "Искра",
     "ХП",
+    "Атака_вселением",
     ...KW_LOCALS
   ],
 }
@@ -407,6 +408,11 @@ KW_RULES.setCommon(
 KW_RULES.setCommon(
   ["Тень_Усопшего"],
   { Духи: 1 }
+)
+
+KW_RULES.setCommon(
+  ["Тень_Усопшего", "Демон-диверсант"],
+  { Атака_вселением: 1 }
 )
 
 KW_RULES.setCommon(
