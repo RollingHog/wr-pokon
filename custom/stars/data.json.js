@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 1.017886545917552,
-  "canvasOffsetX": -4317.852200494332,
-  "canvasOffsetY": -581.6882601360641,
+  "scale": 0.3549150930293091,
+  "canvasOffsetX": -1062.9445828156001,
+  "canvasOffsetY": -79.60931312460002,
   "shapeColor": "#0000ff"
 };
 USER_RESOURCES={
@@ -2670,8 +2670,8 @@ DEFAULT_DATA=[
     "name": "Пси-клинок",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 4764.06,
-    "y": 579.63,
+    "x": 4383.69,
+    "y": 700.79,
     "width": 60,
     "height": 60,
     "curr_hp": 3,
