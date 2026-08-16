@@ -2048,11 +2048,11 @@ const userEffectsObj = {
 
   processLvlValue(value, obj) {
     if(!value.includes('ЛВЛ')) return null
-    if (value === '+ЛВЛ' || value === 'ЛВЛ') return +obj.lvl || MIN_LVL
-    if (value === '+ЛВЛ*2' || value === 'ЛВЛ*2') return 2 * +obj.lvl || MIN_LVL
-    if (value === '+ЛВЛ/2' || value === 'ЛВЛ/2') return +((+obj.lvl / 2).toFixed(1)) || MIN_LVL
-    if (value === '-ЛВЛ') return -obj.lvl || -MIN_LVL
-    if (value === '-ЛВЛ*2') return 2 * -obj.lvl || -MIN_LVL
+    if (value === '+ЛВЛ' || value === 'ЛВЛ') return (+obj.lvl || MIN_LVL)
+    if (value === '+ЛВЛ*2' || value === 'ЛВЛ*2') return 2 * (+obj.lvl || MIN_LVL)
+    if (value === '-ЛВЛ') return (-obj.lvl || -MIN_LVL)
+    if (value === '-ЛВЛ*2') return 2 * (-obj.lvl || -MIN_LVL)
+    if (value === '+ЛВЛ/2' || value === 'ЛВЛ/2') return +(((+obj.lvl || MIN_LVL) / 2).toFixed(1)) 
   },
 
   getRawEffectsList(obj) {
@@ -2095,6 +2095,11 @@ const userEffectsObj = {
     let list = userEffectsObj.getRawEffectsList(obj)
 
     if(Pins.isOwner(obj)) {
+      const outputMultEntry = list.flat().find((el) => el[0] === KW.OUTPUT_MULT);
+      if (!outputMultEntry) {
+        warn(`invalid OUTPUT_MULT value in rules`, obj)
+      }
+
       const ownedObjects = Pins.listOwnedBy(obj.id);
       let childEffects = []
       for(const ownedObj of ownedObjects) {
@@ -2106,12 +2111,7 @@ const userEffectsObj = {
             return null;
           }
 
-          if(list.flat().findIndex((el) => el[0] === KW.OUTPUT_MULT) !== -1) {
-            // Находим значение OUTPUT_MULT у родителя
-            const outputMultEntry = list.flat().find((el) => el[0] === KW.OUTPUT_MULT);
-            if(!outputMultEntry) {
-              warn(`invalid OUTPUT_MULT value in rules`, obj)
-            }
+          if(outputMultEntry) {
             const multiplier = Number(
               userEffectsObj.processLvlValue(outputMultEntry[1], obj)
             )
