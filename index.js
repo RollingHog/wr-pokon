@@ -1591,8 +1591,7 @@ const selection = {
   },
   delete() {
     if (selectedElement) {
-      Pins.removeOwner(selectedElement.id)
-      elements = elements.filter(el => el !== selectedElement);
+      killObj(selectedElement, true)
       selectedElement = null;
       editPanel.style.display = 'none';
       drawCanvas({infoPanel: true});
@@ -2469,10 +2468,17 @@ function offsetUnitHp(obj, amount) {
 /**
  * doesn't do any redraw 
  * @param {typeof elements[0]} obj
+ * @param {[boolean]} force remove without any processing, for direct selection.delete
  */
-function killObj(obj) {
+function killObj(obj, force) {
   obj.disabled = undefined
   Pins.removeOwner(obj.id)
+  Pins.removePreviousOwnership(obj)
+
+  if(force) {
+    elements = elements.filter(el => el !== selectedElement);
+    return
+  }
 
   const lootList = Unit.getLoot(obj.name)
   if (lootList) {
@@ -2483,7 +2489,6 @@ function killObj(obj) {
   }
   
   if (SETTINGS.NO_GRAVES || DEFAULT.noGrave.includes(obj.name) || isNoHealth(obj)) {
-    // selection.delete()
     elements = elements.filter(el => el !== obj);
     return
   }
