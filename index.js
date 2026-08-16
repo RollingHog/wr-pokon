@@ -2088,7 +2088,6 @@ const userEffectsObj = {
     const typeKey = isBuilding(obj) ? '_building_' : '_unit_'
     let list = [].concat([
       DICT_COMMON_A?.[typeKey],
-      DICT_USER[username]?.[typeKey],
       DICT_COMMON_A?.[obj.name],
       DICT_USER[username]?.[typeKey],
       DICT_USER[username]?.[obj.name],
