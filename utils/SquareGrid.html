@@ -5,147 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canvas · сетка с точками и координатами</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
-            margin: 0;
-            min-height: 100vh;
-            background: #0e1219;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-            padding: 16px;
+            margin: 0; min-height: 100vh; background: #0e1219;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif; padding: 16px;
         }
         .canvas-card {
-            background: #1e242c;
-            border-radius: 44px;
-            padding: 28px 30px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.9), inset 0 1px 2px rgba(255, 255, 255, 0.05);
-            max-width: 1300px;
-            width: fit-content;
+            background: #1e242c; border-radius: 44px; padding: 28px 30px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.9), inset 0 1px 2px rgba(255,255,255,0.05);
+            max-width: 1300px; width: fit-content;
         }
         .controls {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            margin-bottom: 28px;
-            background: #2b333f;
-            padding: 20px 28px;
-            border-radius: 48px;
-            border: 1px solid #40506a;
+            display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 28px;
+            background: #2b333f; padding: 20px 28px; border-radius: 48px; border: 1px solid #40506a;
         }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            min-width: 140px;
-        }
+        .input-group { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
         .input-group label {
-            color: #b5ceff;
-            font-weight: 500;
-            font-size: 0.8rem;
-            letter-spacing: 0.7px;
-            text-transform: uppercase;
-            opacity: 0.9;
+            color: #b5ceff; font-weight: 500; font-size: 0.8rem;
+            letter-spacing: 0.7px; text-transform: uppercase; opacity: 0.9;
         }
         .input-group input {
-            background: #101720;
-            border: 2px solid #3d506b;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-            padding: 10px 18px;
-            border-radius: 40px;
-            width: 100%;
-            outline: none;
-            transition: 0.15s;
+            background: #101720; border: 2px solid #3d506b; color: white;
+            font-size: 1.2rem; font-weight: 600; padding: 10px 18px;
+            border-radius: 40px; width: 100%; outline: none; transition: 0.15s;
         }
-        .input-group input:focus {
-            border-color: #96b5fc;
-            box-shadow: 0 0 0 3px rgba(150, 181, 252, 0.3);
-        }
+        .input-group input:focus { border-color: #96b5fc; box-shadow: 0 0 0 3px rgba(150,181,252,0.3); }
         .chance-panel {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: #1f2835;
-            padding: 5px 20px 5px 26px;
-            border-radius: 60px;
-            border: 1px solid #5f7393;
+            display: flex; align-items: center; gap: 15px; background: #1f2835;
+            padding: 5px 20px 5px 26px; border-radius: 60px; border: 1px solid #5f7393;
         }
-        .chance-panel span {
-            color: #d6e6ff;
-            font-weight: 500;
-        }
+        .chance-panel span { color: #d6e6ff; font-weight: 500; }
         .chance-panel input {
-            width: 90px;
-            background: #0d1624;
-            border: 2px solid #61799e;
-            border-radius: 40px;
-            padding: 8px 12px;
-            color: white;
-            font-weight: 700;
-            text-align: center;
-            font-size: 1.2rem;
+            width: 90px; background: #0d1624; border: 2px solid #61799e;
+            border-radius: 40px; padding: 8px 12px; color: white;
+            font-weight: 700; text-align: center; font-size: 1.2rem;
         }
         button {
-            background: #c94f4f;
-            border: none;
-            color: white;
-            font-weight: 700;
-            font-size: 1.3rem;
-            padding: 14px 36px;
-            border-radius: 50px;
-            cursor: pointer;
-            border-bottom: 5px solid #853232;
-            transition: 0.08s linear;
-            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.6);
-            margin-left: auto;
-            letter-spacing: 0.5px;
+            background: #c94f4f; border: none; color: white; font-weight: 700; font-size: 1.3rem;
+            padding: 14px 36px; border-radius: 50px; cursor: pointer;
+            border-bottom: 5px solid #853232; transition: 0.08s linear;
+            box-shadow: 0 10px 18px rgba(0,0,0,0.6); margin-left: auto; letter-spacing: 0.5px;
         }
-        button:hover {
-            background: #dc5f5f;
-            border-bottom-width: 6px;
-            transform: scale(1.02);
-        }
-        button:active {
-            transform: translateY(5px);
-            border-bottom-width: 2px;
-        }
+        button:hover { background: #dc5f5f; border-bottom-width: 6px; transform: scale(1.02); }
+        button:active { transform: translateY(5px); border-bottom-width: 2px; }
         .canvas-wrapper {
-            background: black;
-            padding: 18px;
-            border-radius: 48px;
-            display: inline-block;
+            background: black; padding: 18px; border-radius: 48px; display: inline-block;
             box-shadow: inset 0 0 0 1px #3d4c63, 0 20px 30px -8px black;
         }
         canvas {
             display: block;
-            border-radius: 28px;
-            width: 100%;
-            height: auto;
-            background: black;
-            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+            border-radius: 28px; width: 100%; height: auto;
+            background: black; box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
         }
-        .info-row {
-            color: #9bb5de;
-            margin-top: 22px;
-            text-align: center;
-            font-size: 1rem;
-        }
-        .info-row span {
-            background: #262f3d;
-            padding: 5px 14px;
-            border-radius: 40px;
-            display: inline-block;
-        }
+        .info-row { color: #9bb5de; margin-top: 22px; text-align: center; font-size: 1rem; }
+        .info-row span { background: #262f3d; padding: 5px 14px; border-radius: 40px; display: inline-block; }
         @media (max-width: 700px) {
             .controls { flex-direction: column; align-items: stretch; }
-            button { margin-left: 0; }
-            .canvas-card { padding: 18px; }
+            button { margin-left: 0; } .canvas-card { padding: 18px; }
         }
     </style>
 </head>
@@ -162,11 +79,18 @@
             </div>
             <div class="chance-panel">
                 <span>🔴 шар %</span>
-                <input type="number" id="chanceInput" value="13" min="0" max="100" step="1">
+                <input type="number" id="chanceInput" value="15" min="0" max="100" step="1">
             </div>
+            <label class="input-group"
+              style="min-width: auto; flex-direction: row; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" id="lanesToggle" checked
+                style="width: 22px; height: 22px; accent-color: #4fa3ff; cursor: pointer;">
+              <span
+                style="color: #b5ceff; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.7px;">🔗
+                Пути</span>
+            </label>
             <button id="renderBtn">🎯 Отрисовать</button>
         </div>
-
         <div class="canvas-wrapper">
             <canvas id="gridCanvas" width="700" height="500"></canvas>
         </div>
@@ -178,21 +102,18 @@
     <script>
         (function() {
             const canvas = document.getElementById('gridCanvas');
-            /** @type {CanvasRenderingContext2D} */
             const ctx = canvas.getContext('2d');
-
             const widthInput = document.getElementById('widthInput');
             const heightInput = document.getElementById('heightInput');
             const chanceInput = document.getElementById('chanceInput');
             const chanceDisplay = document.getElementById('chanceDisplay');
             const renderBtn = document.getElementById('renderBtn');
+            const lanesToggle = document.getElementById('lanesToggle');
 
-            // фиксированные размеры ячейки (пиксели)
-            const CELL_W = 72;   // ширина ячейки
-            const CELL_H = 68;   // высота ячейки (чуть меньше, чтобы номер внизу выглядел пропорционально)
-            const DOT_RADIUS = 9; // радиус шарика
+            const CELL_W = 72;
+            const CELL_H = 68;
+            const DOT_RADIUS = 9;
 
-            // обновление текста процентов
             function updateChanceText() {
                 let val = parseInt(chanceInput.value, 10);
                 if (isNaN(val)) val = 15;
@@ -202,15 +123,101 @@
                 chanceInput.value = val;
             }
 
-            // главная функция отрисовки
+            // Расстояние между двумя звездами (евклидово в координатах сетки)
+            function starDist(a, b) {
+                const dx = a.col - b.col;
+                const dy = a.row - b.row;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            // Ключ ребра для дедупликации (неориентированный)
+            function edgeKey(a, b) {
+                const k1 = `${a.col},${a.row}`;
+                const k2 = `${b.col},${b.row}`;
+                return k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
+            }
+
+            // === ПОСТРОЕНИЕ ГИПЕРЛИНИЙ: MST + ДОПОЛНИТЕЛЬНЫЕ СВЯЗИ ===
+            function buildHyperlanes(stars) {
+                if (stars.length <= 1 || !lanesToggle.checked) return [];
+
+                const edges = new Set();
+                const connections = [];
+
+                // --- Фаза 1: Минимальное остовное дерево (Prim) ---
+                const connected = new Set([0]);
+                const unconnected = new Set(stars.map((_, i) => i).slice(1));
+
+                while (unconnected.size > 0) {
+                    let minDist = Infinity, bestFrom = -1, bestTo = -1;
+                    for (const cIdx of connected) {
+                        for (const uIdx of unconnected) {
+                            const d = starDist(stars[cIdx], stars[uIdx]);
+                            if (d < minDist) { minDist = d; bestFrom = cIdx; bestTo = uIdx; }
+                        }
+                    }
+                    if (bestTo !== -1) {
+                        const key = edgeKey(stars[bestFrom], stars[bestTo]);
+                        if (!edges.has(key)) {
+                            edges.add(key);
+                            connections.push([stars[bestFrom], stars[bestTo]]);
+                        }
+                        connected.add(bestTo);
+                        unconnected.delete(bestTo);
+                    } else break;
+                }
+
+                // --- Фаза 2: Дополнительные связи для стратегической глубины ---
+                const EXTRA_LINK_RANGE = 7;      // макс дистанция для доп. связи (в клетках)
+                const MAX_EXTRA_PER_STAR = 1;     // макс доп. связей на одну звезду
+
+                // Считаем сколько доп. связей уже есть у каждой звезды
+                const extraCount = new Map();
+                for (const s of stars) extraCount.set(`${s.col},${s.row}`, 0);
+
+                // Для каждой звезды ищем ближайших соседей, с которыми ещё нет связи
+                for (let i = 0; i < stars.length; i++) {
+                    const myKey = `${stars[i].col},${stars[i].row}`;
+                    if ((extraCount.get(myKey) || 0) >= MAX_EXTRA_PER_STAR) continue;
+
+                    // Собираем кандидатов и сортируем по расстоянию
+                    const candidates = [];
+                    for (let j = 0; j < stars.length; j++) {
+                        if (i === j) continue;
+                        const key = edgeKey(stars[i], stars[j]);
+                        if (edges.has(key)) continue; // уже соединены
+                        const d = starDist(stars[i], stars[j]);
+                        if (d <= EXTRA_LINK_RANGE) {
+                            candidates.push({ idx: j, dist: d });
+                        }
+                    }
+                    candidates.sort((a, b) => a.dist - b.dist);
+
+                    // Подключаем ближайших, не превышая лимит
+                    for (const cand of candidates) {
+                        if ((extraCount.get(myKey) || 0) >= MAX_EXTRA_PER_STAR) break;
+                        const otherKey = `${stars[cand.idx].col},${stars[cand.idx].row}`;
+                        if ((extraCount.get(otherKey) || 0) >= MAX_EXTRA_PER_STAR) continue;
+
+                        const key = edgeKey(stars[i], stars[cand.idx]);
+                        if (!edges.has(key)) {
+                            edges.add(key);
+                            connections.push([stars[i], stars[cand.idx]]);
+                            extraCount.set(myKey, (extraCount.get(myKey) || 0) + 1);
+                            extraCount.set(otherKey, (extraCount.get(otherKey) || 0) + 1);
+                        }
+                    }
+                }
+
+                return connections;
+            }
+
             function drawCanvas() {
-                // считываем и корректируем параметры
                 let cols = parseInt(widthInput.value, 10);
                 let rows = parseInt(heightInput.value, 10);
                 if (isNaN(cols) || cols < 1) cols = 1;
                 if (isNaN(rows) || rows < 1) rows = 1;
-                const MAX_COLS = 35;
-                const MAX_ROWS = 30;
+                const MAX_COLS = 35, MAX_ROWS = 30;
                 if (cols > MAX_COLS) cols = MAX_COLS;
                 if (rows > MAX_ROWS) rows = MAX_ROWS;
                 widthInput.value = cols;
@@ -223,163 +230,164 @@
                 chanceInput.value = chance;
                 chanceDisplay.textContent = chance;
 
-                // устанавливаем размер canvas с небольшим полем (чтобы сетка не впритык)
                 const padding = 16;
                 const canvasWidth = cols * CELL_W + 2 * padding;
                 const canvasHeight = rows * CELL_H + 2 * padding;
                 canvas.width = canvasWidth;
                 canvas.height = canvasHeight;
 
-                // 1. Заливаем всё чёрным
+                // Генерация звезд с минимальной дистанцией
+                const stars = [];
+                const MIN_DISTANCE = 3;
+                for (let row = 1; row <= rows; row++) {
+                    for (let col = 1; col <= cols; col++) {
+                        if (Math.random() * 100 < chance) {
+                            let tooClose = false;
+                            for (const star of stars) {
+                                if (Math.max(Math.abs(star.col - col), Math.abs(star.row - row)) < MIN_DISTANCE) {
+                                    tooClose = true; break;
+                                }
+                            }
+                            if (!tooClose) stars.push({ col, row });
+                        }
+                    }
+                }
+
+                const hyperlanes = buildHyperlanes(stars);
+                const starSet = new Set(stars.map(s => `${s.col},${s.row}`));
+
+                // Фон
                 ctx.fillStyle = '#000000';
                 ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-                // 2. Рисуем сетку (линии между ячейками)
-                ctx.strokeStyle = '#2f3a48';
-                ctx.lineWidth = 2.5;
-                ctx.beginPath();
-
-                // вертикальные линии
+                // Сетка
+                ctx.strokeStyle = '#2f3a48'; ctx.lineWidth = 2.5; ctx.beginPath();
                 for (let i = 0; i <= cols; i++) {
                     const x = padding + i * CELL_W;
-                    ctx.moveTo(x, padding);
-                    ctx.lineTo(x, canvasHeight - padding);
+                    ctx.moveTo(x, padding); ctx.lineTo(x, canvasHeight - padding);
                 }
-                // горизонтальные линии
                 for (let i = 0; i <= rows; i++) {
                     const y = padding + i * CELL_H;
-                    ctx.moveTo(padding, y);
-                    ctx.lineTo(canvasWidth - padding, y);
+                    ctx.moveTo(padding, y); ctx.lineTo(canvasWidth - padding, y);
                 }
-                ctx.strokeStyle = '#3d4a5c';
-                ctx.stroke();
+                ctx.strokeStyle = '#3d4a5c'; ctx.stroke();
 
-                // 3. Тонкая внутренняя обводка ячеек (беловатый оттенок) — опционально, для красоты
-                ctx.lineWidth = 1.2;
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+                ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(255,255,255,0.18)';
                 ctx.strokeRect(padding, padding, cols * CELL_W, rows * CELL_H);
 
-                // 4. Рисуем ячейки: номера и шарики
+                // === ГИПЕРЛИНИИ ===
+                if (lanesToggle.checked && hyperlanes.length > 0) {
+                    ctx.save();
+                    ctx.lineCap = 'round';
+                    ctx.shadowColor = '#4fa3ff'; ctx.shadowBlur = 12;
+                    ctx.strokeStyle = 'rgba(79,163,255,0.4)'; ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    for (const [s1, s2] of hyperlanes) {
+                        const x1 = padding + (s1.col - 1) * CELL_W + CELL_W / 2;
+                        const y1 = padding + (s1.row - 1) * CELL_H + CELL_H / 2;
+                        const x2 = padding + (s2.col - 1) * CELL_W + CELL_W / 2;
+                        const y2 = padding + (s2.row - 1) * CELL_H + CELL_H / 2;
+                        ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+                    }
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                    ctx.strokeStyle = 'rgba(180,220,255,0.8)'; ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                // Ячейки: рамки и звезды
                 for (let row = 1; row <= rows; row++) {
                     for (let col = 1; col <= cols; col++) {
                         const x = padding + (col - 1) * CELL_W;
                         const y = padding + (row - 1) * CELL_H;
+                        const isStar = starSet.has(`${col},${row}`);
 
-                        // === красный шарик (рандом) ===
-                        const rnd = Math.random() * 100;
-                        if (rnd < chance) {
-                            // сначала рисуем свечение по всей ячейке
-                            const glowGradient = ctx.createRadialGradient(
-                                x + CELL_W / 2, y + CELL_H / 2, CELL_H * 0.1,
-                                x + CELL_W / 2, y + CELL_H / 2, CELL_H
+                        if (isStar) {
+                            // Рамка 3x3
+                            const zx = padding + (col - 2) * CELL_W;
+                            const zy = padding + (row - 2) * CELL_H;
+                            ctx.save();
+                            ctx.strokeStyle = 'rgba(255,140,0,0.6)'; ctx.lineWidth = 3;
+                            ctx.shadowColor = '#ff8c00'; ctx.shadowBlur = 10;
+                            ctx.strokeRect(zx, zy, CELL_W * 3, CELL_H * 3);
+                            ctx.restore();
+
+                            // Свечение
+                            const glow = ctx.createRadialGradient(
+                                x + CELL_W/2, y + CELL_H/2, CELL_H * 0.1,
+                                x + CELL_W/2, y + CELL_H/2, CELL_H
                             );
-                            glowGradient.addColorStop(0, 'rgba(255, 140, 0, 0.25)');
-                            glowGradient.addColorStop(0.5, 'rgba(255, 140, 0, 0.15)');
-                            glowGradient.addColorStop(1, 'rgba(255, 140, 0, 0.05)');
-                            ctx.fillStyle = glowGradient;
+                            glow.addColorStop(0, 'rgba(255,140,0,0.25)');
+                            glow.addColorStop(0.5, 'rgba(255,140,0,0.15)');
+                            glow.addColorStop(1, 'rgba(255,140,0,0.05)');
+                            ctx.fillStyle = glow;
                             ctx.beginPath();
-                            ctx.arc(x + CELL_W / 2, y + CELL_H / 2, CELL_H * 0.6, 0, 2 * Math.PI);
+                            ctx.arc(x + CELL_W/2, y + CELL_H/2, CELL_H * 0.6, 0, 2 * Math.PI);
                             ctx.fill();
 
-                            // теперь сам шарик
+                            // Шарик
                             ctx.beginPath();
-                            ctx.arc(x + CELL_W / 2, y + CELL_H / 2, DOT_RADIUS, 0, 2 * Math.PI);
-                            // градиент для объёма
-                          const gradient = ctx.createRadialGradient(
-                            x + CELL_W / 2 - 3, y + CELL_H / 2 - 3, 3,
-                            x + CELL_W / 2, y + CELL_H / 2, DOT_RADIUS + 3
-                          );
-                          gradient.addColorStop(0, '#ffb347');  // светлый оранжевый
-                          gradient.addColorStop(0.7, '#ff8c00'); // средний оранжевый
-                          gradient.addColorStop(1, '#c45c00');   // тёмно-оранжевый
-                          ctx.fillStyle = gradient;
-                            ctx.fill();
-                            // блик
-                            ctx.shadowColor = '#ff8888';
-                            ctx.shadowBlur = 12;
-                            ctx.fill(); // повтор для усиления свечения (не страшно)
-                            ctx.shadowBlur = 0;
-                            ctx.shadowColor = 'transparent';
-                            // дополнительная белая точка-блик
+                            ctx.arc(x + CELL_W/2, y + CELL_H/2, DOT_RADIUS, 0, 2 * Math.PI);
+                            const grad = ctx.createRadialGradient(
+                                x + CELL_W/2 - 3, y + CELL_H/2 - 3, 3,
+                                x + CELL_W/2, y + CELL_H/2, DOT_RADIUS + 3
+                            );
+                            grad.addColorStop(0, '#ffb347');
+                            grad.addColorStop(0.7, '#ff8c00');
+                            grad.addColorStop(1, '#c45c00');
+                            ctx.fillStyle = grad; ctx.fill();
+                            ctx.shadowColor = '#ff8888'; ctx.shadowBlur = 12; ctx.fill();
+                            ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+
+                            // Блик
                             ctx.beginPath();
-                            ctx.arc(x + CELL_W / 2 - 3, y + CELL_H / 2 - 3, 2.5, 0, 2 * Math.PI);
-                            ctx.fillStyle = '#fff9f9';
-                            ctx.fill();
+                            ctx.arc(x + CELL_W/2 - 3, y + CELL_H/2 - 3, 2.5, 0, 2 * Math.PI);
+                            ctx.fillStyle = '#fff9f9'; ctx.fill();
                         }
 
-                        // === номер (столбец.строка) внизу ячейки ===
-                        const text = `${col.toString(10).padStart(2, 0)}.${row.toString(10).padStart(2, 0)}`;
-                        ctx.font = 'bold 17px "JetBrains Mono", "Fira Code", monospace';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'bottom';
-                        // немного поднимаем текст от нижнего края
-                        const textX = x + CELL_W / 2;
-                        const textY = y + CELL_H;  // отступ 8px от низа
-
-                        // сам текст
+                        // Номер
+                        const text = `${String(col).padStart(2,'0')}.${String(row).padStart(2,'0')}`;
+                        ctx.font = 'bold 17px "JetBrains Mono","Fira Code",monospace';
+                        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
                         ctx.fillStyle = '#f0f4ff';
-                        // ctx.shadowColor = '#aaccff';
-                        // ctx.shadowBlur = 6;
-                        ctx.fillText(text, textX, textY - 2); // маленькая поправка
+                        ctx.fillText(text, x + CELL_W/2, y + CELL_H - 2);
                         ctx.shadowBlur = 0;
                     }
                 }
 
-                // 5. Рисуем внешнюю яркую обводку canvas (стильно)
-                ctx.strokeStyle = '#6d7f9c';
-                ctx.lineWidth = 3;
+                // Внешняя обводка
+                ctx.strokeStyle = '#6d7f9c'; ctx.lineWidth = 3;
                 ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
             }
 
-            // синхронизация отображения шанса
             chanceInput.addEventListener('input', () => {
-                let val = parseInt(chanceInput.value, 10);
-                if (isNaN(val)) val = 15;
-                if (val < 0) val = 0;
-                if (val > 100) val = 100;
-                chanceDisplay.textContent = val;
+                let v = parseInt(chanceInput.value, 10);
+                if (isNaN(v)) v = 15; v = Math.max(0, Math.min(100, v));
+                chanceDisplay.textContent = v; 
             });
-
             chanceInput.addEventListener('blur', () => {
-                let val = parseInt(chanceInput.value, 10);
-                if (isNaN(val)) val = 15;
-                if (val < 0) val = 0;
-                if (val > 100) val = 100;
-                chanceInput.value = val;
-                chanceDisplay.textContent = val;
+                let v = parseInt(chanceInput.value, 10);
+                if (isNaN(v)) v = 15; v = Math.max(0, Math.min(100, v));
+                chanceInput.value = v; chanceDisplay.textContent = v;
             });
-
-            // обработчик кнопки
             renderBtn.addEventListener('click', drawCanvas);
-
-            // enter в любом поле вызывает отрисовку
-            [widthInput, heightInput, chanceInput].forEach(input => {
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') drawCanvas();
-                });
-            });
-
-            // защита от дурака для ширины/высоты
+            [widthInput, heightInput, chanceInput].forEach(inp =>
+                inp.addEventListener('keypress', e => { if (e.key === 'Enter') drawCanvas(); })
+            );
             function clampDimensions() {
-                let w = parseInt(widthInput.value, 10);
-                let h = parseInt(heightInput.value, 10);
-                if (isNaN(w)) w = 1;
-                if (isNaN(h)) h = 1;
-                if (w < 1) w = 1;
-                if (h < 1) h = 1;
-                if (w > 35) w = 35;
-                if (h > 30) h = 30;
-                widthInput.value = w;
-                heightInput.value = h;
+                let w = parseInt(widthInput.value, 10) || 1;
+                let h = parseInt(heightInput.value, 10) || 1;
+                w = Math.max(1, Math.min(35, w));
+                h = Math.max(1, Math.min(30, h));
+                widthInput.value = w; heightInput.value = h;
             }
             widthInput.addEventListener('blur', clampDimensions);
             heightInput.addEventListener('blur', clampDimensions);
+            lanesToggle.addEventListener('change', drawCanvas); 
 
-            // начальная отрисовка с дефолтными значениями (9x7, 15%)
             updateChanceText();
             drawCanvas();
-
-            // дополнительно: при изменении размера окна не ломаем canvas (но он фиксированного размера)
         })();
     </script>
 </body>
