@@ -62,7 +62,7 @@ let DICT_COMMON_A = {}
 
 // SETTINGS fallback section
 const DEFAULT_LINE_COLOR = SETTINGS?.DEFAULT_LINE_COLOR || 'black'
-/** minimal level */
+/** minimal level @type {number} */
 const MIN_LVL = typeof SETTINGS?.MIN_LVL !== 'undefined' ? SETTINGS?.MIN_LVL : 1
 const EFFECTS_TO_IGNORE = [KW.COST, KW.LOOT, KW.INIT_HP2]
 /** 
@@ -2046,6 +2046,15 @@ const userEffectsObj = {
 
   //getStaticEffects
 
+  processLvlValue(value, obj) {
+    if(!value.includes('ЛВЛ')) return null
+    if (value === '+ЛВЛ' || value === 'ЛВЛ') return +obj.lvl || MIN_LVL
+    if (value === '+ЛВЛ*2' || value === 'ЛВЛ*2') return 2 * +obj.lvl || MIN_LVL
+    if (value === '+ЛВЛ/2' || value === 'ЛВЛ/2') return +((+obj.lvl / 2).toFixed(1)) || MIN_LVL
+    if (value === '-ЛВЛ') return -obj.lvl || -MIN_LVL
+    if (value === '-ЛВЛ*2') return 2 * -obj.lvl || -MIN_LVL
+  },
+
   getRawEffectsList(obj) {
     const username = playerByColor(obj.color)
 
@@ -2069,6 +2078,7 @@ const userEffectsObj = {
 
     return list.filter(e => e)
   },
+  
   /**
    * @param {elements[0]} obj 
    */
@@ -2096,6 +2106,30 @@ const userEffectsObj = {
             return null;
           }
 
+          if(list.flat().findIndex((el) => el[0] === KW.OUTPUT_MULT) !== -1) {
+            // Находим значение OUTPUT_MULT у родителя
+            const outputMultEntry = list.flat().find((el) => el[0] === KW.OUTPUT_MULT);
+            if(!outputMultEntry) {
+              warn(`invalid OUTPUT_MULT value in rules`, obj)
+            }
+            const multiplier = Number(
+              userEffectsObj.processLvlValue(outputMultEntry[1], obj)
+            )
+
+            const res = effectGroup
+              .filter(([effectName]) => EFFECT_LISTS.resources.includes(effectName))
+              .map(([effectName, value]) => {
+                const numValue = Number(value);
+
+                if (!isNaN(numValue) && !isNaN(multiplier)) {
+                  return [effectName, numValue * multiplier];
+                }
+                return [effectName, value];
+              });
+
+            return res;
+          }
+
           return effectGroup.filter(([effectName]) => EFFECT_LISTS.local.includes(effectName));
         })
         .filter(Boolean)
@@ -2110,10 +2144,12 @@ const userEffectsObj = {
       // if (k.startsWith('_')) return null
       if (EFFECTS_TO_IGNORE.includes(k)) return null
       if (typeof v === 'number' || !isNaN(+v)) return [k, v]
-      if (v === '+ЛВЛ' || v === 'ЛВЛ') return [k, +obj.lvl || MIN_LVL]
-      if (v === '+ЛВЛ*2' || v === 'ЛВЛ*2') return [k, 2 * +obj.lvl || MIN_LVL]
-      if (v === '-ЛВЛ') return [k, -obj.lvl || -MIN_LVL]
-      if (v === '-ЛВЛ*2') return [k, 2 * -obj.lvl || -MIN_LVL]
+
+      const lvlRes = userEffectsObj.processLvlValue(v, obj)
+      if(lvlRes !== null) {
+        return [k, lvlRes]
+      }
+
       console.warn('bad DICT rule for', obj.name, [k, v])
     }).filter(e => e)
 

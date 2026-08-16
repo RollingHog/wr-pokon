@@ -28,6 +28,11 @@ const KW = /** @type {const} */ ({
   LVL_DRIFT: 'Сдвиг уровня',
   VISION: 'Радиус зрения',
   NO_VISION: -1,
+
+  /** if set, clones resource income from children and multiplies it on given amount 
+   * all ЛВЛ-options in children not supported yet
+  */
+  OUTPUT_MULT: "_output_mult_",
 })
 
 const KW_LOCALS = [
@@ -36,6 +41,8 @@ const KW_LOCALS = [
   KW.MAX_HP,
   KW.INIT_LVL,
   KW.LVL_DRIFT,
+
+  KW.OUTPUT_MULT,
 ]
 
 const KW_RULES = {
