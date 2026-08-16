@@ -287,6 +287,7 @@ function setShapeColor(color) {
     } else {
       el.setAttribute('disabled', '')
     }
+    el.title = getUnitDescription(filename, color)
   });
 
   info_panel.style.display = ''
@@ -526,9 +527,9 @@ const Unit = {
   },
 }
 
+function getUnitDescription(filename, playerColor) {
+  if(!filename) return filename
 
-
-function getUnitDescription(filename) {
   const effArrToStr = (arr) => arr
     .filter(e => ![KW.COST].includes(e[0]))
     .map(e => e.join(': ')).join('\n')
@@ -545,8 +546,23 @@ function getUnitDescription(filename) {
     }
   }
 
-  const effStr = typeof DICT_COMMON_A[filename] !== 'undefined'
-    ? '\n\nЭФФЕКТЫ:\n' + effArrToStr(DICT_COMMON_A[filename])
+  const eff = userEffectsObj.getRawEffectsList({
+    name: filename,
+    color: playerColor
+  })
+
+  
+  // oh this is dirty hack
+  const globalEff = eff[0].concat(eff[1])
+  const localEff = (eff[2] || []).concat(eff[3] || [], eff[4] || [])
+  
+  let effStr = 
+    (globalEff && globalEff.flat().length > 0)
+      ? '\n\nОБЩИЕ ЭФФЕКТЫ:\n' + effArrToStr(globalEff)
+      : ''
+
+  effStr += (localEff && localEff.length > 0)
+    ? '\n\nЭФФЕКТЫ ИГРОКА:\n' + effArrToStr(localEff)
     : ''
 
   return filename + costStr + effStr
@@ -2074,6 +2090,7 @@ const userEffectsObj = {
       DICT_COMMON_A?.[typeKey],
       DICT_USER[username]?.[typeKey],
       DICT_COMMON_A?.[obj.name],
+      DICT_USER[username]?.[typeKey],
       DICT_USER[username]?.[obj.name],
       techEff
     ])
