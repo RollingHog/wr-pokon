@@ -319,23 +319,6 @@ const DICT_COMMON = {
 }
 
 const onEndTurnCb = () => {
-  for(let player of listPlayers()) {
-    if(NPCPlayers.includes(player)) continue
-    const sum = userEffectsObj.sumPlayerEffects(player)
-    for(let [effName, v] of Object.entries(sum)) {
-      if(EFFECT_LISTS.resources.includes(effName)) {
-        if(typeof USER_RESOURCES[player][effName] !== 'number') {
-          USER_RESOURCES[player][effName] = 0
-        }
-        if(USER_RESOURCES[player][effName] + +v < 0) {
-          USER_RESOURCES[player][effName] = 0
-          continue
-        }
-        USER_RESOURCES[player][effName] += +v
-      }
-
-    }
-  }
 }
 
 const onPlayerEffectChangeCb = (player, effs) => {
