@@ -1,19 +1,26 @@
-CURRENT_TURN=2;
+CURRENT_TURN=4;
 OTHER_SAVE_DATA={
-  "scale": 0.9586420476516289,
-  "canvasOffsetX": -29.12476384000024,
-  "canvasOffsetY": -150.27006990600023,
+  "scale": 1.2440835561214516,
+  "canvasOffsetX": -272,
+  "canvasOffsetY": -85,
   "shapeColor": "#0000ff"
 };
 USER_RESOURCES={
   "Нейтралы": {},
-  "Враги": {},
-  "Десант": {
-    "Еда": 0
+  "Враги": {
+    "Еда": 0,
+    "Металл": 0
   },
-  "Эл-во": {}
+  "Десант": {
+    "Еда": 0,
+    "Металл": 0
+  },
+  "Эл-во": {
+    "Еда": 0,
+    "Металл": 0
+  }
 };
-OWNER_MAP={};
+OWNER_MAP={"5":[1]};
 DEFAULT_DATA=[
   {
     "id": 1,
@@ -21,8 +28,8 @@ DEFAULT_DATA=[
     "name": "Горячий_мир",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 368.70699095863364,
-    "y": 510.64614351406175,
+    "x": 370.59,
+    "y": 356.61,
     "width": 60,
     "height": 60,
     "src": "pokras-spc/images/buildings/Горячий_мир.png",
@@ -36,13 +43,26 @@ DEFAULT_DATA=[
     "name": "Умеренный_мир",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 508.01,
-    "y": 529.91,
+    "x": 588.19,
+    "y": 355.77,
     "width": 60,
     "height": 60,
     "src": "pokras-spc/images/buildings/Умеренный_мир.png",
     "curr_hp": 5,
     "endedTurn": false,
     "lvl": 5
+  },
+  {
+    "id": 5,
+    "type": "shape",
+    "name": "Колония",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 364.5,
+    "y": 259.03,
+    "width": 60,
+    "height": 60,
+    "curr_hp": 5,
+    "endedTurn": false
   }
 ]

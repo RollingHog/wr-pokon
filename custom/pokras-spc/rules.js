@@ -27,7 +27,7 @@ const SETTINGS = {
   // NO_GRAVES: true, 
 
   MAX_TECH_LVL: 3,
-  // DEFAULT_LINE_COLOR: 'white',
+  DEFAULT_LINE_COLOR: 'white',
   // TITLE_ABOVE: true,
   CANNOT_ACT_AFTER_PLACEMENT: true,
 } 
@@ -60,7 +60,8 @@ const EMOJI_IMAGES = {
 
   [KW.INFO_UNIT]: "ℹ️",
   // [KW.TIMER_UNIT]: "⏲️",
-
+  
+  "Колония": "🏙️",
 
 }
 
@@ -82,6 +83,7 @@ const OBJ_CATEGORIES = {
       // KW.TIMER_UNIT,
     ],
     _default_: [
+      "Колония",
     ],
     Планеты: [
       "Горячий_мир",
@@ -110,14 +112,11 @@ const CATEGORY_PRICES = {
 const EFFECT_LISTS = {
   // статичные эффекты, нам важно текущее значение
   static: [
-    "Экипаж",
-    "Духи",
-    "Зомби",
-    "Элементали",
   ],
   // добывается, фактически показывает прибыль ресурса
   resources: [
     "Еда",
+    "Металл",
   ],
   local: [
     // KW.ATK,
@@ -125,10 +124,6 @@ const EFFECT_LISTS = {
     // KW.AP,
     // KW.DIST,
     // KW.REGEN,
-    "Вместилище",
-    "Искра",
-    "ХП",
-    "Атака_вселением",
     ...KW_LOCALS
   ],
 }
@@ -147,9 +142,13 @@ const DICT_COMMON = {
   '_unit_': {
   },
 
+  "Колония": {
+    [KW.OUTPUT_MULT]: "ЛВЛ/2"
+  },
+
   "Горячий_мир"
     : {
-      "Еда": "+ЛВЛ"
+      "Еда": 3
   },
   "Умеренный_мир"
     : {
