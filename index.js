@@ -660,7 +660,9 @@ const STUFF_EFFECTS = [
 ]
 
 function loadDefaultCustomImages() {
-  const root = SETTINGS.IS_CUSTOM ? '..' : '.';
+  const root = 
+    SETTINGS.IMAGE_ROOT ||
+    (SETTINGS.IS_CUSTOM ? '..' : '.');
 
   const category2ru = {
     '_none_': 'игромех',
