@@ -19,5 +19,6 @@ const DICT_USER = {
 
 const USER_TECH_LVLS = {
   Десант: {
+    Величие: 1,
   },
 }

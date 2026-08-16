@@ -276,7 +276,10 @@ function setShapeColor(color) {
   const noTech = techEffects.length === 0
   const allowedNames = new Set(techEffects
     .map(effect => effect[0])
-    .map(fullName => fullName.split(': ')[1]));
+    .map(fullName => fullName.split(': ')[1])
+    .concat(OBJ_CATEGORIES.UNITS._none_)
+    .concat(OBJ_CATEGORIES.BUILDINGS._none_)
+  )
   document.querySelectorAll('.shape-preview').forEach(el => {
     const filename = el.getAttribute('data-filename');
     if (allowedNames.has(filename) || noTech) {
