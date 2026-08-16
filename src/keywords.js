@@ -41,6 +41,7 @@ const KW_LOCALS = [
   KW.MAX_HP,
   KW.INIT_LVL,
   KW.LVL_DRIFT,
+  KW.REGEN,
 
   KW.OUTPUT_MULT,
 ]

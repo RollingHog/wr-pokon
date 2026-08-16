@@ -489,7 +489,7 @@ const Unit = {
     for (let category in OBJ_CATEGORIES[typeKey]) {
       if (OBJ_CATEGORIES[typeKey][category].includes(filename)) {
         const res = CATEGORY_PRICES[typeKey][category]
-        if (!res) console.warn(`Не задана цена категории: ${category} `)
+        // if (!res) console.warn(`Не задана цена категории: ${category} `)
         return res
       }
     }
@@ -553,8 +553,8 @@ function getUnitDescription(filename, playerColor) {
 
   
   // oh this is dirty hack
-  const globalEff = eff[0].concat(eff[1])
-  const localEff = (eff[2] || []).concat(eff[3] || [], eff[4] || [])
+  const globalEff = eff[0]
+  const localEff = (eff[1] || [])
   
   let effStr = 
     (globalEff && globalEff.flat().length > 0)
@@ -2086,22 +2086,34 @@ const userEffectsObj = {
     const techEff = TechUtils.getUnitTechEffects(username, obj.name)
 
     const typeKey = isBuilding(obj) ? '_building_' : '_unit_'
-    let list = [].concat([
-      DICT_COMMON_A?.[typeKey],
-      DICT_COMMON_A?.[obj.name],
-      DICT_USER[username]?.[typeKey],
-      DICT_USER[username]?.[obj.name],
-      techEff
-    ])
+
+    const userEff = username
+      ? [].concat(
+        DICT_USER[username]?.[typeKey],
+        DICT_USER[username]?.[obj.name],
+        techEff
+      ).filter(e => e)
+      : []
+
+    let list = [
+      // global eff
+      [].concat(
+        DICT_COMMON_A?.[typeKey],
+        DICT_COMMON_A?.[obj.name],
+      ).filter(e => e),
+      userEff
+    ]
 
     if (
       !DEFAULT.noUpkeep.includes(obj.name)
       && !isNoHealth(obj)
     ) {
-      list = list.concat([
-        DICT_USER[username]?._upkeep_?.[typeKey],
-        DICT_COMMON_A?._upkeep_?.[typeKey],
-      ])
+      list.push(
+        [].concat(
+          DICT_USER[username]?._upkeep_?.[typeKey],
+          DICT_COMMON_A?._upkeep_?.[typeKey],
+        ).filter(e => e)
+      )
     }
 
     return list.filter(e => e)
@@ -2124,9 +2136,6 @@ const userEffectsObj = {
 
     if(Pins.isOwner(obj)) {
       const outputMultEntry = list.flat().find((el) => el[0] === KW.OUTPUT_MULT);
-      if (!outputMultEntry) {
-        warn(`invalid OUTPUT_MULT value in rules`, obj)
-      }
 
       const ownedObjects = Pins.listOwnedBy(obj.id);
       let childEffects = []
@@ -2143,6 +2152,10 @@ const userEffectsObj = {
             const multiplier = Number(
               userEffectsObj.processLvlValue(outputMultEntry[1], obj)
             )
+
+            if (!multiplier) {
+              warn(`invalid OUTPUT_MULT value in rules`, obj)
+            }
 
             const res = effectGroup
               .filter(([effectName]) => EFFECT_LISTS.resources.includes(effectName))
@@ -2709,7 +2722,7 @@ const TechUtils = {
     // if (NPCPlayers.includes(username)) return []
     const techLvlsObj = USER_TECH_LVLS[username];
     if (!techLvlsObj) {
-      console.warn('processSpecialTechEffects() wtf:', techLvlsObj);
+      console.warn('processSpecialTechEffects() wtf:', username, techLvlsObj);
       return
     }
 
