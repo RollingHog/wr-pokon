@@ -1602,12 +1602,16 @@ const selection = {
     if (!selectedElement) return
     if (newTitle === null) return
 
-    if (newTitle === '') {
-      delete selectedElement.title
-      draw.element(selectedElement)
-      return
+    if(selectedElement.type === 'text') {
+      selectedElement.content = newTitle
+    } else {
+      if (newTitle === '') {
+        delete selectedElement.title
+        draw.element(selectedElement)
+        return
+      }
+      selectedElement.title = newTitle
     }
-    selectedElement.title = newTitle
     draw.element(selectedElement)
   },
 
