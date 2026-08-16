@@ -2058,8 +2058,13 @@ const userEffectsObj = {
     if (value === '+ЛВЛ/2' || value === 'ЛВЛ/2') return +(((+obj.lvl || MIN_LVL) / 2).toFixed(1)) 
   },
 
+  /**
+   * @param {elements[0]} obj 
+   * @returns 
+   */
   getRawEffectsList(obj) {
     const username = playerByColor(obj.color)
+    const techEff = TechUtils.getUnitTechEffects(username, obj.name)
 
     const typeKey = isBuilding(obj) ? '_building_' : '_unit_'
     let list = [].concat([
@@ -2067,6 +2072,7 @@ const userEffectsObj = {
       DICT_USER[username]?.[typeKey],
       DICT_COMMON_A?.[obj.name],
       DICT_USER[username]?.[obj.name],
+      techEff
     ])
 
     if (
@@ -2232,10 +2238,11 @@ const userEffectsObj = {
     };
   },
 
+  /** both UI and non-UI */
   sumPlayerEffects(username) {
     const userColor = colorFromUsername(username)
 
-    const techEffects = TechUtils.getTechEffects(username)
+    const techEffects = TechUtils.getTechEffects(username, {notUnitEffects: true})
 
     let userEffects = []
     const userObjs = elements.filter(obj => obj.color === userColor && !isNoHealth(obj))
@@ -2687,11 +2694,15 @@ const TechUtils = {
     }
     const res = acc
       .filter(line => {
-
         return Array.isArray(line) || !line.startsWith('НУЖНА ЕЩЕ ТЕХА?')
       }
       )
-      .map(str => [str, null]);
+      .map(line => {
+        if(Array.isArray(line)) {
+          return line
+        }
+        return [line, null]
+      });
 
     if (!this.techEffectCache) {
       this.techEffectCache = {};
@@ -2699,6 +2710,40 @@ const TechUtils = {
     this.techEffectCache[cacheKey] = res;
 
     return res.filter(filterByOptions);
+  },
+
+  unitTechEffectCache: {},
+
+  /**
+   * Возвращает эффекты для конкретного юнита с использованием кеширования.
+   * @param {string} username 
+   * @param {string} unitName 
+   * @returns {Array} - массив эффектов юнита или пустой массив
+   */
+  getUnitTechEffects(username, unitName) {
+    const cacheKey = `unit_tech_effects_${username}_${unitName}`;
+
+    if (this.unitTechEffectCache[cacheKey]) {
+      return this.unitTechEffectCache[cacheKey];
+    }
+
+    // 2. Вычисляем эффекты при первом обращении
+    const allUnitEffects = TechUtils.getTechEffects(username, { onlyUnitEffects: true });
+    
+    if (!allUnitEffects || !Array.isArray(allUnitEffects)) {
+      this.unitTechEffectCache[cacheKey] = [];
+      return [];
+    }
+
+    // Фильтруем по имени юнита и распаковываем значения
+    const res = allUnitEffects
+      .filter(([k, v]) => k === unitName)
+      .map(([k, v]) => v)
+      .flat();
+
+    this.unitTechEffectCache[cacheKey] = res;
+
+    return res;
   }
 }
 
