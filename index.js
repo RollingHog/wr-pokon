@@ -2430,7 +2430,7 @@ const userEffectsObj = {
           costInfo = 'Нет';
         }
 
-        tableRows.push(`| ${objName} ${EMOJI_IMAGES[objName] || ''} | ${costInfo} | ${objData[KW.DESC] || ''} |`);
+        tableRows.push(`| ${objName.replace('_', ' ')} ${EMOJI_IMAGES[objName] || ''} | ${costInfo} | ${objData[KW.DESC] || ''} |`);
       }
 
       // Если ни у одного объекта нет цены, добавляем примечание
