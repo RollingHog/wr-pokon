@@ -55,7 +55,7 @@ DEFAULT_DATA=[
   {
     "id": 5,
     "type": "shape",
-    "name": "Колония",
+    "name": "Развитая_колония",
     "shape": "custom",
     "color": "#0000ff",
     "x": 364.5,
