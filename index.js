@@ -2068,19 +2068,58 @@ const userEffectsObj = {
 
   //getStaticEffects
 
+  _lvlExprCache: {},
+
   /**
    * 
    * @param {string} value 
-   * @param {*} obj 
+   * @param {{lvl: number}} obj 
    * @returns 
    */
-  processLvlValue(value, obj) {
-    if(!value?.includes('ЛВЛ')) return null
-    if (value === '+ЛВЛ' || value === 'ЛВЛ') return (+obj.lvl || MIN_LVL)
-    if (value === '+ЛВЛ*2' || value === 'ЛВЛ*2') return 2 * (+obj.lvl || MIN_LVL)
-    if (value === '-ЛВЛ') return (-obj.lvl || -MIN_LVL)
-    if (value === '-ЛВЛ*2') return 2 * (-obj.lvl || -MIN_LVL)
-    if (value === '+ЛВЛ/2' || value === 'ЛВЛ/2') return +(((+obj.lvl || MIN_LVL) / 2).toFixed(1)) 
+   processLvlValue(value, obj) {
+    if (!value?.includes?.('ЛВЛ')) return null;
+
+    const lvl = +obj.lvl || MIN_LVL;
+
+    // Точные совпадения (быстрый путь)
+    if (value === '+ЛВЛ' || value === 'ЛВЛ') return lvl;
+    if (value === '+ЛВЛ*2' || value === 'ЛВЛ*2') return 2 * lvl;
+    if (value === '-ЛВЛ') return -lvl;
+    if (value === '-ЛВЛ*2') return 2 * -lvl;
+    if (value === '+ЛВЛ/2' || value === 'ЛВЛ/2') return +((lvl / 2).toFixed(1));
+
+    // Кешированный парсинг структуры выражения
+    let parsed = this._lvlExprCache[value];
+    if (!parsed) {
+      const match = value.match(/^(-?\d+)([+-])ЛВЛ([*/])(\d+)$/);
+      if (!match) {
+        console.warn('processLvlValue: unrecognized LVL expression:', value);
+        this._lvlExprCache[value] = null;
+        return null;
+      }
+      parsed = {
+        baseNum: parseInt(match[1], 10),
+        sign: match[2],
+        operator: match[3]?.trim() || null,
+        operand: match[4] ? parseInt(match[4], 10) : null,
+      };
+      this._lvlExprCache[value] = parsed;
+    }
+
+    const { baseNum, sign, operator, operand } = parsed;
+    let lvlPart = lvl;
+
+    if (operator === '*') {
+      lvlPart = lvl * operand;
+    } else if (operator === '/') {
+      lvlPart = +(lvl / operand).toFixed(1);
+    }
+
+    const result = sign === '+'
+      ? baseNum + lvlPart
+      : baseNum - lvlPart;
+
+    return +result.toFixed(1);
   },
 
   /**
@@ -2146,7 +2185,8 @@ const userEffectsObj = {
       const ownedObjects = Pins.listOwnedBy(obj.id);
       let childEffects = []
       for(const ownedObj of ownedObjects) {
-        childEffects = childEffects.concat(userEffectsObj.getRawEffectsList(ownedObj))
+        const effs = userEffectsObj.getRawEffectsList(ownedObj)
+        childEffects = childEffects.concat(effs)
       }
       childEffects = childEffects
         .map(effectGroup => {
