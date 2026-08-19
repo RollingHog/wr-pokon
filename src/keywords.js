@@ -25,6 +25,8 @@ const KW = /** @type {const} */ ({
   REGEN: 'Регенерация',
   
   INIT_LVL: '_init_lvl_',
+  /** not implemented yet */
+  MAX_LVL: '_max_lvl_',
   LVL_DRIFT: 'Сдвиг уровня',
   VISION: 'Радиус зрения',
   NO_VISION: -1,
