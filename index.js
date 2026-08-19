@@ -614,7 +614,7 @@ function onCustomImageLoad(filename, src) {
     if (typeof selectedElement !== 'undefined' && selectedElement && switchEditsCheckbox.checked) {
       selectedElement.name = this.dataset.filename
       selectedElement.src = this.style.backgroundImage.replace(/(^url\(|\)$|")/g, '')
-      drawCanvas();
+      drawCanvas({infoPanel: true});
     } else {
       // placeShape(true)
     }
@@ -2068,8 +2068,14 @@ const userEffectsObj = {
 
   //getStaticEffects
 
+  /**
+   * 
+   * @param {string} value 
+   * @param {*} obj 
+   * @returns 
+   */
   processLvlValue(value, obj) {
-    if(!value.includes('ЛВЛ')) return null
+    if(!value?.includes('ЛВЛ')) return null
     if (value === '+ЛВЛ' || value === 'ЛВЛ') return (+obj.lvl || MIN_LVL)
     if (value === '+ЛВЛ*2' || value === 'ЛВЛ*2') return 2 * (+obj.lvl || MIN_LVL)
     if (value === '-ЛВЛ') return (-obj.lvl || -MIN_LVL)
@@ -2149,9 +2155,14 @@ const userEffectsObj = {
           }
 
           if(outputMultEntry) {
-            const multiplier = Number(
-              userEffectsObj.processLvlValue(outputMultEntry[1], obj)
-            )
+            let multiplier
+            if (typeof outputMultEntry[1] === 'number' || !isNaN(+outputMultEntry[1])) {
+              multiplier = outputMultEntry[1]
+            } else {
+              multiplier = Number(
+                userEffectsObj.processLvlValue(outputMultEntry[1], obj)
+              )
+            }
 
             if (!multiplier) {
               warn(`invalid OUTPUT_MULT value in rules`, obj)
@@ -2926,6 +2937,9 @@ function saveMap() {
 
     tempCtx.restore();
   });
+
+  // doesnt work
+  // tempCtx.drawImage(fogCanvas, 0, 0);
 
   // Создаем ссылку для скачивания
   const link = document.createElement('a');
