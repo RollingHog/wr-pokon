@@ -13,6 +13,8 @@ const KW = /** @type {const} */ ({
 
   COST: '_cost_',
   LOOT: '_loot_',
+  /** optional object description */
+  DESC: '_desc_',
 
   INIT_HP: '_init_hp_',
   MAX_HP: '_max_hp_',
