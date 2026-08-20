@@ -148,7 +148,7 @@ function init() {
       enablePinMode()
     },
     'F2': () => {
-      selection.setTitle(prompt('new title?', selectedElement?.title))
+      selection.setTitle(prompt('new title?', selectedElement?.title || selectedElement?.content))
     },
     'Space': () => {
       onEndTurn()
