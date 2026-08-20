@@ -516,6 +516,13 @@ const Unit = {
       DICT_COMMON[filename]?.[KW.INIT_LVL]
   },
 
+  /** only if lvl not equal to MIN_LVL */
+  getSpriteSize(filename) {
+    return DICT_USER[filename]?.[KW.SPRITE_SIZE] ||
+      DICT_COMMON[filename]?.[KW.SPRITE_SIZE] ||
+      null
+  },
+
   getVision(filename) {
     if (isNoHealth({ name: filename })) return KW.NO_VISION
     return DICT_USER[Player.getCurrent()]?.[filename]?.[KW.VISION] ||
@@ -1796,7 +1803,10 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
 
   const name = activePreview.dataset.filename
   const color = getShapeColor();
-  const size = selectedElement?.height || parseInt(document.getElementById('shape-size').value);
+  const size = 
+    Unit.getSpriteSize(name)
+    || selectedElement?.height 
+    || parseInt(document.getElementById('shape-size').value);
 
   if (payCheckbox.checked) {
     const costCheck = subtractUnitCost(name, playerByColor(color))
