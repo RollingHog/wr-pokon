@@ -64,7 +64,7 @@ let DICT_COMMON_A = {}
 const DEFAULT_LINE_COLOR = SETTINGS?.DEFAULT_LINE_COLOR || 'black'
 /** minimal level @type {number} */
 const MIN_LVL = typeof SETTINGS?.MIN_LVL !== 'undefined' ? SETTINGS?.MIN_LVL : 1
-const EFFECTS_TO_IGNORE = [KW.COST, KW.LOOT, KW.DESC, KW.INIT_HP2]
+const EFFECTS_TO_IGNORE = [KW.COST, KW.LOOT, KW.DESC, KW.SPRITE_SIZE]
 /** 
 * @type {{
 *     id: number,
