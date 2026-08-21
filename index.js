@@ -470,6 +470,10 @@ function onEndTurn() {
   CURRENT_TURN++;
   drawCanvas({infoPanel: true})
   drawTurnDisplay();
+
+  if(SETTINGS.AUTOSAVE !== false) {
+    saveGame()
+  }
 }
 
 function imageObjByObjName(filename) {
