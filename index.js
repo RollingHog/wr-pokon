@@ -520,6 +520,11 @@ const Unit = {
       DICT_COMMON[filename]?.[KW.INIT_LVL]
   },
 
+  getByKey(filename, key) {
+    return DICT_USER[filename]?.[key] ||
+      DICT_COMMON[filename]?.[key] || null
+  },
+
   /** only if lvl not equal to MIN_LVL */
   getSpriteSize(filename) {
     return DICT_USER[filename]?.[KW.SPRITE_SIZE] ||
@@ -1875,7 +1880,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     height: height,
     src: src || undefined,
     curr_hp: Unit.getInitialHP(name),
-    disabled: undefined,
+    disabled: Unit.getByKey(name, KW.START_DISABLED) || undefined,
     // can't act on same turn
     endedTurn: !isBuilding({name}) && !isNoHealth(name) ? (SETTINGS?.CANNOT_ACT_AFTER_PLACEMENT || true): false,
   };

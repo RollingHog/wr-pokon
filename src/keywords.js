@@ -33,6 +33,8 @@ const KW = /** @type {const} */ ({
   LVL_DRIFT: 'Сдвиг уровня',
   VISION: 'Радиус зрения',
   NO_VISION: -1,
+  /** if object should spawn with disabled: true */
+  START_DISABLED: "_start_disabled_",
 
   /** if set, clones resource income from children and multiplies it on given amount 
    * all ЛВЛ-options in children not supported yet
