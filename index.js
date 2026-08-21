@@ -2399,126 +2399,7 @@ const userEffectsObj = {
       + '\n' + warns
       // + JSON.stringify(, 0, 2)
     )
-  }, 
-
-  generateCostTables() {
-    
-    function createTableForObjects(objNames, DICT_COMMON) {
-      let tableRows = [];
-      let hasCost = false;
-
-      // Заголовок таблицы
-      let header = '| Объект | Цена | Описание |\n';
-      let separator = '|--------|---------------|---|\n';
-
-      // Проверяем каждый объект
-      for (const objName of objNames) {
-        const objData = DICT_COMMON[objName];
-        if (!objData) {
-          // Объект не найден в DICT_COMMON
-          tableRows.push(`| ${objName} | *Не найден в DICT_COMMON* |`);
-          continue;
-        }
-
-        // this is too dirty and exact-game-dependent, rework
-        const costMap = {
-          Металл: "М",
-          Кремний: "К",
-          Уран: "РЭ",
-        }
-
-        // Проверяем наличие KW.COST
-        let costInfo = '';
-        const cost = objData[KW.COST];
-        if (cost && typeof cost === 'object' && Object.keys(cost).length > 0) {
-          hasCost = true;
-          const costEntries = Object.entries(cost)
-            .map(([key, value]) => `${costMap[key] || key}: ${value}`)
-            .join('; ');
-          costInfo = costEntries;
-        } else {
-          costInfo = 'Нет';
-        }
-
-        tableRows.push(`| ${objName.replace('_', ' ')} ${EMOJI_IMAGES[objName] || ''} | ${costInfo} | ${objData[KW.DESC] || ''} |`);
-      }
-
-      // Если ни у одного объекта нет цены, добавляем примечание
-      if (!hasCost && tableRows.length > 0) {
-        tableRows = tableRows.map(row => {
-          if (row.includes('Нет')) {
-            return row.replace('Нет', 'Нет данных о цене');
-          }
-          return row;
-        });
-      }
-
-      return header + separator + tableRows.join('\n') + '\n\n';
-    }
-
-    // Проверка наличия данных
-    if (!DICT_COMMON || !OBJ_CATEGORIES) {
-      console.error("DICT_COMMON или OBJ_CATEGORIES не определены");
-      return '';
-    }
-
-    let markdown = '';
-
-    // Проход по категориям из OBJ_CATEGORIES
-    for (const [categoryKey, categoryData] of Object.entries(OBJ_CATEGORIES)) {
-      markdown += `## ${categoryKey.toUpperCase()}\n\n`;
-
-      // Проверка на _none_ и _default_
-      const hasNone = categoryData._none_ && categoryData._none_.length > 0;
-      const hasDefault = categoryData._default_ && categoryData._default_.length > 0;
-
-      // Получаем все ключи объектов для этой категории, исключая служебные
-      const categoryKeys = Object.keys(categoryData)
-        .filter(key => !key.startsWith('_'));
-
-      if (categoryKeys.length === 0) {
-        // Если нет категорий, проверяем наличие _none_ или _default_
-        if (!hasNone && !hasDefault) {
-          markdown += `*Нет объектов в категории*\n\n`;
-          continue;
-        }
-
-        // Если есть _none_ или _default_, обрабатываем их
-        const defaultKeys = [];
-        if (hasDefault) {
-          defaultKeys.push(...categoryData._default_);
-        }
-        if (hasNone) {
-          defaultKeys.push(...categoryData._none_);
-        }
-
-        if (defaultKeys.length === 0) {
-          markdown += `*Нет объектов в категории*\n\n`;
-          continue;
-        }
-
-        // Создаем таблицу для объектов из _none_ и _default_
-        markdown += `### Объекты\n\n`;
-        markdown += createTableForObjects(defaultKeys, DICT_COMMON);
-        continue;
-      }
-
-      // Обработка каждой подкатегории
-      for (const subCategory of categoryKeys) {
-        const objNames = categoryData[subCategory];
-        if (!Array.isArray(objNames) || objNames.length === 0) {
-          continue;
-        }
-
-        markdown += `### ${subCategory}\n\n`;
-        markdown += createTableForObjects(objNames, DICT_COMMON);
-      }
-    }
-
-    return markdown;
-  },
-
-  
+  },   
 }
 
 const Player = {
@@ -2963,6 +2844,460 @@ const TechUtils = {
 
     return res;
   }
+}
+
+const Reports = {
+  generateMDCostTables() {
+
+    function createTableForObjects(objNames, DICT_COMMON) {
+      let tableRows = [];
+      let hasCost = false;
+
+      // Заголовок таблицы
+      let header = '| Объект | Цена | Описание |\n';
+      let separator = '|--------|---------------|---|\n';
+
+      // Проверяем каждый объект
+      for (const objName of objNames) {
+        const objData = DICT_COMMON[objName];
+        if (!objData) {
+          // Объект не найден в DICT_COMMON
+          tableRows.push(`| ${objName} | *Не найден в DICT_COMMON* |`);
+          continue;
+        }
+
+        // this is too dirty and exact-game-dependent, rework
+        const costMap = {
+          Металл: "М",
+          Кремний: "К",
+          Уран: "РЭ",
+        }
+
+        // Проверяем наличие KW.COST
+        let costInfo = '';
+        const cost = objData[KW.COST];
+        if (cost && typeof cost === 'object' && Object.keys(cost).length > 0) {
+          hasCost = true;
+          const costEntries = Object.entries(cost)
+            .map(([key, value]) => `${costMap[key] || key}: ${value}`)
+            .join('; ');
+          costInfo = costEntries;
+        } else {
+          costInfo = 'Нет';
+        }
+
+        tableRows.push(`| ${objName.replace('_', ' ')} ${EMOJI_IMAGES[objName] || ''} | ${costInfo} | ${objData[KW.DESC] || ''} |`);
+      }
+
+      // Если ни у одного объекта нет цены, добавляем примечание
+      if (!hasCost && tableRows.length > 0) {
+        tableRows = tableRows.map(row => {
+          if (row.includes('Нет')) {
+            return row.replace('Нет', 'Нет данных о цене');
+          }
+          return row;
+        });
+      }
+
+      return header + separator + tableRows.join('\n') + '\n\n';
+    }
+
+    // Проверка наличия данных
+    if (!DICT_COMMON || !OBJ_CATEGORIES) {
+      console.error("DICT_COMMON или OBJ_CATEGORIES не определены");
+      return '';
+    }
+
+    let markdown = '';
+
+    // Проход по категориям из OBJ_CATEGORIES
+    for (const [categoryKey, categoryData] of Object.entries(OBJ_CATEGORIES)) {
+      markdown += `## ${categoryKey.toUpperCase()}\n\n`;
+
+      // Проверка на _none_ и _default_
+      const hasNone = categoryData._none_ && categoryData._none_.length > 0;
+      const hasDefault = categoryData._default_ && categoryData._default_.length > 0;
+
+      // Получаем все ключи объектов для этой категории, исключая служебные
+      const categoryKeys = Object.keys(categoryData)
+        .filter(key => !key.startsWith('_'));
+
+      if (categoryKeys.length === 0) {
+        // Если нет категорий, проверяем наличие _none_ или _default_
+        if (!hasNone && !hasDefault) {
+          markdown += `*Нет объектов в категории*\n\n`;
+          continue;
+        }
+
+        // Если есть _none_ или _default_, обрабатываем их
+        const defaultKeys = [];
+        if (hasDefault) {
+          defaultKeys.push(...categoryData._default_);
+        }
+        if (hasNone) {
+          defaultKeys.push(...categoryData._none_);
+        }
+
+        if (defaultKeys.length === 0) {
+          markdown += `*Нет объектов в категории*\n\n`;
+          continue;
+        }
+
+        // Создаем таблицу для объектов из _none_ и _default_
+        markdown += `### Объекты\n\n`;
+        markdown += createTableForObjects(defaultKeys, DICT_COMMON);
+        continue;
+      }
+
+      // Обработка каждой подкатегории
+      for (const subCategory of categoryKeys) {
+        const objNames = categoryData[subCategory];
+        if (!Array.isArray(objNames) || objNames.length === 0) {
+          continue;
+        }
+
+        markdown += `### ${subCategory}\n\n`;
+        markdown += createTableForObjects(objNames, DICT_COMMON);
+      }
+    }
+
+    return markdown;
+  },
+
+  /** be  noted: it counts only COMMON prices */
+  countSumPrices() {
+    if (!DICT_COMMON || !OBJ_CATEGORIES) {
+      console.error("countSumPrices: DICT_COMMON или OBJ_CATEGORIES не определены");
+      return {};
+    }
+
+    const sum = {};
+    const processedNames = new Set();
+
+    for (const categoryData of Object.values(OBJ_CATEGORIES)) {
+      // Собираем все списки объектов категории: подкатегории + _none_ + _default_
+      const allLists = [
+        ...Object.entries(categoryData)
+          .filter(([key]) => !key.startsWith('_'))
+          .map(([, list]) => list),
+      ];
+
+      if (categoryData._default_) allLists.push(categoryData._default_);
+      if (categoryData._none_) allLists.push(categoryData._none_);
+
+      for (const objNames of allLists) {
+        if (!Array.isArray(objNames)) continue;
+
+        for (const objName of objNames) {
+          // Каждый объект учитывается только один раз
+          if (processedNames.has(objName)) continue;
+          processedNames.add(objName);
+
+          const objData = DICT_COMMON[objName];
+          const cost = objData?.[KW.COST];
+
+          if (cost && typeof cost === 'object') {
+            for (const [resource, amount] of Object.entries(cost)) {
+              const numAmount = Number(amount);
+              if (!isNaN(numAmount)) {
+                sum[resource] = (sum[resource] || 0) + numAmount;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return sum;
+  },
+
+  generateMDSubcategoryCostTable(categoryKey, subCategoryKey) {
+    if (!DICT_COMMON || !OBJ_CATEGORIES) {
+      console.error("generateSubcategoryCostTable: DICT_COMMON или OBJ_CATEGORIES не определены");
+      return '';
+    }
+
+    const categoryData = OBJ_CATEGORIES[categoryKey];
+    if (!categoryData) {
+      console.warn(`generateSubcategoryCostTable: категория "${categoryKey}" не найдена`);
+      return '';
+    }
+
+    const objNames = categoryData[subCategoryKey];
+    if (!Array.isArray(objNames) || objNames.length === 0) {
+      return ''
+      // `*В подкатегории "${subCategoryKey}" нет объектов*\n`;
+    }
+
+    // Карта отображения ресурсов (из оригинального образца)
+    const costMap = {
+      Металл: "Металл",
+      Кремний: "Кремний",
+      Уран: "Уран",
+    };
+
+    // Собираем данные по каждому объекту и определяем набор всех ресурсов
+    const rows = [];
+    const resourceSet = new Set();
+    const processedNames = new Set();
+
+    for (const objName of objNames) {
+      if (processedNames.has(objName)) continue;
+      processedNames.add(objName);
+
+      const objData = DICT_COMMON[objName];
+      const cost = objData?.[KW.COST];
+
+      const rowResources = {};
+      if (cost && typeof cost === 'object') {
+        for (const [res, val] of Object.entries(cost)) {
+          const numVal = Number(val);
+          if (!isNaN(numVal)) {
+            rowResources[res] = numVal;
+            resourceSet.add(res);
+          }
+        }
+      }
+
+      rows.push({ name: objName, resources: rowResources });
+    }
+
+    // Фиксированный порядок ресурсов как в образце, + любые дополнительные
+    const orderedResources = [...Object.keys(costMap).filter(r => resourceSet.has(r))];
+    for (const res of resourceSet) {
+      if (!orderedResources.includes(res)) orderedResources.push(res);
+    }
+
+    if (orderedResources.length === 0) {
+      return ''
+      // `*У объектов подкатегории "${subCategoryKey}" нет данных о цене*\n`;
+    }
+
+    // Построение таблицы с выравниванием пробелами
+    const displayNames = orderedResources.map(r => costMap[r] || r);
+    const headerCols = ['Тип мира', ...displayNames, 'Итого по объекту'];
+
+    // 1. Собираем все строковые представления ячеек для расчета ширины
+    const allRowsData = [];
+    const totalsByResource = {};
+    let grandTotal = 0;
+
+    for (const row of rows) {
+      let rowTotal = 0;
+      const cells = orderedResources.map(res => {
+        const val = row.resources[res] ?? 0;
+        rowTotal += val;
+        totalsByResource[res] = (totalsByResource[res] || 0) + val;
+        return String(val || '-');
+      });
+
+      const displayName = (row.name || '').replace('_', ' ');
+      allRowsData.push([displayName, ...cells, String(rowTotal)]);
+      grandTotal += rowTotal;
+    }
+
+    const totalRowData = [
+      'Итого по ресурсу',
+      ...orderedResources.map(res => String(totalsByResource[res] || 0)),
+      String(grandTotal)
+    ];
+
+    // 2. Вычисляем максимальную ширину для каждого столбца
+    const colWidths = headerCols.map((h, i) => {
+      const dataMax = Math.max(
+        ...allRowsData.map(r => (r[i] || '').length),
+        totalRowData[i].length
+      );
+      return Math.max(h.length, dataMax);
+    });
+
+    // 3. Формируем Markdown с padEnd
+    const formatRow = (cells, isBold = false) => {
+      const padded = cells.map((cell, i) => {
+        const content = isBold ? `**${cell}**` : cell;
+        // Учитываем длину звездочек при bold-форматировании для корректного padding
+        const targetWidth = isBold ? colWidths[i] + 4 : colWidths[i];
+        return content.padEnd(targetWidth);
+      });
+      return `| ${padded.join(' | ')} |`;
+    };
+
+    let markdown = formatRow(headerCols) + '\n';
+    markdown += `| ${colWidths.map(w => '-'.repeat(w)).join(' | ')} |\n`;
+
+    for (const rowData of allRowsData) {
+      markdown += formatRow(rowData) + '\n';
+    }
+
+    markdown += formatRow(totalRowData) + '\n';
+    return markdown;
+  },
+
+  generateMDSubcategoryEffectsTable(categoryKey, subCategoryKey) {
+    if (!DICT_COMMON || !OBJ_CATEGORIES) {
+      console.error("generateSubcategoryEffectsTable: DICT_COMMON или OBJ_CATEGORIES не определены");
+      return '';
+    }
+
+    const categoryData = OBJ_CATEGORIES[categoryKey];
+    if (!categoryData) {
+      console.warn(`generateSubcategoryEffectsTable: категория "${categoryKey}" не найдена`);
+      return '';
+    }
+
+    const objNames = categoryData[subCategoryKey];
+    if (!Array.isArray(objNames) || objNames.length === 0) {
+      // `*В подкатегории "${subCategoryKey}" нет объектов*\n`;
+      return ''
+    }
+
+    // Собираем данные и определяем набор всех эффектов
+    const rows = [];
+    const effectSet = new Set();
+    const processedNames = new Set();
+
+    for (const objName of objNames) {
+      if (processedNames.has(objName)) continue;
+      processedNames.add(objName);
+
+      const objData = DICT_COMMON[objName];
+      if (!objData || typeof objData !== 'object') continue;
+
+      const rowEffects = {};
+      for (const [key, value] of Object.entries(objData)) {
+        if (key === KW.COST) continue;
+        if (key === KW.DESC) continue;
+        if (key.startsWith('_')) continue;
+
+        const numValue = Number(value);
+        if (!isNaN(numValue)) {
+          rowEffects[key] = numValue;
+          effectSet.add(key);
+        }
+      }
+
+      rows.push({ name: objName, effects: rowEffects });
+    }
+
+    const orderedEffects = [...effectSet];
+
+    if (orderedEffects.length === 0) {
+      return ''
+      // `*У объектов подкатегории "${subCategoryKey}" нет числовых эффектов*\n`;
+    }
+
+    // Построение таблицы
+    const headerCols = ['Тип мира', ...orderedEffects, '**Итого по объекту**'];
+    const separatorCols = headerCols.map(() => '---');
+
+    let markdown = `| ${headerCols.join(' | ')} |\n`;
+    markdown += `| ${separatorCols.join(' | ')} |\n`;
+
+    const totalsByEffect = {};
+    let grandTotal = 0;
+
+    for (const row of rows) {
+      let rowTotal = 0;
+      const cells = orderedEffects.map(effect => {
+        const val = row.effects[effect] ?? 0;
+        rowTotal += val;
+        totalsByEffect[effect] = (totalsByEffect[effect] || 0) + val;
+        return val || '-';
+      });
+
+      grandTotal += rowTotal;
+      const displayName = (row.name || '').replace('_', ' ');
+      markdown += `| ${displayName} | ${cells.join(' | ')} | ${rowTotal} |\n`;
+    }
+
+    // Строка итогов
+    const totalCells = orderedEffects.map(effect => `**${totalsByEffect[effect] || 0}**`);
+    markdown += `| **Итого по эффекту** | ${totalCells.join(' | ')} | **${grandTotal}** |\n`;
+
+    return markdown;
+  },
+
+  generateAllCostTables() {
+    if (!DICT_COMMON || !OBJ_CATEGORIES) {
+      console.error("generateAllUnitsAndBuildingsTables: DICT_COMMON или OBJ_CATEGORIES не определены");
+      return '';
+    }
+
+    const results = [];
+
+    // Обрабатываем юниты
+    if (OBJ_CATEGORIES.UNITS && typeof OBJ_CATEGORIES.UNITS === 'object') {
+      const unitSubcategories = Object.keys(OBJ_CATEGORIES.UNITS);
+      if (unitSubcategories.length > 0) {
+        results.push('## Юниты\n');
+
+        for (const subCategoryKey of unitSubcategories) {
+          const displayName = subCategoryKey.replace(/_/g, ' ');
+          
+          const tableMarkdown = this.generateMDSubcategoryCostTable('UNITS', subCategoryKey);
+          if (tableMarkdown) {
+            results.push(`### ${displayName}\n`);
+            results.push(tableMarkdown);
+          }
+        }
+      }
+    }
+
+    // Обрабатываем здания
+    if (OBJ_CATEGORIES.BUILDINGS && typeof OBJ_CATEGORIES.BUILDINGS === 'object') {
+      const buildingSubcategories = Object.keys(OBJ_CATEGORIES.BUILDINGS);
+      if (buildingSubcategories.length > 0) {
+        results.push('\n## Здания\n');
+
+        for (const subCategoryKey of buildingSubcategories) {
+          const displayName = subCategoryKey.replace(/_/g, ' ');
+          
+          const tableMarkdown = this.generateMDSubcategoryCostTable('BUILDINGS', subCategoryKey);
+          if (tableMarkdown) {
+            results.push(`### ${displayName}\n`);
+            results.push(tableMarkdown);
+          }
+        }
+      }
+    }
+
+    return results.join('\n');
+  },
+
+  saveMDResult(markdownContent, filename = 'output.md') {
+    if (!markdownContent || typeof markdownContent !== 'string') {
+      console.error("saveMDResult: некорректное содержимое для сохранения");
+      return false;
+    }
+
+    try {
+      // Для браузерного окружения
+      if (typeof window !== 'undefined') {
+        const blob = new Blob([markdownContent], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Освобождаем память
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+
+        console.log(`Файл инициирован для скачивания: ${filename}`);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("saveMDResult: ошибка при сохранении файла:", error);
+      return false;
+    }
+  },
 }
 
 // Работа с картами
