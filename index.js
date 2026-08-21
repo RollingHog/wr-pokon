@@ -528,9 +528,10 @@ const Unit = {
   },
 
   getVision(filename) {
-    if (isNoHealth({ name: filename })) return KW.NO_VISION
-    return DICT_USER[Player.getCurrent()]?.[filename]?.[KW.VISION] ||
+    const res = DICT_USER[Player.getCurrent()]?.[filename]?.[KW.VISION] ||
       DICT_COMMON[filename]?.[KW.VISION] || null
+    if(!res && isNoHealth({ name: filename })) return KW.NO_VISION
+    return res
   },
 
   getLoot(filename) {
