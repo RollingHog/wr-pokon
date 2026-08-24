@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
   "scale": 1.0973936640191715,
-  "canvasOffsetX": -90.94000000000005,
-  "canvasOffsetY": -72.66000000000008,
+  "canvasOffsetX": 1,
+  "canvasOffsetY": 0,
   "shapeColor": "#0000ff"
 };
 USER_RESOURCES={
@@ -50,5 +50,18 @@ DEFAULT_DATA=[
     "curr_hp": 5,
     "endedTurn": false,
     "src": ""
+  },
+  {
+    "id": 6,
+    "type": "shape",
+    "name": "Столица",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 484.39,
+    "y": 257.48,
+    "width": 50,
+    "height": 50,
+    "curr_hp": 1,
+    "endedTurn": false
   }
 ]
