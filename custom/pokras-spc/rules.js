@@ -404,7 +404,10 @@ KW_RULES.setCommon(
   [].concat(
     OBJ_CATEGORIES.BUILDINGS.Планеты,
   ),
-  { [KW.SPRITE_SIZE]: 50 }
+  { 
+    [KW.SPRITE_SIZE]: 50,
+    [KW.START_DISABLED]: 1,
+   }
 )
 
 KW_RULES.setCommon(
