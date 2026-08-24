@@ -2321,7 +2321,7 @@ const userEffectsObj = {
               });
               return `== ${section} ==<br> ${effList.join('<br>')}<br><br>`
             } else if (section === '_tech_') {
-              return `== ${section} ==<br> <span onclick=alert('add me')>${eff.map((arr) => arr.join(': ')).join('<br>')}</span><br><br>`
+              return `== ${section} ==<br> <span onclick=TechUtils.selectTech()>${eff.map((arr) => arr.join(': ')).join('<br>')}</span><br><br>`
             }
             return `== ${section} ==<br> ${eff.map((arr) => arr.join(': ')).join('<br>')}<br><br>`
           }).join('')
@@ -2853,7 +2853,11 @@ const TechUtils = {
     this.unitTechEffectCache[cacheKey] = res;
 
     return res;
-  }
+  },
+
+  selectTech() {
+    alert('haha not working')
+  },
 }
 
 const Reports = {
@@ -3310,17 +3314,21 @@ const Reports = {
   },
 
   /**
- * Извлекает технологии из XML-строки графа yEd.
+ * Извлекает технологии из XML-строки графа yEd. 
+ * Если в блоке нет переносов строки, он считается техническим и игнорируется.
  * @param {string} xmlString - Содержимое XML-файла
  * @param {Object} colorMap - Словарь сопоставления цветов и тех. древ (ключи в lowerCase)
  * @returns {Array<{color: string, techTree: string|undefined, text: string}>}
  */
   extractTechnologies(xmlString, colorMap = {
-    "#ffcc00": "Энергетика",
-    "#ff6600": "Оружие",
-    "#00ccff": "Защита",
+    "#3366ff": "Энергетика",
+    "#dd0000": "Двигатели",
+    "#808000": "Оружие",
+    "#aa4400": "Броня",
+    "#ff6600": "Энерго-оружие",
+    "#00ccff": "Щиты",
     "#ccffcc": "Биология",
-    "#cc99ff": "Социум",
+    "#cc99ff": "Социология",
   }) {
 
     /**
@@ -3345,7 +3353,7 @@ const Reports = {
       if (price) parts.push(price);
       if (restParts) parts.push(restParts);
 
-      return parts.join('\n');
+      return parts.join('  \n');
     }
 
     /**
@@ -3353,7 +3361,7 @@ const Reports = {
      * @param {Array<{color: string, techTree: string, text: string}>} techs - Результат extractTechnologies
      */
     function printTechTrees(techs) {
-      const grouped = {};
+      const grouped = Object.fromEntries(Object.values(colorMap).map(e => [e, []]));
 
       // 1. Группировка по техдревам
       for (const tech of techs) {
@@ -3375,14 +3383,14 @@ const Reports = {
           return parsePrice(a.text) - parsePrice(b.text)
         });
 
-        outputLines.push(`#### ${treeName}`);
+        outputLines.push(`${treeName.toUpperCase()}\n`);
         for (const item of items) {
           outputLines.push(item.text);
           outputLines.push('');
         }
       }
 
-      const result = outputLines.join('\n').trim();
+      const result = outputLines.join('  \n').trim();
       return result;
     }
 
@@ -3408,6 +3416,8 @@ const Reports = {
 
       const labelEl = node.getElementsByTagNameNS('*', 'NodeLabel')[0];
       const rawText = labelEl?.textContent || '';
+
+      if(rawText.indexOf('\n') === -1) continue
 
       const formattedText = formatTechText(rawText);
 
