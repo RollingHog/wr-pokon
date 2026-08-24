@@ -3308,6 +3308,118 @@ const Reports = {
       return false;
     }
   },
+
+  /**
+ * Извлекает технологии из XML-строки графа yEd.
+ * @param {string} xmlString - Содержимое XML-файла
+ * @param {Object} colorMap - Словарь сопоставления цветов и тех. древ (ключи в lowerCase)
+ * @returns {Array<{color: string, techTree: string|undefined, text: string}>}
+ */
+  extractTechnologies(xmlString, colorMap = {
+    "#ffcc00": "Энергетика",
+    "#ff6600": "Оружие",
+    "#00ccff": "Защита",
+    "#ccffcc": "Биология",
+    "#cc99ff": "Социум",
+  }) {
+
+    /**
+     * Форматирует текст: "Название\nЦена\nВсе остальное в одну строку"
+     */
+    function formatTechText(rawText) {
+      if (!rawText) return '';
+
+      /** @type {string[]} */
+      const lines = rawText
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+      if (lines.length === 0) return '';
+
+      const name = lines[0];
+      const price = lines[1];
+      const restParts = lines.slice(2).join(' ');
+
+      const parts = [name];
+      if (price) parts.push(price);
+      if (restParts) parts.push(restParts);
+
+      return parts.join('\n');
+    }
+
+    /**
+     * Группирует технологии по древам и выводит отсортированный чистый текст.
+     * @param {Array<{color: string, techTree: string, text: string}>} techs - Результат extractTechnologies
+     */
+    function printTechTrees(techs) {
+      const grouped = {};
+
+      // 1. Группировка по техдревам
+      for (const tech of techs) {
+        if (!grouped[tech.techTree]) grouped[tech.techTree] = [];
+        grouped[tech.techTree].push(tech);
+      }
+
+      const outputLines = [];
+
+      for (const [treeName, items] of Object.entries(grouped)) {
+        const parsePrice = (text) => {
+          const match = text.split('\n').find(l => /^цена \d+ /i.test(l));
+          if (!match) return Infinity;
+          const num = parseInt(match.replace(/[^0-9]/g, ''));
+          return isNaN(num) ? Infinity : num;
+        };
+
+        items.sort((a, b) => {
+          return parsePrice(a.text) - parsePrice(b.text)
+        });
+
+        outputLines.push(`#### ${treeName}`);
+        for (const item of items) {
+          outputLines.push(item.text);
+          outputLines.push('');
+        }
+      }
+
+      const result = outputLines.join('\n').trim();
+      return result;
+    }
+
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, 'application/xml');
+
+    const parseError = xmlDoc.querySelector('parsererror');
+    if (parseError) {
+      throw new Error(`Ошибка парсинга XML: ${parseError.textContent}`);
+    }
+
+    const results = [];
+    const shapeNodes = xmlDoc.getElementsByTagNameNS('*', 'ShapeNode');
+
+    for (const node of shapeNodes) {
+      const fillEl = node.getElementsByTagNameNS('*', 'Fill')[0];
+      const rawColor = fillEl?.getAttribute('color') || null;
+
+      if (!rawColor) continue; // Пропускаем ноды без явного цвета заливки
+
+      const normalizedColor = rawColor.toLowerCase();
+      const techTree = colorMap[normalizedColor];
+
+      const labelEl = node.getElementsByTagNameNS('*', 'NodeLabel')[0];
+      const rawText = labelEl?.textContent || '';
+
+      const formattedText = formatTechText(rawText);
+
+      results.push({
+        color: rawColor,
+        techTree: techTree || 'Неизвестное древо',
+        text: formattedText
+      });
+    }
+
+    console.log(printTechTrees(results));
+  }
 }
 
 // Работа с картами
