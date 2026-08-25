@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор Космического Флота v2</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1d;
+            --card-bg: #2d2d30;
+            --text-color: #e0e0e0;
+            --accent: #4caf50;
+            --danger: #f44336;
+            --border: #3e3e42;
+            --json-tag: #2196f3;
+            --str-tag: #ff9800;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Layout */
+        .controls { flex: 1; display: flex; flex-direction: column; gap: 15px; max-width: 600px; }
+        .results { 
+            flex: 1; background: var(--card-bg); padding: 20px; border-radius: 8px; 
+            border: 1px solid var(--border); overflow-y: auto; position: sticky; top: 20px; height: fit-content; max-height: calc(100vh - 40px); 
+        }
+
+        h1, h2 { margin: 0 0 10px 0; color: var(--accent); }
+        
+        /* Inputs */
+        .input-group {
+            background: var(--card-bg); padding: 15px; border-radius: 8px;
+            border: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px;
+        }
+        label { font-size: 0.9em; color: #aaa; }
+        input[type="text"], textarea {
+            background: #111; border: 1px solid var(--border); color: white;
+            padding: 8px; border-radius: 4px; width: 100%; box-sizing: border-box; font-family: monospace; font-size: 0.9em;
+        }
+        button {
+            background: var(--accent); color: white; border: none; padding: 10px 15px;
+            border-radius: 4px; cursor: pointer; font-weight: bold; transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+
+        /* Ship List */
+        .ship-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px; }
+        .ship-card {
+            background: var(--card-bg); padding: 10px; border-radius: 6px;
+            border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center;
+        }
+        .ship-info { flex: 1; }
+        .ship-name { font-weight: bold; font-size: 1.1em; display: flex; align-items: center; gap: 8px;}
+        .ship-meta { font-size: 0.75em; color: #888; margin-top: 2px; }
+        
+        /* Tags for format type */
+        .tag { font-size: 0.6em; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; font-weight: bold; }
+        .tag-json { background: rgba(33, 150, 243, 0.2); color: var(--json-tag); border: 1px solid rgba(33, 150, 243, 0.4); }
+        .tag-str { background: rgba(255, 152, 0, 0.2); color: var(--str-tag); border: 1px solid rgba(255, 152, 0, 0.4); }
+
+        /* Quantity Controls */
+        .qty-control { display: flex; align-items: center; gap: 5px; background: #111; padding: 2px 5px; border-radius: 4px; }
+        .qty-control button { padding: 2px 8px; background: #444; min-width: 25px;}
+        .qty-control span { min-width: 25px; text-align: center; display: inline-block;}
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--accent); }
+        tr:last-child td { border-bottom: none; font-weight: bold; background: rgba(76, 175, 80, 0.1); }
+        .empty-state { color: #666; text-align: center; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <!-- ЛЕВАЯ КОЛОНКА -->
+    <div class="controls">
+        <h1>🚀 Верфь Флота v2</h1>
+        
+        <div class="input-group">
+            <h2>Новый проект</h2>
+            <div>
+                <label>Название (опционально)</label>
+                <input type="text" id="projectName" placeholder="Авто-имя, если пусто">
+            </div>
+            <div>
+                <label>Данные проекта (Строка ИЛИ JSON)</label>
+                <textarea id="projectData" rows="6" placeholder='Вставьте код "00E0F..." или JSON {"class":"C", ...}'></textarea>
+            </div>
+            <button onclick="addProject()">Добавить в флот</button>
+        </div>
+
+        <div class="ship-list" id="shipListContainer">
+            <div class="empty-state">Флот пуст.</div>
+        </div>
+    </div>
+
+    <!-- ПРАВАЯ КОЛОНКА -->
+    <div class="results">
+        <h2>📊 Требуемые модули</h2>
+        <table id="summaryTable">
+            <thead>
+                <tr>
+                    <th>Модуль</th>
+                    <th>Код</th>
+                    <th style="text-align: right;">Количество</th>
+                </tr>
+            </thead>
+            <tbody id="summaryBody">
+                <tr><td colspan="3" style="text-align:center; color:#666;">Нет данных</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+<script>
+    // --- КОНФИГУРАЦИЯ ---
+    
+    // Базовый словарь (для строкового формата)
+    const CODE_TO_NAME = {
+        'E': 'ДВИГ', 'F': 'ТОПЛ', 'S': 'КОМП', 'C': 'ЭКИП',
+        'P': 'ПЛАЗ', 'G': 'ГРАВ', 'I': 'ЗАЩ', 'R': 'АТОМ',
+        'M': 'ЗЕРК', 'D': 'ДОК'
+    };
+
+    // Словарь для JSON формата (ключ -> код модуля)
+    const JSON_KEY_TO_CODE = {
+        'engine_cells': 'E',
+        'fuel_cells': 'F',
+        'systems_cells': 'S',
+        'crew_cells': 'C',
+        'plasma_guns': 'P',
+        'gravity_guns': 'G',
+        'r_torpedo_launchers': 'R', // R_TORPEDO и R_MISSILE оба идут в АТОМ(R) согласно вашему словарю
+        'r_missile_launchers': 'R',
+        'ion_shield_generators': 'I',
+        'plasma_mirrors': 'M',
+        'dock_bays': 'D'
+    };
+
+    let fleet = []; 
+
+    // --- ЛОГИКА ПАРСИНГА ---
+
+    /**
+     * Главная функция определения формата и парсинга
+     */
+    function parseInput(rawInput) {
+        const trimmed = rawInput.trim();
+        if (!trimmed) return null;
+
+        // Попытка распарсить как JSON
+        if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+            try {
+                const json = JSON.parse(trimmed);
+                // Если это массив, обрабатываем каждый элемент
+                if (Array.isArray(json)) {
+                    return json.map(item => parseJsonObject(item)).filter(Boolean);
+                }
+                // Если одиночный объект
+                return [parseJsonObject(json)];
+            } catch (e) {
+                console.error("JSON parse error:", e);
+                alert("Ошибка в формате JSON. Проверьте синтаксис.");
+                return null;
+            }
+        }
+
+        // Иначе считаем строковым форматом
+        return [{
+            modules: parseStringCode(trimmed),
+            sourceType: 'STRING',
+            meta: `Mass: N/A`
+        }];
+    }
+
+    /**
+     * Парсинг JSON объекта
+     */
+    function parseJsonObject(obj) {
+        if (!obj.modules) return null;
+        
+        const modules = {};
+        let totalModules = 0;
+
+        for (const [key, value] of Object.entries(obj.modules)) {
+            const code = JSON_KEY_TO_CODE[key];
+            if (code && value > 0) {
+                modules[code] = (modules[code] || 0) + value;
+                totalModules += value;
+            }
+        }
+
+        return {
+            modules: modules,
+            sourceType: 'JSON',
+            meta: `Class: ${obj.class || '?'}, Mass: ${obj.mass || '?'} (${totalModules} cells)`
+        };
+    }
+
+    /**
+     * Парсинг строки (старый формат)
+     */
+    function parseStringCode(codeString) {
+        const modules = {};
+        const cleanCode = codeString.replace(/[\s\nZ0]/g, '').toUpperCase();
+        
+        for (const char of cleanCode) {
+            if (CODE_TO_NAME[char]) {
+                modules[char] = (modules[char] || 0) + 1;
+            }
+        }
+        return modules;
+    }
+
+    // --- УПРАВЛЕНИЕ ФЛОТОМ ---
+
+    function addProject() {
+        const nameInput = document.getElementById('projectName');
+        const dataInput = document.getElementById('projectData');
+        
+        const customName = nameInput.value.trim();
+        const rawData = dataInput.value;
+
+        const parsedItems = parseInput(rawData);
+        if (!parsedItems || parsedItems.length === 0) return;
+
+        parsedItems.forEach((item, index) => {
+            // Генерация имени
+            let name = customName;
+            if (!name) {
+                name = item.sourceType === 'JSON' ? `Ship Class-${item.meta.match(/Class: (\w+)/)?.[1] || 'X'}` : `Project String-${fleet.length + 1}`;
+            } else if (parsedItems.length > 1) {
+                name = `${customName} #${index + 1}`;
+            }
+
+            fleet.push({
+                id: Date.now() + Math.random(),
+                name: name,
+                modules: item.modules,
+                sourceType: item.sourceType,
+                meta: item.meta,
+                quantity: 1
+            });
+        });
+
+        // Очистка
+        nameInput.value = '';
+        dataInput.value = '';
+        
+        renderFleetList();
+        calculateTotals();
+    }
+
+    function updateQuantity(id, delta) {
+        const project = fleet.find(p => p.id === id);
+        if (project) {
+            project.quantity = Math.max(0, project.quantity + delta);
+            if (project.quantity === 0) {
+                fleet = fleet.filter(p => p.id !== id);
+            }
+            renderFleetList();
+            calculateTotals();
+        }
+    }
+
+    // --- ОТРИСОВКА ---
+
+    function renderFleetList() {
+        const container = document.getElementById('shipListContainer');
+        
+        if (fleet.length === 0) {
+            container.innerHTML = '<div class="empty-state">Флот пуст. Добавьте проекты выше.</div>';
+            return;
+        }
+
+        container.innerHTML = fleet.map(ship => {
+            const tagClass = ship.sourceType === 'JSON' ? 'tag-json' : 'tag-str';
+            const tagLabel = ship.sourceType === 'JSON' ? 'JSON' : 'STR';
+            
+            return `
+            <div class="ship-card">
+                <div class="ship-info">
+                    <div class="ship-name">
+                        ${ship.name} 
+                        <span class="tag ${tagClass}">${tagLabel}</span>
+                    </div>
+                    <div class="ship-meta">${ship.meta}</div>
+                </div>
+                <div class="ship-controls">
+                    <div class="qty-control">
+                        <button onclick="updateQuantity(${ship.id}, -1)">−</button>
+                        <span>${ship.quantity}</span>
+                        <button onclick="updateQuantity(${ship.id}, 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        `}).join('');
+    }
+
+    function calculateTotals() {
+        const totals = {};
+
+        fleet.forEach(ship => {
+            for (const [code, count] of Object.entries(ship.modules)) {
+                totals[code] = (totals[code] || 0) + (count * ship.quantity);
+            }
+        });
+
+        const tbody = document.getElementById('summaryBody');
+        
+        if (Object.keys(totals).length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#666;">Нет данных</td></tr>';
+            return;
+        }
+
+        const sortedCodes = Object.keys(totals).sort((a, b) => 
+            (CODE_TO_NAME[a] || a).localeCompare(CODE_TO_NAME[b] || b)
+        );
+
+        let grandTotal = 0;
+        let html = sortedCodes.map(code => {
+            const count = totals[code];
+            grandTotal += count;
+            return `
+                <tr>
+                    <td>${CODE_TO_NAME[code] || code}</td>
+                    <td style="color:#888; font-family:monospace;">[${code}]</td>
+                    <td style="text-align: right;">${count.toLocaleString()}</td>
+                </tr>
+            `;
+        }).join('');
+
+        html += `
+            <tr>
+                <td colspan="2">ВСЕГО МОДУЛЕЙ</td>
+                <td style="text-align: right;">${grandTotal.toLocaleString()}</td>
+            </tr>
+        `;
+
+        tbody.innerHTML = html;
+    }
+</script>
+
+</body>
+</html>+
