@@ -50,7 +50,10 @@ const KW_LOCALS = [
   KW.LVL_DRIFT,
   KW.REGEN,
 
+  KW.DESC,
+  KW.SPRITE_SIZE,
   KW.OUTPUT_MULT,
+  KW.START_DISABLED,
 ]
 
 const KW_RULES = {

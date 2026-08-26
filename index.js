@@ -3,7 +3,10 @@
 
 /// <reference path="./data/data.json.js"/>
 /* global
-CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA USER_RESOURCES OWNER_MAP
+CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA 
+OWNER_MAP
+USER_RESOURCES 
+USER_TECH_LVLS
 */
 
 /// <reference path="./src/keywords.js"/>
@@ -22,7 +25,7 @@ onEndTurnCb
 
 /// <reference path="./bnb/userParams.js"/>
 /* global
-DICT_USER USER_TECH_LVLS
+DICT_USER 
 */
 
 /* exported
@@ -3600,6 +3603,7 @@ function saveGame() {
   saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
 OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
 USER_RESOURCES=${JSON.stringify(userResources, 0, 2)};
+USER_TECH_LVLS=${JSON.stringify(typeof USER_TECH_LVLS !== 'undefined' ? USER_TECH_LVLS : {}, 0, 2)};
 OWNER_MAP=${JSON.stringify(typeof ownerMap !== 'undefined' ? ownerMap : {})};
 DEFAULT_DATA=`
     + JSON.stringify(defaultData, 0, 2)
