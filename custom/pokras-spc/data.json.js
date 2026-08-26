@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 0.7199999829629785,
-  "canvasOffsetX": 213.39659999999986,
-  "canvasOffsetY": 152.18499999999995,
+  "scale": 0.39435010336589865,
+  "canvasOffsetX": 43.64414286869277,
+  "canvasOffsetY": -294.2161241831952,
   "shapeColor": "#0000ff"
 };
 USER_RESOURCES={
@@ -13,12 +13,17 @@ USER_RESOURCES={
   },
   "Десант": {
     "Еда": 0,
-    "Металл": 0,
-    "Кремний": 0,
-    "Уран": 0,
+    "Металл": 20,
+    "Кремний": 20,
+    "Уран": 10,
     "Наука": 0
   },
-  "Варвары": {}
+  "Варвары": {},
+  "Колорады": {
+    "Металл": 20,
+    "Кремний": 20,
+    "Уран": 10
+  }
 };
 USER_TECH_LVLS={
   "Десант": {
@@ -32,38 +37,34 @@ USER_TECH_LVLS={
     "Щиты": 0
   },
   "Нейтралы": {},
-  "Варвары": {}
+  "Варвары": {},
+  "Колорады": {
+    "Энергетика": 0,
+    "Двигатели": 0,
+    "Социология": 0,
+    "Биология": 0,
+    "Оружие": 0,
+    "Броня": 0,
+    "Энерго-оружие": 0,
+    "Щиты": 0
+  }
 };
-OWNER_MAP={"5":[1]};
+OWNER_MAP={"16":[15],"23":[1]};
 DEFAULT_DATA=[
   {
     "id": 1,
     "type": "shape",
-    "name": "Горячий_мир",
+    "name": "Холодный_мир",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 349.64,
-    "y": 367.64,
+    "x": 349.41,
+    "y": 369.82,
     "width": 60,
     "height": 60,
-    "src": "pokras-spc/images/buildings/Горячий_мир.png",
-    "curr_hp": 5,
+    "src": "pokras-spc/images/buildings/Холодный_мир.png",
+    "curr_hp": 1,
     "endedTurn": false,
     "lvl": 1
-  },
-  {
-    "id": 5,
-    "type": "shape",
-    "name": "Развивающаяся_колония",
-    "shape": "custom",
-    "color": "#0000ff",
-    "x": 386.55,
-    "y": 339.52,
-    "width": 60,
-    "height": 60,
-    "curr_hp": 5,
-    "endedTurn": false,
-    "src": ""
   },
   {
     "id": 6,
@@ -75,6 +76,240 @@ DEFAULT_DATA=[
     "y": 257.48,
     "width": 50,
     "height": 50,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 9,
+    "type": "shape",
+    "name": "Безжизненный_мир",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1322.57,
+    "y": 1801.97,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Безжизненный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 11,
+    "type": "shape",
+    "name": "Газовый_гигант",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1541.39,
+    "y": 1804.47,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Газовый_гигант.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 13,
+    "type": "shape",
+    "name": "Умеренный_мир",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1541.39,
+    "y": 2007.04,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Умеренный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 14,
+    "type": "shape",
+    "name": "Столица",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1455.85,
+    "y": 1890.14,
+    "width": 50,
+    "height": 50,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 15,
+    "type": "shape",
+    "name": "Горячий_мир",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1328.54,
+    "y": 2010.24,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Горячий_мир.png",
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 16,
+    "type": "shape",
+    "name": "Развитая_колония",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1335.19,
+    "y": 2006.53,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 17,
+    "type": "shape",
+    "name": "Верфь",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1329.91,
+    "y": 1961.23,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 18,
+    "type": "shape",
+    "name": "Фрегат",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1326.73,
+    "y": 1875.32,
+    "width": 40,
+    "height": 40,
+    "src": "pokras-spc/images/units/Фрегат.png",
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 19,
+    "type": "shape",
+    "name": "Колонизатор",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1376.85,
+    "y": 1872.13,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 20,
+    "type": "shape",
+    "name": "Строитель",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1356.95,
+    "y": 1915.09,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 21,
+    "type": "shape",
+    "name": "Горячий_мир",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 351.99,
+    "y": 173.48,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Горячий_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 22,
+    "type": "shape",
+    "name": "Газовый_гигант",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 568.58,
+    "y": 174.91,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Газовый_гигант.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 23,
+    "type": "shape",
+    "name": "Развитая_колония",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 355.93,
+    "y": 380.75,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 24,
+    "type": "shape",
+    "name": "Верфь",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 350.35,
+    "y": 327.73,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 25,
+    "type": "shape",
+    "name": "Колонизатор",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 350.35,
+    "y": 247.45,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 26,
+    "type": "shape",
+    "name": "Строитель",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 390.76,
+    "y": 246.9,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 27,
+    "type": "shape",
+    "name": "Фрегат",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 357.99,
+    "y": 286.77,
+    "width": 40,
+    "height": 40,
+    "src": "pokras-spc/images/units/Фрегат.png",
     "curr_hp": 1,
     "endedTurn": false
   }
