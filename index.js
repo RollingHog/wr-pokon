@@ -775,7 +775,11 @@ function processRuleFile() {
 
   for(let playerName of listPlayers()) {
     if(!USER_TECH_LVLS[playerName]) {
-      USER_TECH_LVLS[playerName] = Object.fromEntries(Object.keys(TECH_EFFECTS).map(e => [e, 0]))
+      USER_TECH_LVLS[playerName] = Object.fromEntries(
+        Object.keys(TECH_EFFECTS)
+          .filter(name => !TECH_EFFECTS[name][KW.NO_STUDY])
+          .map(e => [e, 0])
+      )
     }
     if(!USER_RESOURCES[playerName]) {
       USER_RESOURCES[playerName] = {}
@@ -2968,7 +2972,7 @@ const TechUtils = {
 
     // 2. Показываем пользователю выбор
     const message = 'Выберите технологию для изучения:\n' + 
-      availableTechs.map((t, i) => `${i + 1}. ${t} (Ур. ${USER_TECH_LVLS[player]?.[t] || 0} -> ${USER_TECH_LVLS[player]?.[t] + 1})`).join('\n');
+      availableTechs.map((t, i) => `${i + 1}. ${t} (цена: ${TechUtils.getTechPrice(t, USER_TECH_LVLS[player]?.[t] + 1)})`).join('\n');
     
     const input = prompt(message);
     if (input === null) return;
