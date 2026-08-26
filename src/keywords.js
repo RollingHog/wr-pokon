@@ -35,6 +35,8 @@ const KW = /** @type {const} */ ({
   NO_VISION: -1,
   /** if object should spawn with disabled: true */
   START_DISABLED: "_start_disabled_",
+  /** запрещает изучать древо технологий; располагается в корне древа, рядом с уровнями */
+  NO_STUDY: "_no_study_",
 
   /** if set, clones resource income from children and multiplies it on given amount 
    * all ЛВЛ-options in children not supported yet
@@ -54,6 +56,7 @@ const KW_LOCALS = [
   KW.SPRITE_SIZE,
   KW.OUTPUT_MULT,
   KW.START_DISABLED,
+  KW.NO_STUDY,
 ]
 
 const KW_RULES = {

@@ -2324,7 +2324,7 @@ const userEffectsObj = {
               });
               return `== ${section} ==<br> ${effList.join('<br>')}<br><br>`
             } else if (section === '_tech_') {
-              return `== ${section} ==<br> <span onclick=TechUtils.selectTech()>${eff.map((arr) => arr.join(': ')).join('<br>')}</span><br><br>`
+              return `== ${section} ==<br> <span onclick=TechUtils.${TechUtils.selectTechToStudy.name}(this)>${eff.map((arr) => arr.join(': ')).join('<br>')}</span><br><br>`
             }
             return `== ${section} ==<br> ${eff.map((arr) => arr.join(': ')).join('<br>')}<br><br>`
           }).join('')
@@ -2474,26 +2474,32 @@ const warn = (...args) => {
 }
 
 /**
- * Вычитает стоимость юнита/здания из ресурсов игрока.
- *
- * @param {string} filename - Название объекта (например, "Солдат", "Ферма")
+ * Вычитает стоимость объекта или технологии из ресурсов игрока.
+ * @param {string} filename - Название объекта или технологии
  * @param {string} player - Имя игрока
+ * @param {Record<string, number>} [customPrice] - Опциональная цена. 
+ *        Если передана, используется вместо поиска в Unit.getPrice.
+ *        Формат: {Ресурс: кол-во}
  * @returns {boolean} true, если хватило ресурсов и вычитание прошло успешно, иначе false
  */
-function subtractUnitCost(filename, player) {
-  // 1. Получаем цену через новую функцию
-  const price = Unit.getPrice(filename);
+function subtractUnitCost(filename, player, customPrice = null) {
+  // 1. Получаем цену: либо из аргумента, либо через стандартный механизм юнитов
+  let price = customPrice;
+  if (!price) {
+    price = Unit.getPrice(filename);
+  } else if (!Array.isArray(price)) {
+    price = Object.entries(price);
+  }
 
-  // 2. Если цена не определена (например, _none_), выходим успешно
+  // 2. Если цена не определена, считаем операцию успешной (бесплатно)
   if (!price) {
     return true;
   }
 
   // 3. Проверяем, хватает ли ресурсов
   for (const [resourceName, cost] of price) {
-    if (typeof cost !== 'number' || cost <= 0) continue; // пропускаем отрицательные (например, бонусы)
-
-    const current = USER_RESOURCES[player][resourceName];
+    if (typeof cost !== 'number' || cost <= 0) continue;
+    const current = USER_RESOURCES[player]?.[resourceName];
     if (typeof current !== 'number' || current < cost) {
       warn(`Недостаточно ресурса "${resourceName}"\n для покупки "${filename}" игроком "${player}"`);
       return false;
@@ -2503,7 +2509,6 @@ function subtractUnitCost(filename, player) {
   // 4. Вычитаем ресурсы
   for (const [resourceName, cost] of price) {
     if (typeof cost !== 'number' || cost <= 0) continue;
-
     USER_RESOURCES[player][resourceName] -= cost;
   }
 
@@ -2778,8 +2783,14 @@ const TechUtils = {
     const cacheKey = `tech_effects_${username}`;
 
     const filterByOptions = el => {
-      if (Array.isArray(el) && el[1] !== null) {
-        return !options.notUnitEffects
+      if (Array.isArray(el)) {
+        if (el[0] === KW.COST) {
+          return false;
+        }
+
+        if (el[1] !== null) {
+          return !options.notUnitEffects
+        }
       }
       if (options.onlyUnitEffects) {
         return false
@@ -2858,8 +2869,122 @@ const TechUtils = {
     return res;
   },
 
-  selectTech() {
-    alert('haha not working')
+  /**
+ * Получает цену технологии для указанного уровня.
+ * @param {string} techName - Название технологии
+ * @param {number} level - Целевой уровень технологии
+ * @returns {Array<[string, number]>|null} Массив пар [ресурс, кол-во] или null, если цена не задана
+ */
+  getTechPrice(techName, level) {
+    const techLevels = TECH_EFFECTS[techName];
+    if (!techLevels || !techLevels[level]) return null;
+
+    const effects = techLevels[level];
+    // Ищем запись вида [KW.COST, {...}]
+    const costEntry = effects.find(e =>
+      Array.isArray(e) && e[0] === KW.COST && typeof e[1] === 'object'
+    );
+
+    if (!costEntry) return null;
+
+    // Нормализуем объект {Resource: Val} в массив [[Resource, Val]]
+    return Object.entries(costEntry[1]);
+  },
+
+  /**
+   * Обертка для вызова из HTML при изучении технологии.
+   * Ожидает, что цена технологии хранится в TECH_EFFECTS или передается явно.
+   * @param {string} techName - Название технологии
+   * @param {number} level - Уровень технологии
+   * @param {Array|[string, number][]} price - Цена технологии (массив пар [ресурс, кол-во])
+   */
+  subtractTechCost(techName, level, price) {
+    const player = Player.getCurrent();
+    if (!player) {
+      warn('Игрок не выбран');
+      return false;
+    }
+
+    if (!payCheckbox.checked) {
+      return
+    }
+
+    // Здесь можно добавить логику получения цены из TECH_EFFECTS, 
+    // если она не передается явно из HTML, например:
+    // if (!price) price = TechUtils.getTechPrice(techName, level);
+
+    subtractUnitCost(`${techName} ${level}`, player, price);
+  },
+
+    selectTechToStudy() {
+    const player = Player.getCurrent();
+    if (!player) {
+      warn('Не выбран игрок');
+      return;
+    }
+
+    // 1. Формируем список доступных для изучения технологий
+    const techList = Object.keys(TECH_EFFECTS);
+    if (techList.length === 0) {
+      warn('Нет доступных технологий');
+      return;
+    }
+
+    const maxLvl = SETTINGS?.MAX_TECH_LVL || 3;
+    
+    // Фильтруем только те, что можно улучшить
+    const availableTechs = techList.filter(techName => {
+      const techData = TECH_EFFECTS[techName];
+      if (!techData) return false;
+      if (techData[KW.NO_STUDY]) return false;
+
+      const currentLvl = USER_TECH_LVLS[player]?.[techName] || 0;
+      return currentLvl < maxLvl && TECH_EFFECTS[techName][currentLvl + 1];
+    });
+
+    if (availableTechs.length === 0) {
+      warn('Все технологии изучены на максимум или нет доступных для исследования.');
+      return;
+    }
+
+    // 2. Показываем пользователю выбор
+    const message = 'Выберите технологию для изучения:\n' + 
+      availableTechs.map((t, i) => `${i + 1}. ${t} (Ур. ${USER_TECH_LVLS[player]?.[t] || 0} -> ${USER_TECH_LVLS[player]?.[t] + 1})`).join('\n');
+    
+    const input = prompt(message);
+    if (input === null) return;
+
+    const index = parseInt(input, 10) - 1;
+    if (isNaN(index) || index < 0 || index >= availableTechs.length) {
+      warn('Некорректный номер технологии');
+      return;
+    }
+
+    const selectedTech = availableTechs[index];
+    const nextLevel = (USER_TECH_LVLS[player]?.[selectedTech] || 0) + 1;
+
+    // 3. Пытаемся списать ресурсы и зафиксировать уровень
+    // Используем модифицированную subtractUnitCost, передавая цену явно через TechUtils.getTechPrice
+    const price = TechUtils.getTechPrice(selectedTech, nextLevel);
+
+    if(!price) {
+      warn(`Цена для технологии ${selectedTech} ${nextLevel} не задана`)
+      return
+    }
+    
+    if (subtractUnitCost(selectedTech, player, price)) {
+      if (!USER_TECH_LVLS[player]) USER_TECH_LVLS[player] = {};
+      USER_TECH_LVLS[player][selectedTech] = nextLevel;
+      
+      // Сбрасываем кеш эффектов, так как они изменились
+      TechUtils.techEffectCache = {}; 
+      TechUtils.unitTechEffectCache = {};
+      
+      UI.drawInfoPanel();
+      // alert(`Технология "${selectedTech}" улучшена до уровня ${nextLevel}!`);
+    } else {
+      // Ошибка уже выведена внутри subtractUnitCost
+    }
   },
 }
 
