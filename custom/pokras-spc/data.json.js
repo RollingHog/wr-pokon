@@ -1,9 +1,9 @@
-CURRENT_TURN=5;
+CURRENT_TURN=6;
 OTHER_SAVE_DATA={
-  "scale": 0.640012806033653,
-  "canvasOffsetX": 104.54148106555192,
-  "canvasOffsetY": -218.9178386539425,
-  "shapeColor": "#0000ff"
+  "scale": 0.5531284786910664,
+  "canvasOffsetX": 43.02458407077313,
+  "canvasOffsetY": -452.34664389777595,
+  "shapeColor": "#008000"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -13,17 +13,17 @@ USER_RESOURCES={
   },
   "Десант": {
     "Еда": 0,
-    "Металл": 46,
-    "Кремний": 20,
-    "Уран": 42,
-    "Наука": 8
+    "Металл": 52,
+    "Кремний": 19,
+    "Уран": 49.5,
+    "Наука": 10
   },
   "Варвары": {},
   "Колорады": {
-    "Металл": 26,
-    "Кремний": 50,
-    "Уран": 29,
-    "Наука": 8
+    "Металл": 25,
+    "Кремний": 58,
+    "Уран": 39,
+    "Наука": 10
   }
 };
 USER_TECH_LVLS={
@@ -121,7 +121,6 @@ DEFAULT_DATA=[
     "height": 50,
     "src": "pokras-spc/images/buildings/Умеренный_мир.png",
     "curr_hp": 1,
-    "disabled": 1,
     "endedTurn": false
   },
   {
@@ -183,8 +182,8 @@ DEFAULT_DATA=[
     "name": "Фрегат",
     "shape": "custom",
     "color": "#008000",
-    "x": 445.95,
-    "y": 2004.02,
+    "x": 286.43,
+    "y": 2348.38,
     "width": 40,
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
@@ -197,8 +196,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#008000",
-    "x": 1447.7,
-    "y": 1805.41,
+    "x": 1403.39,
+    "y": 1856.05,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -266,8 +265,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1131.85,
-    "y": 1006.6,
+    "x": 855.95,
+    "y": 1343.44,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -279,8 +278,8 @@ DEFAULT_DATA=[
     "name": "Фрегат",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1244.91,
-    "y": 677.62,
+    "x": 1659.05,
+    "y": 689.84,
     "width": 40,
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
@@ -838,6 +837,122 @@ DEFAULT_DATA=[
     "width": 40,
     "height": 40,
     "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 69,
+    "type": "shape",
+    "name": "Строитель",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 407.46,
+    "y": 259.37,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 70,
+    "type": "shape",
+    "name": "Умеренный_мир",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1540.43,
+    "y": 576.59,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Умеренный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 71,
+    "type": "shape",
+    "name": "Газовый_гигант",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1751.89,
+    "y": 582.16,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Газовый_гигант.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 72,
+    "type": "shape",
+    "name": "Водный_мир",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1751.89,
+    "y": 786.19,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Водный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 73,
+    "type": "shape",
+    "name": "Добывающая_станция",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1544.73,
+    "y": 1963.14,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 74,
+    "type": "shape",
+    "name": "Безжизненный_мир",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 134.44,
+    "y": 2417.71,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Безжизненный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 75,
+    "type": "shape",
+    "name": "Газовый_гигант",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 240.79,
+    "y": 2316.42,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Газовый_гигант.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 76,
+    "type": "shape",
+    "name": "Холодный_мир",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 349.67,
+    "y": 2416.44,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Холодный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
     "endedTurn": false
   }
 ]
