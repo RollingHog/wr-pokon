@@ -775,7 +775,7 @@ function processRuleFile() {
 
   for(let playerName of listPlayers()) {
     if(!USER_TECH_LVLS[playerName]) {
-      USER_TECH_LVLS[playerName] = {}
+      USER_TECH_LVLS[playerName] = Object.fromEntries(Object.keys(TECH_EFFECTS).map(e => [e, 0]))
     }
     if(!USER_RESOURCES[playerName]) {
       USER_RESOURCES[playerName] = {}
@@ -2094,8 +2094,8 @@ const userEffectsObj = {
   _lvlExprCache: {},
 
   /**
-   * 
    * @param {string} value 
+   * @example 20+ЛВЛ*10
    * @param {{lvl: number}} obj 
    * @returns 
    */
@@ -2114,15 +2114,16 @@ const userEffectsObj = {
     // Кешированный парсинг структуры выражения
     let parsed = this._lvlExprCache[value];
     if (!parsed) {
-      const match = value.match(/^(-?\d+)([+-])ЛВЛ([*/])?(\d+)?$/);
+      const match = value.match(/^(-?\d+)?([+-])?ЛВЛ([*/])?(\d+)?$/);
       if (!match) {
-        console.warn('processLvlValue: unrecognized LVL expression:', value);
+        // this is very bad and not normal
+        warn('processLvlValue: unrecognized LVL expression:', value);
         this._lvlExprCache[value] = null;
         return null;
       }
       parsed = {
-        baseNum: parseInt(match[1], 10),
-        sign: match[2],
+        baseNum: parseInt(match[1], 10) || 0,
+        sign: match[2] || '+',
         operator: match[3]?.trim() || null,
         operand: match[4] ? parseInt(match[4], 10) : null,
       };
@@ -2871,24 +2872,42 @@ const TechUtils = {
 
   /**
  * Получает цену технологии для указанного уровня.
+ * Сначала проверяет корневой KW.COST (с поддержкой формул ЛВЛ), затем уровень.
  * @param {string} techName - Название технологии
  * @param {number} level - Целевой уровень технологии
- * @returns {Array<[string, number]>|null} Массив пар [ресурс, кол-во] или null, если цена не задана
+ * @returns {Array<[string, number]>|null} Массив пар [ресурс, кол-во] или null
  */
   getTechPrice(techName, level) {
     const techLevels = TECH_EFFECTS[techName];
-    if (!techLevels || !techLevels[level]) return null;
+    if (!techLevels) return null;
 
+    // ищем цену в эффектах конкретного уровня
     const effects = techLevels[level];
-    // Ищем запись вида [KW.COST, {...}]
+    if (!effects) return null;
+
     const costEntry = effects.find(e =>
       Array.isArray(e) && e[0] === KW.COST && typeof e[1] === 'object'
     );
 
-    if (!costEntry) return null;
+    if (costEntry) {
+      return Object.entries(costEntry[1]);
+    }
 
-    // Нормализуем объект {Resource: Val} в массив [[Resource, Val]]
-    return Object.entries(costEntry[1]);
+    // Проверяем цену в корне технологии (общая формула для всех уровней), если локальной нет
+    const rootCost = techLevels[KW.COST];
+    if (rootCost && typeof rootCost === 'object') {
+      const processedEntries = Object.entries(rootCost).map(([res, val]) => {
+        let numVal = val;
+        if (typeof val === 'string' && val.includes('ЛВЛ')) {
+          numVal = userEffectsObj.processLvlValue(val, { lvl: level });
+        }
+        return [res, Number(numVal)];
+      }).filter(([_, v]) => !isNaN(v));
+
+      if (processedEntries.length > 0) return processedEntries;
+    }
+
+    return null
   },
 
   /**
@@ -2916,7 +2935,7 @@ const TechUtils = {
     subtractUnitCost(`${techName} ${level}`, player, price);
   },
 
-    selectTechToStudy() {
+  selectTechToStudy() {
     const player = Player.getCurrent();
     if (!player) {
       warn('Не выбран игрок');
@@ -2972,7 +2991,7 @@ const TechUtils = {
       return
     }
     
-    if (subtractUnitCost(selectedTech, player, price)) {
+    if (subtractUnitCost(`${selectedTech} ${nextLevel}`, player, price)) {
       if (!USER_TECH_LVLS[player]) USER_TECH_LVLS[player] = {};
       USER_TECH_LVLS[player][selectedTech] = nextLevel;
       
