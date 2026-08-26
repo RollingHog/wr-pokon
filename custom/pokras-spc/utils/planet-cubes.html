@@ -269,7 +269,12 @@
   </h1>
 
   <div class="input-area">
-    <label for="diceInput">Вставьте результаты бросков (1d4 и 4d6) в одно поле:</label>
+    Нажмите чтобы скопировать
+    <pre onclick='navigator.clipboard.writeText(this.textContent)' title="Нажмите чтобы скопировать">
+##1d4##
+##4d6##</pre>
+    <label for="diceInput">Вставьте результаты бросков (1d4 и 4d6) в одно поле:
+    </label>
     <textarea id="diceInput" placeholder="Например:&#10;1d4: (4) = 4 количество планет&#10;4d6: (5 + 6 + 2 + 6) = 19 типы планет"></textarea>
     <div class="actions">
       <button class="btn" id="decodeBtn">🔮 Расшифровать</button>
