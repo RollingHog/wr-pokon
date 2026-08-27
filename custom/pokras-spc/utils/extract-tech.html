@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Tech Extractor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        #drop-zone {
+            width: 100%;
+            height: 150px;
+            border: 3px dashed #cbd5e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #718096;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        #drop-zone.dragover {
+            border-color: #4299e1;
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+        }
+
+        #drop-zone p {
+            margin: 5px 0;
+            font-size: 18px;
+        }
+
+        .output-container {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
+            white-space: pre;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-copy {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background-color: #38a169;
+        }
+
+        .btn-copy:active {
+            transform: translateY(1px);
+        }
+
+        .status-msg {
+            margin-top: 10px;
+            font-size: 14px;
+            text-align: center;
+            height: 20px;
+        }
+
+        .error { color: #e53e3e; }
+        .success { color: #38a169; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Извлечение технологий (yEd GraphML)</h1>
+
+    <div id="drop-zone">
+        <p>Перетащите XML/GraphML файл сюда</p>
+        <p style="font-size: 14px;">или нажмите для выбора</p>
+        <input type="file" id="file-input" accept=".xml,.graphml" style="display: none;">
+    </div>
+
+    <div class="output-container">
+        <textarea id="output-text" readonly placeholder="Результат появится здесь..."></textarea>
+    </div>
+
+    <div class="button-group">
+        <div id="status" class="status-msg"></div>
+        <button class="btn-copy" id="copy-btn">Копировать результат</button>
+    </div>
+</div>
+
+<script>
+    /**
+     * Извлекает технологии из XML-строки графа yEd. 
+     * Если в блоке нет переносов строки, он считается техническим и игнорируется.
+     * @param {string} xmlString - Содержимое XML-файла
+     * @param {Object} colorMap - Словарь сопоставления цветов и тех. древ (ключи в lowerCase)
+     * @returns {Array<{color: string, techTree: string|undefined, text: string}>}
+     */
+    function extractTechnologies(xmlString, colorMap = {
+        "#3366ff": "Энергетика",
+        "#dd0000": "Двигатели",
+        "#808000": "Оружие",
+        "#aa4400": "Броня",
+        "#ff6600": "Энерго-оружие",
+        "#00ccff": "Щиты",
+        "#ccffcc": "Биология",
+        "#cc99ff": "Социология",
+    }) {
+
+        /**
+         * Форматирует текст: "Название\nЦена\nВсе остальное в одну строку"
+         */
+        function formatTechText(rawText) {
+        if (!rawText) return '';
+
+        /** @type {string[]} */
+        const lines = rawText
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
+
+        if (lines.length === 0) return '';
+
+        const name = lines[0];
+        const price = lines[1];
+        const restParts = lines.slice(2).join(' ');
+
+        const parts = [name];
+        if (price) parts.push(price);
+        if (restParts) parts.push(restParts);
+
+        return parts.join('  \n');
+        }
+
+        /**
+         * Группирует технологии по древам и выводит отсортированный чистый текст.
+         * @param {Array<{color: string, techTree: string, text: string}>} techs - Результат extractTechnologies
+         */
+        function printTechTrees(techs) {
+        const grouped = Object.fromEntries(Object.values(colorMap).map(e => [e, []]));
+
+        // 1. Группировка по техдревам
+        for (const tech of techs) {
+            if (!grouped[tech.techTree]) grouped[tech.techTree] = [];
+            grouped[tech.techTree].push(tech);
+        }
+
+        const outputLines = [];
+
+        for (const [treeName, items] of Object.entries(grouped)) {
+            const parsePrice = (text) => {
+            const match = text.split('\n').find(l => /^цена \d+ /i.test(l));
+            if (!match) return Infinity;
+            const num = parseInt(match.replace(/[^0-9]/g, ''));
+            return isNaN(num) ? Infinity : num;
+            };
+
+            items.sort((a, b) => {
+            return parsePrice(a.text) - parsePrice(b.text)
+            });
+
+            outputLines.push(`${treeName.toUpperCase()}\n`);
+            for (const item of items) {
+            outputLines.push(item.text);
+            outputLines.push('');
+            }
+        }
+
+        const result = outputLines.join('  \n').trim();
+        return result;
+        }
+
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlString, 'application/xml');
+
+        const parseError = xmlDoc.querySelector('parsererror');
+        if (parseError) {
+        throw new Error(`Ошибка парсинга XML: ${parseError.textContent}`);
+        }
+
+        const results = [];
+        const shapeNodes = xmlDoc.getElementsByTagNameNS('*', 'ShapeNode');
+
+        for (const node of shapeNodes) {
+        const fillEl = node.getElementsByTagNameNS('*', 'Fill')[0];
+        const rawColor = fillEl?.getAttribute('color') || null;
+
+        if (!rawColor) continue; // Пропускаем ноды без явного цвета заливки
+
+        const normalizedColor = rawColor.toLowerCase();
+        const techTree = colorMap[normalizedColor];
+
+        const labelEl = node.getElementsByTagNameNS('*', 'NodeLabel')[0];
+        const rawText = labelEl?.textContent || '';
+
+        if(rawText.indexOf('\n') === -1) continue
+
+        const formattedText = formatTechText(rawText);
+
+        results.push({
+            color: rawColor,
+            techTree: techTree || 'Неизвестное древо',
+            text: formattedText
+        });
+        }
+
+        return printTechTrees(results);
+    }
+
+    // --- Логика интерфейса ---
+
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const outputText = document.getElementById('output-text');
+    const copyBtn = document.getElementById('copy-btn');
+    const status = document.getElementById('status');
+
+    // Клик по зоне открывает выбор файла
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    // Обработка Drag & Drop
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) handleFile(files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+        showStatus("Читаю файл...", "");
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const content = e.target.result;
+                // Вызов вашей функции
+                const result = extractTechnologies(content);
+                
+                // Вывод результата
+                outputText.value = result;
+                showStatus("Готово!", "success");
+            } catch (err) {
+                console.error(err);
+                showStatus("Ошибка при обработке файла", "error");
+                outputText.value = "Произошла ошибка: " + err.message;
+            }
+        };
+
+        reader.onerror = () => {
+            showStatus("Ошибка чтения файла", "error");
+        };
+
+        reader.readAsText(file);
+    }
+
+    function showStatus(msg, type) {
+        status.textContent = msg;
+        status.className = "status-msg " + type;
+    }
+
+    // Копирование в буфер обмена
+    copyBtn.addEventListener('click', async () => {
+        if (!outputText.value) return;
+        
+        try {
+            await navigator.clipboard.writeText(outputText.value);
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "Скопировано!";
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 2000);
+        } catch (err) {
+            showStatus("Не удалось скопировать", "error");
+        }
+    });
+</script>
+
+</body>
+</html>
