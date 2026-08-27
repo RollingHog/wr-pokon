@@ -1,8 +1,8 @@
-CURRENT_TURN=8;
+CURRENT_TURN=9;
 OTHER_SAVE_DATA={
-  "scale": 0.8626198249336338,
-  "canvasOffsetX": -862.7908601693254,
-  "canvasOffsetY": -724.0021750927372,
+  "scale": 0.745265227006311,
+  "canvasOffsetX": 189.70580795617093,
+  "canvasOffsetY": -1033.9994244883655,
   "shapeColor": "#008000"
 };
 USER_RESOURCES={
@@ -13,17 +13,17 @@ USER_RESOURCES={
   },
   "Десант": {
     "Еда": 0,
-    "Металл": 83,
-    "Кремний": 38,
-    "Уран": 74.5,
-    "Наука": 6
+    "Металл": 92,
+    "Кремний": 44,
+    "Уран": 89,
+    "Наука": 9
   },
   "Варвары": {},
   "Колорады": {
-    "Металл": 35,
-    "Кремний": 82,
-    "Уран": 57,
-    "Наука": 6
+    "Металл": 45,
+    "Кремний": 98,
+    "Уран": 70.5,
+    "Наука": 9
   }
 };
 USER_TECH_LVLS={
@@ -195,8 +195,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#008000",
-    "x": 1434.19,
-    "y": 2172.19,
+    "x": 1061.27,
+    "y": 2221.08,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -263,8 +263,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 884.21,
-    "y": 1344.93,
+    "x": 954.52,
+    "y": 1359.38,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -276,8 +276,8 @@ DEFAULT_DATA=[
     "name": "Фрегат",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1897.04,
-    "y": 366.6,
+    "x": 1678.82,
+    "y": 106.97,
     "width": 40,
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
@@ -516,7 +516,6 @@ DEFAULT_DATA=[
     "height": 50,
     "src": "pokras-spc/images/buildings/Горячий_мир.png",
     "curr_hp": 1,
-    "disabled": 1,
     "endedTurn": false
   },
   {
@@ -588,7 +587,6 @@ DEFAULT_DATA=[
     "height": 50,
     "src": "pokras-spc/images/buildings/Безжизненный_мир.png",
     "curr_hp": 1,
-    "disabled": 1,
     "endedTurn": false
   },
   {
@@ -843,8 +841,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 384.87,
-    "y": 258.31,
+    "x": 142.88,
+    "y": 144.48,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -902,7 +900,7 @@ DEFAULT_DATA=[
     "shape": "custom",
     "color": "#008000",
     "x": 1547.25,
-    "y": 1964.4,
+    "y": 1956.44,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -974,8 +972,8 @@ DEFAULT_DATA=[
     "name": "Холодный_мир",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1457.67,
-    "y": 254.36,
+    "x": 1431.05,
+    "y": 270.33,
     "width": 50,
     "height": 50,
     "src": "pokras-spc/images/buildings/Холодный_мир.png",
@@ -989,8 +987,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#008000",
-    "x": 1481.43,
-    "y": 1790.25,
+    "x": 1778.37,
+    "y": 1887.15,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -1095,6 +1093,77 @@ DEFAULT_DATA=[
     "src": "pokras-spc/images/buildings/Газовый_гигант.png",
     "curr_hp": 1,
     "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 87,
+    "type": "shape",
+    "name": "Добывающая_станция",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 896.37,
+    "y": 1351.34,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 88,
+    "type": "shape",
+    "name": "Горячий_мир",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1536.42,
+    "y": 66.58,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Горячий_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 89,
+    "type": "shape",
+    "name": "Умеренный_мир",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1760.68,
+    "y": 67.44,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Умеренный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 90,
+    "type": "shape",
+    "name": "Безжизненный_мир",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1649.42,
+    "y": 172.67,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Безжизненный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 91,
+    "type": "shape",
+    "name": "Добывающая_станция",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1008.28,
+    "y": 2267.19,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
     "endedTurn": false
   }
 ]
