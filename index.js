@@ -2318,7 +2318,7 @@ const userEffectsObj = {
       toObj() { return result },
       toPrettyHTML(playerName = null) {
         delete result.local
-        if(playerName) result._tech_ = Object.entries(USER_TECH_LVLS[playerName])
+        if (playerName) result._tech_ = Object.entries(USER_TECH_LVLS[playerName])
         const uRes = typeof USER_RESOURCES !== 'undefined' ? (USER_RESOURCES[playerName] || {}) : {}
         return Object.entries(result)
           .map(([section, eff]) => {
@@ -2330,6 +2330,11 @@ const userEffectsObj = {
               return `== ${section} ==<br> ${effList.join('<br>')}<br><br>`
             } else if (section === '_tech_') {
               return `== ${section} ==<br> <span onclick=TechUtils.${TechUtils.selectTechToStudy.name}(this)>${eff.map((arr) => arr.join(': ')).join('<br>')}</span><br><br>`
+            } else if (section === 'static') {
+              const filteredEff = eff
+                .filter((arr) => !['unit_count', 'build_count',].includes(arr[0]))
+                .map( ([k,v]) => k.endsWith('_to_upkeep') ? [k.replace('_to_upkeep', 's'), v] : [k,v])
+              return `== ${section} ==<br> ${filteredEff.map((arr) => arr.join(': ')).join('<br>')}<br><br>`
             }
             return `== ${section} ==<br> ${eff.map((arr) => arr.join(': ')).join('<br>')}<br><br>`
           }).join('')
@@ -3003,7 +3008,7 @@ const TechUtils = {
       TechUtils.techEffectCache = {}; 
       TechUtils.unitTechEffectCache = {};
       
-      UI.drawInfoPanel();
+      setShapeColor(getShapeColor())
       // alert(`Технология "${selectedTech}" улучшена до уровня ${nextLevel}!`);
     } else {
       // Ошибка уже выведена внутри subtractUnitCost
