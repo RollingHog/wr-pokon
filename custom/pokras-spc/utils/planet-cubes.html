@@ -271,13 +271,14 @@
   <div class="input-area">
     Нажмите чтобы скопировать
     <pre onclick='navigator.clipboard.writeText(this.textContent)' title="Нажмите чтобы скопировать">
-##1d4##
+##1d6##
 ##4d6##</pre>
-    <label for="diceInput">Вставьте результаты бросков (1d4 и 4d6) в одно поле:
+    <label for="diceInput">Вставьте результаты бросков (1d6 и 4d6) в одно поле:
     </label>
-    <textarea id="diceInput" placeholder="Например:&#10;1d4: (4) = 4 количество планет&#10;4d6: (5 + 6 + 2 + 6) = 19 типы планет"></textarea>
+    <textarea id="diceInput" placeholder="Например:&#10;1d6: (4) = 4 количество планет&#10;4d6: (5 + 6 + 2 + 6) = 19 типы планет"></textarea>
     <div class="actions">
       <button class="btn" id="decodeBtn">🔮 Расшифровать</button>
+      <button class="btn btn-outline" id="removeLinesBtn">🗑️ Удалить 3 строки</button>
     </div>
   </div>
 
@@ -321,14 +322,18 @@
       let planetCount = null;
       let typeRolls = [];
 
-      // проходим по строкам, ищем 1d4 и 4d6
+      // проходим по строкам, ищем 1d6 и 4d6
       for (let line of lines) {
-        // ищем 1d4: (X) = Y ...
-        const d4Match = line.match(/1d4\s*:\s*\((\d+)\)\s*=\s*(\d+)/i);
-        if (d4Match) {
-          const val = parseInt(d4Match[2], 10);
-          if (!isNaN(val) && val >= 1 && val <= 4) {
-            planetCount = val;
+        // ищем 1d6: (X) = Y ...
+        const pCountMatch = line.match(/1d6\s*:\s*\((\d+)\)\s*=\s*(\d+)/i);
+        if (pCountMatch) {
+          const val = parseInt(pCountMatch[2], 10);
+          if (!isNaN(val) && val >= 1 && val <= 6) {
+            // Маппинг: 1→1, 2-3→2, 4-5→3, 6→4
+            if (val === 1) planetCount = 1;
+            else if (val >= 2 && val <= 3) planetCount = 2;
+            else if (val >= 4 && val <= 5) planetCount = 3;
+            else if (val === 6) planetCount = 4;
           }
           continue;
         }
@@ -367,10 +372,10 @@
         }
       }
 
-      // если всё ещё null, пробуем найти просто цифру 1-4 в строке где есть 1d4
+      // если всё ещё null, пробуем найти просто цифру 1-4 в строке где есть 1d6
       if (planetCount === null) {
         for (let line of lines) {
-          if (/1d4/i.test(line)) {
+          if (/1d6/i.test(line)) {
             const num = line.match(/\b([1-4])\b/);
             if (num) {
               planetCount = parseInt(num[1], 10);
@@ -386,7 +391,7 @@
     // ---- отрисовка ----
     function renderSystem(planetCount, typeRolls) {
       if (planetCount === null || planetCount < 1 || planetCount > 4) {
-        systemContainer.innerHTML = `<div class="empty-state">⚠️ Не удалось определить количество планет (1d4). Проверьте формат.</div>`;
+        systemContainer.innerHTML = `<div class="empty-state">⚠️ Не удалось определить количество планет (1d6). Проверьте формат.</div>`;
         return;
       }
 
@@ -439,6 +444,24 @@
       systemContainer.innerHTML = html;
     }
 
+    // ---- удаление трёх последних строк ----
+    function removeLastThreeLines() {
+      const lines = textarea.value.split('\n');
+      
+      // Проверяем, что есть хотя бы 3 строки
+      if (lines.length < 3) {
+        textarea.value = ""
+        return;
+      }
+      
+      // Удаляем последние 3 строки
+      const remainingLines = lines.slice(0, -3);
+      textarea.value = remainingLines.join('\n');
+      
+      // Автоматически запускаем расшифровку после удаления
+      decode();
+    }
+
     // ---- основная функция расшифровки ----
     function decode() {
       const raw = textarea.value;
@@ -450,16 +473,11 @@
       const { planetCount, typeRolls } = parseDiceResults(raw);
       renderSystem(planetCount, typeRolls);
     }
-
-    // ---- заполнить пример ----
-    function fillExample() {
-      textarea.value = `1d4: (4) = 4 количество планет\n4d6: (5 + 6 + 2 + 6) = 19 типы планет`;
-      decode();
-    }
-
+    
     // ---- обработчики ----
     decodeBtn.addEventListener('click', decode);
     diceInput.addEventListener('input', decode);
+    document.getElementById('removeLinesBtn').addEventListener('click', removeLastThreeLines);
 
     // автозапуск при загрузке с примером (если поле пустое)
     window.addEventListener('DOMContentLoaded', function() {
