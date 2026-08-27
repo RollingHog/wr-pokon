@@ -1,8 +1,8 @@
-CURRENT_TURN=6;
+CURRENT_TURN=7;
 OTHER_SAVE_DATA={
-  "scale": 0.5531284786910664,
-  "canvasOffsetX": 43.02458407077313,
-  "canvasOffsetY": -452.34664389777595,
+  "scale": 0.5810483194178049,
+  "canvasOffsetX": -209.0816133850592,
+  "canvasOffsetY": -535.4843385052336,
   "shapeColor": "#008000"
 };
 USER_RESOURCES={
@@ -13,24 +13,24 @@ USER_RESOURCES={
   },
   "Десант": {
     "Еда": 0,
-    "Металл": 52,
-    "Кремний": 19,
-    "Уран": 49.5,
-    "Наука": 10
+    "Металл": 78,
+    "Кремний": 38,
+    "Уран": 62,
+    "Наука": 3
   },
   "Варвары": {},
   "Колорады": {
-    "Металл": 25,
-    "Кремний": 58,
-    "Уран": 39,
-    "Наука": 10
+    "Металл": 29,
+    "Кремний": 71,
+    "Уран": 45.5,
+    "Наука": 3
   }
 };
 USER_TECH_LVLS={
   "Десант": {
     "Энергетика": 0,
     "Двигатели": 0,
-    "Социология": 0,
+    "Социология": 1,
     "Биология": 0,
     "Оружие": 0,
     "Металлургия": 0,
@@ -42,7 +42,7 @@ USER_TECH_LVLS={
   "Колорады": {
     "Энергетика": 0,
     "Двигатели": 0,
-    "Социология": 0,
+    "Социология": 1,
     "Биология": 0,
     "Оружие": 0,
     "Металлургия": 0,
@@ -182,8 +182,8 @@ DEFAULT_DATA=[
     "name": "Фрегат",
     "shape": "custom",
     "color": "#008000",
-    "x": 286.43,
-    "y": 2348.38,
+    "x": 464.19,
+    "y": 1996.63,
     "width": 40,
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
@@ -196,8 +196,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#008000",
-    "x": 1403.39,
-    "y": 1856.05,
+    "x": 1426.08,
+    "y": 2168.71,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -265,8 +265,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 855.95,
-    "y": 1343.44,
+    "x": 884.21,
+    "y": 1344.93,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -278,8 +278,8 @@ DEFAULT_DATA=[
     "name": "Фрегат",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1659.05,
-    "y": 689.84,
+    "x": 1569.5,
+    "y": 378.3,
     "width": 40,
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
@@ -845,8 +845,8 @@ DEFAULT_DATA=[
     "name": "Строитель",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 407.46,
-    "y": 259.37,
+    "x": 393.29,
+    "y": 259.36,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -903,8 +903,8 @@ DEFAULT_DATA=[
     "name": "Добывающая_станция",
     "shape": "custom",
     "color": "#008000",
-    "x": 1544.73,
-    "y": 1963.14,
+    "x": 1547.25,
+    "y": 1964.4,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -953,6 +953,49 @@ DEFAULT_DATA=[
     "src": "pokras-spc/images/buildings/Холодный_мир.png",
     "curr_hp": 1,
     "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 77,
+    "type": "shape",
+    "name": "Газовый_гигант",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1674.47,
+    "y": 455.51,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Газовый_гигант.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 78,
+    "type": "shape",
+    "name": "Холодный_мир",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1457.67,
+    "y": 254.36,
+    "width": 50,
+    "height": 50,
+    "src": "pokras-spc/images/buildings/Холодный_мир.png",
+    "curr_hp": 1,
+    "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 79,
+    "type": "shape",
+    "name": "Строитель",
+    "shape": "custom",
+    "color": "#008000",
+    "x": 1382.4344487226801,
+    "y": 1961.9194155740124,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
     "endedTurn": false
   }
 ]
