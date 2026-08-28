@@ -3,7 +3,7 @@
 # source file path
 SOURCE="/home/floppa/Загрузки/data.json.js"
 # destination dir
-DESTINATION='/home/floppa/Рабочий стол/myprojects/wr-pokon'
+DESTINATION='/home/floppa/Рабочий стол/myprojects/wr-pokon/custom/pokras-spc'
 INTERVAL=4
 
 while true; do
