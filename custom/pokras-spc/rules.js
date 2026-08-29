@@ -11,7 +11,7 @@ TECH_EFFECTS
 KW KW_RULES KW_LOCALS
 */
 
-const CELL_SIZE = 120
+const CELL_SIZE = 105
 
 const SETTINGS = {
   IS_CUSTOM: true,
@@ -20,7 +20,7 @@ const SETTINGS = {
   // DEFAULT_FIGURE_BG: 'circle',
 
   MAX_UNIT_HP: 1,
-  VISION_RADIUS: CELL_SIZE * 1.5,
+  VISION_RADIUS: CELL_SIZE * 1.7,
   CAPITAL_SPECIAL_VISION: false,
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
@@ -30,6 +30,8 @@ const SETTINGS = {
   DEFAULT_LINE_COLOR: 'white',
   // TITLE_ABOVE: true,
   CANNOT_ACT_AFTER_PLACEMENT: true,
+
+  AUTOSAVE: false,
 } 
 
 
@@ -280,7 +282,7 @@ const DICT_COMMON = {
       Кремний: 20,
       Уран: 5
     },
-    [KW.DESC]: `может колонизировать планеты, при колонизации исчезает. При проведении Терраформирования (после изучения соответствующей технологии) не исчезает`,
+    [KW.DESC]: `Может колонизировать планеты. При колонизации исчезает, при Терраформировании не исчезает`,
   },
   Строитель: {
     [KW.COST]: {
@@ -420,9 +422,9 @@ const DICT_COMMON = {
     Уран: 3,
   },
   Водный_мир: {
-    Металл: 2,
+    Металл: 3,
     Кремний: 3,
-    Уран: 6,
+    Уран: 5,
   },
   Холодный_мир: {
     Металл: 6,
@@ -430,9 +432,9 @@ const DICT_COMMON = {
     Уран: 3,
   },
   Безжизненный_мир: {
-    Металл: 4,
+    Металл: 5,
     Кремний: 5,
-    Уран: 2,
+    Уран: 1,
   },
   Газовый_гигант: {
     Металл: 7,
@@ -447,6 +449,7 @@ KW_RULES.setCommon(
   ),
   { 
     [KW.SPRITE_SIZE]: 50,
+    [KW.VISION]: 50 / 1.6,
     [KW.START_DISABLED]: 1,
    }
 )
