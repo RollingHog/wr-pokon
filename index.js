@@ -3337,7 +3337,7 @@ const Reports = {
       for (const [key, value] of Object.entries(objData)) {
         if (key === KW.COST) continue;
         if (key === KW.DESC) continue;
-        if (key.startsWith('_')) continue;
+        if (key.startsWith('_') || KW_LOCALS.includes(key)) continue;
 
         const numValue = Number(value);
         if (!isNaN(numValue)) {
