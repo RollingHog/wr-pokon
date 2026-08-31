@@ -591,15 +591,13 @@ function getUnitDescription(filename, playerColor) {
 /** @type {HTMLInputElement} */
 const switchEditsCheckbox = document.getElementById('ch_switch_edits') || {}
 
-// TODO sections
 function onCustomImageLoad(filename, src) {
   const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
 
   const emojiName = typeof EMOJI_IMAGES !== 'undefined' ? EMOJI_IMAGES[filename] : null
 
   if (!emojiName) {
-    const imageObj = new Image();
-    imageObj.src = src;
+    const imageObj = getCachedImage(src);
 
     customShapes.push({
       id: shapeId,
@@ -1816,6 +1814,32 @@ const payCheckbox = document.getElementById('ch_pay') || {}
 
 let currentId = 1
 
+const imageCache = new Map();
+
+/**
+ * @param {string} src - URL изображения для загрузки
+ * @returns {HTMLImageElement} Объект Image (новый или из кэша)
+ */
+function getCachedImage(src) {
+  if (imageCache.has(src)) {
+    const cached = imageCache.get(src);
+    
+    if (cached.complete && cached.naturalWidth > 0) {
+      return cached;
+    }
+    
+    // Если загрузка ещё идёт, возвращаем тот же объект Image
+    // (он всё ещё загрузится)
+    return cached;
+  }
+  
+  const img = new Image();
+  img.src = src;
+  imageCache.set(src, img);
+  
+  return img;
+}
+
 /**
  * @param {{selectedElement: elements[0]}} param0 
  * @returns 
@@ -1858,18 +1882,30 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
       const customShape = customShapes.find(s => s.id === shapeId);
       if (customShape) {
         src = customShape.src;
-        // Сохраняем пропорции изображения
-        const img = new Image();
-        img.src = src;
-        const ratio = img.width / img.height;
-        if (!ratio) {
-          // TODO there is some strange bug here
-          console.warn('ratio bad!!!', customShape, img);
-          debug
+
+        const img = getCachedImage(src);
+
+        // Проверяем, загружено ли изображение
+        if (img.complete && img.naturalWidth > 0) {
+          const ratio = img.naturalWidth / img.naturalHeight;
+          if (!ratio) {
+            console.warn('ratio bad!!!', customShape, img);
+            debug
+          }
+          width = size;
+          height = +((size / ratio).toFixed(2));
+        } else {
+          // Если изображение ещё не загружено
+          img.onload = () => {
+            const ratio = img.naturalWidth / img.naturalHeight;
+            width = size;
+            height = +((size / ratio).toFixed(2));
+          };
+
+          img.onerror = () => {
+            warn('Failed to load image:', src);
+          };
         }
-        width = size;
-        height = +((size / ratio).toFixed(2));
-        // FIXME ratio checker
       }
     }
   }
@@ -2471,12 +2507,32 @@ const Player = {
   },
 }
 
+// Кэш для хранения результатов
+const usernameColorCache = new Map();
+const colorPlayerCache = new Map();
+
 function colorFromUsername(username) {
-  return Array.from(document.querySelectorAll('.player-btn')).find(el => el.textContent === username)?.dataset?.color
+  if (usernameColorCache.has(username)) {
+    return usernameColorCache.get(username);
+  }
+  
+  const result = Array.from(document.querySelectorAll('.player-btn'))
+    .find(el => el.textContent === username)?.dataset?.color;
+  
+  usernameColorCache.set(username, result);
+  return result;
 }
 
 function playerByColor(colorStr) {
-  return Array.from(document.querySelectorAll('.player-btn')).find(el => el.dataset.color === colorStr)?.textContent
+  if (colorPlayerCache.has(colorStr)) {
+    return colorPlayerCache.get(colorStr);
+  }
+  
+  const result = Array.from(document.querySelectorAll('.player-btn'))
+    .find(el => el.dataset.color === colorStr)?.textContent;
+  
+  colorPlayerCache.set(colorStr, result);
+  return result;
 }
 
 function listPlayers() {
