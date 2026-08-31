@@ -466,6 +466,8 @@ KW_RULES.setCommon(
   { [KW.SPRITE_SIZE]: 40 }
 )
 
+DEFAULT.noUpkeep = DEFAULT.noUpkeep.concat(OBJ_CATEGORIES.BUILDINGS.Планеты)
+
 // KW_RULES.setCommon(
 //   ["Звёздный_зомби"],
 //   { Зомби: 1 }
