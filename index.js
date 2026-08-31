@@ -835,7 +835,7 @@ function drawCanvas(options = {infoPanel: false}) {
     draw.element(element)
   });
 
-  draw.fogOfWar();
+  draw.fogOfWar(fogCtx);
 
   if(options.infoPanel) {
     UI.drawInfoPanel(selectedElement?.color)
@@ -859,66 +859,80 @@ const draw = {
     context.globalCompositeOperation = ''
   },
 
-  fogOfWar() {
+  /**
+ * @param {CanvasRenderingContext2D} localCtx - контекст для рисования
+ * @param {Object} options - опции рисования тумана
+ * @param {number} [options.lScale=1] - масштаб (1 для полного размера, текущий scale для экрана)
+ * @param {number} [options.lOffsetX=0] - смещение по X
+ * @param {number} [options.lOffsetY=0] - смещение по Y
+ * @param {number} [options.width] - ширина области (по умолчанию размер карты)
+ * @param {number} [options.height] - высота области (по умолчанию размер карты)
+ */
+  fogOfWar(localCtx, options = {}) {
+    const {
+      lScale = scale,
+      lOffsetX = canvasOffsetX,
+      lOffsetY = canvasOffsetY,
+      width,
+      height
+    } = options
+
     const playerColor = getShapeColor()
 
-    const localCtx = fogCtx
+    
+    const fogColor = 'rgba(100, 100, 100, 1)'
 
-    const fogColor = 'rgba(100, 100, 100, 1)'; // тёмно-серый непрозрачный туман
-
-    localCtx.clearRect(0, 0, canvas.width, canvas.height);
+    localCtx.clearRect(0, 0, canvas.width, canvas.height)
     if (!fogCheckbox.checked) {
       return
     }
-    localCtx.save();
+    localCtx.save()
 
     const map = getCurrentMap()
     if (!map) return
 
-    const screenX = 0 * scale + canvasOffsetX;
-    const screenY = 0 * scale + canvasOffsetY;
-    const screenWidth = map?.image?.width * scale;
-    const screenHeight = map?.image?.height * scale;
+    // Определяем размеры области
+    const areaWidth = width || map?.image?.width
+    const areaHeight = height || map?.image?.height
 
-    // Заливаем весь canvas туманом
-    localCtx.fillStyle = fogColor;
-    localCtx.fillRect(screenX, screenY, screenWidth, screenHeight);
+    // Заливаем всю область туманом
+    localCtx.fillStyle = fogColor
+    localCtx.fillRect(lOffsetX, lOffsetY, areaWidth * lScale, areaHeight * lScale)
 
-    // localCtx.fillStyle = 'rgba(0, 0, 0, 1)';
-    // Меняем режим композиции: следующие рисунки будут "вырезать" (стирать) туман
-    // localCtx.globalCompositeOperation = 'destination-out';
-
-    // Собираем все юниты своей фракции с visionRadius
+    // Собираем все юниты своей фракции
     const visibleUnits = elements.filter(el =>
       el.color === playerColor
-    );
+    )
 
-    //   ctx.translate(shape.x * scale + canvasOffsetX, shape.y * scale + canvasOffsetY);
-    // ctx.scale(scale, scale);
-
-    // Для каждого юнита рисуем круг видимости (в локальных координатах)
+    // Для каждого юнита рисуем круг видимости
     visibleUnits.forEach(el => {
       const isCapital = el.name === KW.CAPITAL && SETTINGS.CAPITAL_SPECIAL_VISION
       let radius = isCapital
-        ? CURRENT_TURN * visionRadius * 0.4 * scale
-        : visionRadius * scale;
+        ? CURRENT_TURN * visionRadius * 0.4
+        : visionRadius
 
       const vis = Unit.getVision(el.name)
-
-      if(vis === KW.NO_VISION) return
-      if(vis) {
-        radius = vis * scale
+      if (vis === KW.NO_VISION) return
+      if (vis) {
+        radius = vis
       }
 
-      const x = el.x * scale + canvasOffsetX;
-      const y = el.y * scale + canvasOffsetY;
+      // Применяем масштаб к радиусу и позициям
+      const scaledRadius = radius * lScale
+      const x = el.x * lScale + lOffsetX
+      const y = el.y * lScale + lOffsetY
+      const delta = (el.width / 2) * lScale
 
-      const delta = el.width / 2 * scale;
-      localCtx.clearRect(x - radius + delta, y - radius + delta, radius * 2, radius * 2);
-    });
+      // Вырезаем круг видимости
+      localCtx.clearRect(
+        x - scaledRadius + delta,
+        y - scaledRadius + delta,
+        scaledRadius * 2,
+        scaledRadius * 2
+      )
+    })
 
-    // Восстанавливаем стандартный режим композиции
-    localCtx.restore();
+    localCtx.restore()
   },
 
   element(element) {
@@ -1851,6 +1865,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
         if (!ratio) {
           // TODO there is some strange bug here
           console.warn('ratio bad!!!', customShape, img);
+          debug
         }
         width = size;
         height = +((size / ratio).toFixed(2));
@@ -1899,7 +1914,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
 
   elements.push(shape);
   draw.element(shape)
-  draw.fogOfWar()
+  draw.fogOfWar(fogCtx)
   UI.drawInfoPanel()
 }
 
@@ -3612,8 +3627,20 @@ function saveMap() {
     tempCtx.restore();
   });
 
-  // doesnt work
-  // tempCtx.drawImage(fogCanvas, 0, 0);
+  const fullFogCanvas = document.createElement('canvas');
+  fullFogCanvas.width = tempCanvas.width;
+  fullFogCanvas.height = tempCanvas.height;
+  const fullFogCtx = fullFogCanvas.getContext('2d');
+
+  fullFogCtx.translate(padding - minX, padding - minY);
+  draw.fogOfWar(fullFogCtx, {
+    lScale: 1,           // без масштабирования
+    lOffsetX: 0,         // без смещения (уже есть translate)
+    lOffsetY: 0,
+    width: tempCanvas.width,
+    height: tempCanvas.height
+  });
+  tempCtx.drawImage(fullFogCanvas, 0, 0);
 
   // Создаем ссылку для скачивания
   const link = document.createElement('a');
