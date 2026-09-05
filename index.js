@@ -275,7 +275,7 @@ function setShapeColor(color) {
     selectedElement.color = color
   }
 
-  const techEffects = TechUtils.getTechEffects(playerByColor(color), { notUnitEffects: true });
+  const techEffects = TechUtils.getTechEffects(Players.byColor(color), { notUnitEffects: true });
   const noTech = techEffects.length === 0
   const allowedNames = new Set(techEffects
     .map(effect => effect[0])
@@ -300,7 +300,7 @@ function setShapeColor(color) {
 const UI = {
   drawInfoPanel(color = getShapeColor()) {
     if (!color) return
-    const player = playerByColor(color)
+    const player = Players.byColor(color)
     const effs = userEffectsObj.sumPlayerEffects(player)
     
     if (typeof onPlayerEffectChangeCb === 'function') {
@@ -409,7 +409,7 @@ function onEndTurn() {
 
   const notEnded = elements.filter(el => isUnit(el) && !el.endedTurn && !el.disabled)
   if(notEnded.length > 0) {
-    const playerList =  [...new Set(notEnded.map(el => playerByColor(el.color)))].join(', ')
+    const playerList =  [...new Set(notEnded.map(el => Players.byColor(el.color)))].join(', ')
     const res = confirm(`Не все юниты игроков ${playerList} походили. Закончить ход?`)
     if(!res) return
   }
@@ -448,8 +448,8 @@ function onEndTurn() {
   });
 
   // count resources
-  for(let player of listPlayers()) {
-    if(NPCPlayers.includes(player)) continue
+  for(let player of Players.list()) {
+    if(Players.NPC.includes(player)) continue
     const sum = userEffectsObj.sumPlayerEffects(player)
     for(let [effName, v] of Object.entries(sum)) {
       if(EFFECT_LISTS.resources.includes(effName)) {
@@ -511,7 +511,7 @@ const Unit = {
 
   getMaxHP(filename) {
     if (isNoHealth({ name: filename })) return 1
-    // DICT_USER[Player.getCurrent()]?.[filename] ||
+    // DICT_USER[Players.current()]?.[filename] ||
     return DICT_USER[filename]?.[KW.MAX_HP] ||
       DICT_COMMON[filename]?.[KW.MAX_HP] ||
       SETTINGS.MAX_UNIT_HP
@@ -536,7 +536,7 @@ const Unit = {
   },
 
   getVision(filename) {
-    const res = DICT_USER[Player.getCurrent()]?.[filename]?.[KW.VISION] ||
+    const res = DICT_USER[Players.current()]?.[filename]?.[KW.VISION] ||
       DICT_COMMON[filename]?.[KW.VISION] || null
     if(!res && isNoHealth({ name: filename })) return KW.NO_VISION
     return res
@@ -771,7 +771,7 @@ function processRuleFile() {
     USER_RESOURCES = {}
   }
 
-  for(let playerName of listPlayers()) {
+  for(let playerName of Players.list()) {
     if(!USER_TECH_LVLS[playerName]) {
       USER_TECH_LVLS[playerName] = Object.fromEntries(
         Object.keys(TECH_EFFECTS)
@@ -1864,7 +1864,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     || parseInt(document.getElementById('shape-size').value);
 
   if (payCheckbox.checked) {
-    const costCheck = subtractUnitCost(name, playerByColor(color))
+    const costCheck = subtractUnitCost(name, Players.byColor(color))
     if(!costCheck) return
   }
 
@@ -2206,7 +2206,7 @@ const userEffectsObj = {
    * @returns 
    */
   getRawEffectsList(obj) {
-    const username = playerByColor(obj.color)
+    const username = Players.byColor(obj.color)
     const techEff = TechUtils.getUnitTechEffects(username, obj.name)
 
     const typeKey = isBuilding(obj) ? '_building_' : '_unit_'
@@ -2376,7 +2376,7 @@ const userEffectsObj = {
             if (section === 'resources') {
               const effList = eff.map((arr) => {
                 const currentValue = typeof uRes[arr[0]] !== 'undefined' ? uRes[arr[0]] : '?';
-                return `<span onclick="Player.offsetCurrentFromHTML('${arr[0]}')">${arr[0]}: ${currentValue} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )</span>`;
+                return `<span onclick="Players.offsetCurrentFromHTML('${arr[0]}')">${arr[0]}: ${currentValue} ( ${arr[1] > 0 ? '+' : ''}${arr[1]} )</span>`;
               });
               return `== ${section} ==<br> ${effList.join('<br>')}<br><br>`
             } else if (section === '_tech_') {
@@ -2407,7 +2407,7 @@ const userEffectsObj = {
 
   /** both UI and non-UI */
   sumPlayerEffects(username) {
-    const userColor = colorFromUsername(username)
+    const userColor = Players.colorByName(username)
 
     const techEffects = TechUtils.getTechEffects(username, {notUnitEffects: true})
 
@@ -2476,9 +2476,59 @@ const userEffectsObj = {
   },   
 }
 
-const Player = {
+// Кэши никогда не инвалидируются — считается, что кнопки игроков
+// заданы в HTML статично и не меняются после загрузки
+const Players = {
+  NPC: ['Варвары', 'Нейтралы'],
+
+  _colorByName: new Map(),
+  _nameByColor: new Map(),
+
+  list() {
+    return Array.from(document.querySelectorAll('.player-btn')).map(el => el.textContent)
+  },
+
+  byColor(colorStr) {
+    if (this._nameByColor.has(colorStr)) {
+      return this._nameByColor.get(colorStr);
+    }
+
+    const result = Array.from(document.querySelectorAll('.player-btn'))
+      .find(el => el.dataset.color === colorStr)?.textContent;
+
+    this._nameByColor.set(colorStr, result);
+    return result;
+  },
+
+  colorByName(username) {
+    if (this._colorByName.has(username)) {
+      return this._colorByName.get(username);
+    }
+
+    const result = Array.from(document.querySelectorAll('.player-btn'))
+      .find(el => el.textContent === username)?.dataset?.color;
+
+    this._colorByName.set(username, result);
+    return result;
+  },
+
+  current() {
+    return this.byColor(getShapeColor());
+  },
+
+  /** после вызова нужен drawInfoPanel */
+  offsetResources(playerName, resourceKey, offsetValue) {
+    USER_RESOURCES[playerName][resourceKey] = (USER_RESOURCES[playerName][resourceKey] || 0)
+      + offsetValue;
+  },
+
+  offsetResourcesCurrent(resourceKey, offsetValue) {
+    this.offsetResources(this.current(), resourceKey, offsetValue)
+  },
+
+  /** вызывается из onclick в панели эффектов */
   offsetCurrentFromHTML(resourceKey) {
-    const playerName = Player.getCurrent()
+    const playerName = this.current()
 
     const inputValue = prompt(`Введите величину изменения ресурса "${resourceKey}" для игрока "${playerName}":`);
     if (inputValue === null) {
@@ -2490,53 +2540,9 @@ const Player = {
       return;
     }
 
-    Player.offsetResourcesCurrent(resourceKey, offsetValue)
+    this.offsetResourcesCurrent(resourceKey, offsetValue)
     UI.drawInfoPanel()
   },
-  offsetResourcesCurrent(resourceKey, offsetValue) {
-    Player.offsetResources(Player.getCurrent(), resourceKey, offsetValue)
-  },
-  /** remember to drawInfoPanel */
-  offsetResources(playerName, resourceKey, offsetValue) {
-    USER_RESOURCES[playerName][resourceKey] = (USER_RESOURCES[playerName][resourceKey] || 0)
-      + offsetValue;
-  },
-  getCurrent() {
-    const currentColor = getShapeColor();
-    return playerByColor(currentColor);
-  },
-}
-
-// Кэш для хранения результатов
-const usernameColorCache = new Map();
-const colorPlayerCache = new Map();
-
-function colorFromUsername(username) {
-  if (usernameColorCache.has(username)) {
-    return usernameColorCache.get(username);
-  }
-  
-  const result = Array.from(document.querySelectorAll('.player-btn'))
-    .find(el => el.textContent === username)?.dataset?.color;
-  
-  usernameColorCache.set(username, result);
-  return result;
-}
-
-function playerByColor(colorStr) {
-  if (colorPlayerCache.has(colorStr)) {
-    return colorPlayerCache.get(colorStr);
-  }
-  
-  const result = Array.from(document.querySelectorAll('.player-btn'))
-    .find(el => el.dataset.color === colorStr)?.textContent;
-  
-  colorPlayerCache.set(colorStr, result);
-  return result;
-}
-
-function listPlayers() {
-  return Array.from(document.querySelectorAll('.player-btn')).map(el => el.textContent)
 }
 
 // Source - https://stackoverflow.com/a/51468627
@@ -2677,7 +2683,7 @@ function killObj(obj, force) {
   if (lootList) {
     const loot = userEffectsObj.sumEffArr(lootList)
     for (let [k, v] of Object.entries(loot)) {
-      Player.offsetResourcesCurrent(k, v)
+      Players.offsetResourcesCurrent(k, v)
     }
   }
   
@@ -2720,7 +2726,7 @@ function getBattleParams(obj) {
 function attackObj(atkObj, defObj) {
   const atk = getBattleParams(atkObj)
   const def = getBattleParams(defObj)
-  const res = `${playerByColor(atkObj.color)} ${atkObj.name} атакует ${playerByColor(defObj.color)} ${defObj.name}:
+  const res = `${Players.byColor(atkObj.color)} ${atkObj.name} атакует ${Players.byColor(defObj.color)} ${defObj.name}:
 Атака ${atkObj.name} ##1d${atk.atk}## + ##1d3## 
 Защита ${defObj.name} ##1d${def.def}##` +
     (def.atk > 0 ?
@@ -2749,8 +2755,6 @@ function updateScale() {
   scaleValue.textContent = `${scaleSlider.value}%`;
   drawCanvas();
 }
-
-const NPCPlayers = ['Варвары', 'Нейтралы']
 
 const TechUtils = {
   parseTechTree(text) {
@@ -2885,7 +2889,7 @@ const TechUtils = {
       return this.techEffectCache[cacheKey].filter(filterByOptions);
     }
 
-    // if (NPCPlayers.includes(username)) return []
+    // if (Players.NPC.includes(username)) return []
     const techLvlsObj = USER_TECH_LVLS[username];
     if (!techLvlsObj) {
       console.warn('processSpecialTechEffects() wtf:', username, techLvlsObj);
@@ -2998,7 +3002,7 @@ const TechUtils = {
    * @param {Array|[string, number][]} price - Цена технологии (массив пар [ресурс, кол-во])
    */
   subtractTechCost(techName, level, price) {
-    const player = Player.getCurrent();
+    const player = Players.current();
     if (!player) {
       warn('Игрок не выбран');
       return false;
@@ -3016,7 +3020,7 @@ const TechUtils = {
   },
 
   selectTechToStudy() {
-    const player = Player.getCurrent();
+    const player = Players.current();
     if (!player) {
       warn('Не выбран игрок');
       return;
