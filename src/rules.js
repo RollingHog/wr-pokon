@@ -54,7 +54,9 @@ const DEFAULT = {
   noGrave: [
     'Зверь',
     'Шестеренка',
-  ]
+  ],
+  noUpkeep: [],
+
 }
 
 const CATEGORY_PRICES = {
@@ -78,8 +80,8 @@ const OBJ_CATEGORIES = {
     ],
     _default_: [
       'Жители',
-      'Солдат',
-      'Маг',
+      'Пехота',
+      'Маги',
     ],
   },
   BUILDINGS: {
@@ -194,21 +196,4 @@ const DICT_COMMON = {
 
 };
 
-const DICT_USER = {
-  Егг: {
-    Столица:
-      [
-        ["Кристаллы", 2],
-        ["Еда", 10],
-      ],
-  },
-
-  Кшиштоф: {
-    Столица:
-      [
-        ["Кристаллы", 2],
-        ["Еда", 10],
-      ],
-  },
-
-};
+TECH_EFFECTS = {}
