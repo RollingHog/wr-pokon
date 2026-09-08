@@ -2646,6 +2646,8 @@ function offsetObjLvl(obj, amount) {
  * @param {number} amount 
  */
 function offsetUnitHp(obj, amount) {
+  // LEGACY problem only on old saves?
+  if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = Unit.getMaxHP(selectedElement.name)
   const curr = obj.curr_hp
   const maxHP = Unit.getMaxHP(obj.name)
   let res = curr + amount

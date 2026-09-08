@@ -137,7 +137,9 @@ const EFFECT_LISTS = {
     "Рабы",
     // "Лошади",
   ],
-  local: ["ХП"],
+  local: [
+    ...KW_LOCALS
+  ],
 }
 
 const DICT_COMMON = {
