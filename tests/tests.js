@@ -85,7 +85,7 @@
     Viewport.scale = 1
     Viewport.offsetX = 0
     Viewport.offsetY = 0
-    mousePos = { x: 300, y: 300 }
+    Pointer.mousePos = { x: 300, y: 300 }
     payCheckbox.checked = false
   }
 
@@ -95,7 +95,7 @@
     const preview = document.querySelector(`.shape-preview[data-filename="${name}"]`)
     assert(preview, `нет превью для "${name}"`)
     preview.click()
-    mousePos = { x: clientX, y: clientY }
+    Pointer.mousePos = { x: clientX, y: clientY }
     const before = elements.length
     placeShape()
     assertEq(elements.length, before + 1, `объект "${name}" не размещён`)

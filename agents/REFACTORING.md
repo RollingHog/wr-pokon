@@ -49,9 +49,15 @@
      (передаются в `addEventListener`).
    - Обновлены `tests/tests.js` (resetGame, canvasPoint, тест зума).
    - Tests.html: 13/13 зелёные.
-3. **Pointer** (drag) — `isDragging`, `isDraggingElement`, `dragStart*`,
-   `touchIdentifier`, `mousePos`, `handleMouse*`, `handleTouch*`,
-   `startDrag`, `updateDrag`, `endDrag`.
+3. **Pointer** — ✅ сделано (2026-09-08): `isDragging`, `isDraggingElement`,
+   `dragStartTime`, `dragStartX/Y`, `mousePos`, `touchIdentifier` и функции
+   `startDrag`/`updateDrag`/`endDrag` + `handleMouse*`/`handleTouch*` →
+   объект `Pointer` (методы без `this`, как в Viewport). Нюансы:
+   - объект `selection` (drop/damage/dropLevel/...) лежал в файле между
+     обработчиками и был бы задет переносом — восстановлен из git как
+     отдельная глобальная константа сразу после `Pointer`.
+   - `tests/tests.js`: `mousePos` → `Pointer.mousePos`.
+   - Tests.html: 13/13 зелёные.
 4. **Board** — `elements`, `selectedElement`, `currentId`,
    `assignIdsToElements`, `isBuilding`/`isUnit`/`isNoHealth`, `killObj`,
    `offsetUnitHp`, `offsetObjLvl`.

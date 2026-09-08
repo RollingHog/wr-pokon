@@ -50,14 +50,6 @@ const turnDisplay = document.getElementById('turnDisplay');
 const info_panel = document.getElementById('info_panel');
 const info_panel_body = document.getElementById('info_panel_body');
 
-let isDragging = false;
-let isDraggingElement = false;
-let dragStartTime = Date.now();
-let dragStartX, dragStartY;
-let mousePos = {
-  x: 0,
-  y: 0
-}
 let DICT_COMMON_A = {}
 
 // SETTINGS fallback section
@@ -101,7 +93,6 @@ let maps = [];
 let currentMapIndex = -1;
 let customShapes = [];
 let activeShapeType = 'rect';
-let touchIdentifier = null;
 let isGlobalLocked = false;
 const lineModeObj = {
   active: false,
@@ -335,17 +326,17 @@ const UI = {
 
 function addListeners() {
   // События мыши/касания
-  fogCanvas.addEventListener('mousedown', handleMouseDown);
-  fogCanvas.addEventListener('mousemove', handleMouseMove);
-  fogCanvas.addEventListener('mouseup', handleMouseUp);
+  fogCanvas.addEventListener('mousedown', Pointer.handleMouseDown);
+  fogCanvas.addEventListener('mousemove', Pointer.handleMouseMove);
+  fogCanvas.addEventListener('mouseup', Pointer.handleMouseUp);
   canvas.addEventListener('contextmenu', lineActionsObj.finishLineDrawing);
 
   fogCanvas.addEventListener('wheel', Viewport.handleWheel, { passive: false });
 
   // События касания для мобильных устройств
-  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-  canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-  canvas.addEventListener('touchend', handleTouchEnd);
+  canvas.addEventListener('touchstart', Pointer.handleTouchStart, { passive: false });
+  canvas.addEventListener('touchmove', Pointer.handleTouchMove, { passive: false });
+  canvas.addEventListener('touchend', Pointer.handleTouchEnd);
 
   // Кнопки тулбара
   document.getElementById('load-map-btn').addEventListener('click', () => {
@@ -1529,124 +1520,221 @@ const Pins = {
   },
 }
 
-// Обработчики событий мыши/касания
-function handleMouseDown(e) {
-  e.preventDefault();
+// Состояние мыши/тача и перетаскивание.
+// Внутри методов обращаемся к Pointer.* явно (а не через this),
+// потому что обработчики передаются в addEventListener
+const Pointer = {
+  isDragging: false,
+  isDraggingElement: false,
+  // время начала перетаскивания — чтобы отличить «клик» средней кнопкой от драга
+  dragStartTime: Date.now(),
+  dragStartX: 0,
+  dragStartY: 0,
+  // последняя известная позиция курсора (clientX/clientY)
+  mousePos: {
+    x: 0,
+    y: 0
+  },
+  touchIdentifier: null,
 
-  if (!lineModeObj.active) {
-    startDrag(e.clientX, e.clientY, e.button);
-  } else {
-    if (e.button === 0) {
-      lineModeObj.active = true;
+  startDrag(clientX, clientY, mouseButton = 0) {
+    const isLeftClick = mouseButton === 0
 
-      // Получаем координаты точки
-      const rect = canvas.getBoundingClientRect();
-      const x = +(e.clientX - rect.left).toFixed(2);
-      const y = +(e.clientY - rect.top).toFixed(2);
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = clientX - rect.left;
+    const mouseY = clientY - rect.top;
 
-      // Добавляем точку
-      lineModeObj.points.push({ x, y });
+    if (isLeftClick) {
+      // Проверяем, не кликнули ли мы на элемент
+      for (let i = elements.length - 1; i >= 0; i--) {
+        const element = elements[i];
+        const x = element.x * Viewport.scale + Viewport.offsetX;
+        const y = element.y * Viewport.scale + Viewport.offsetY;
+        const width = element.width * Viewport.scale;
+        const height = element.height * Viewport.scale;
 
-      // Перерисовываем холст
-      lineActionsObj.drawLineCanvas();
+        if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
+          if (isAttack) {
+            isAttack = false
+            attackObj(selectedElement, element)
+            return
+          }
 
-      e.preventDefault();
+          if (isPin) {
+            isPin = false
+            if (element !== selectedElement) { // Не позволяем объекту владеть самим собой
+              Pins.removePreviousOwnership(selectedElement);
+              Pins.addChildToOwner(element.id, selectedElement);
+            }
+            drawCanvas()
+            return
+          }
+
+          selectedElement = element;
+          UI.drawEditPanel(mouseX, mouseY, element);
+
+          // if(Ownership.isOwnedObj(element)) return
+          Pointer.isDraggingElement = true;
+
+          // Сохраняем начальные координаты дочерних элементов
+          if (Pins.isOwner(selectedElement)) {
+            const children = Pins.listOwnedBy(selectedElement.id);
+            for (const child of children) {
+              child.originalX = child.x;
+              child.originalY = child.y;
+            }
+          }
+
+
+          // Начинаем перетаскивание
+          Pointer.isDragging = true;
+          Pointer.dragStartTime = Date.now()
+          Pointer.dragStartX = mouseX;
+          Pointer.dragStartY = mouseY;
+          Viewport.tempOffsetX = element.x;
+          Viewport.tempOffsetY = element.y;
+
+          drawCanvas();
+          return;
+        }
+      }
+      isAttack = false
     }
-  }
-}
 
-function handleTouchStart(e) {
-  if (e.touches.length === 1) {
+
+    // Если не кликнули на элемент, начинаем перемещение холста
+    Pointer.isDragging = true;
+    Pointer.dragStartTime = Date.now()
+    Pointer.isDraggingElement = false;
+    Pointer.dragStartX = clientX;
+    Pointer.dragStartY = clientY;
+    Viewport.tempOffsetX = Viewport.offsetX;
+    Viewport.tempOffsetY = Viewport.offsetY;
+
+    // Скрываем панель редактирования, если ничего не выбрано
+    if (selectedElement) {
+      selection.drop()
+    }
+  },
+
+  updateDrag(clientX, clientY) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = clientX - rect.left;
+    const mouseY = clientY - rect.top;
+
+    if (Pointer.isDraggingElement && selectedElement) {
+      // Вычисляем смещение
+      const deltaX = (mouseX - Pointer.dragStartX) / Viewport.scale;
+      const deltaY = (mouseY - Pointer.dragStartY) / Viewport.scale;
+
+      // Перемещаем выбранный элемент
+      selectedElement.x = +(Viewport.tempOffsetX + deltaX).toFixed(2);
+      selectedElement.y = +(Viewport.tempOffsetY + deltaY).toFixed(2);
+
+      // Перемещаем все дочерние элементы синхронно
+      if (Pins.isOwner(selectedElement)) {
+        const children = Pins.listOwnedBy(selectedElement.id);
+        for (const child of children) {
+          child.x = +(child.originalX + deltaX).toFixed(2);
+          child.y = +(child.originalY + deltaY).toFixed(2);
+        }
+      }
+
+      // Обновляем позицию панели редактирования
+      editPanel.style.left = `${mouseX + 10}px`;
+      editPanel.style.top = `${mouseY + 10}px`;
+    } else {
+      // Перемещаем холст
+      Viewport.offsetX = Viewport.tempOffsetX + (clientX - Pointer.dragStartX);
+      Viewport.offsetY = Viewport.tempOffsetY + (clientY - Pointer.dragStartY);
+    }
+
+    drawCanvas();
+  },
+
+  endDrag(mouseButton = 0) {
+    const isMiddleClick = mouseButton === 1
+    const insertOnMiddleClick = document.getElementById('el_insertOnMiddleClick')?.checked
+    if (isMiddleClick && (Date.now() - Pointer.dragStartTime < 170) && insertOnMiddleClick) {
+      placeShape()
+    }
+
+    Pointer.isDragging = false;
+    Pointer.dragStartTime = 0
+    Pointer.isDraggingElement = false;
+  },
+
+  handleMouseDown(e) {
     e.preventDefault();
-    const touch = e.touches[0];
-    touchIdentifier = touch.identifier;
-    startDrag(touch.clientX, touch.clientY);
-  } else if (e.touches.length === 2) {
-    // Обработка масштабирования двумя пальцами
-    e.preventDefault();
-    touchIdentifier = null;
-  }
-}
 
-function startDrag(clientX, clientY, mouseButton = 0) {
-  const isLeftClick = mouseButton === 0
+    if (!lineModeObj.active) {
+      Pointer.startDrag(e.clientX, e.clientY, e.button);
+    } else {
+      if (e.button === 0) {
+        lineModeObj.active = true;
 
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = clientX - rect.left;
-  const mouseY = clientY - rect.top;
+        // Получаем координаты точки
+        const rect = canvas.getBoundingClientRect();
+        const x = +(e.clientX - rect.left).toFixed(2);
+        const y = +(e.clientY - rect.top).toFixed(2);
 
-  if (isLeftClick) {
-    // Проверяем, не кликнули ли мы на элемент
-    for (let i = elements.length - 1; i >= 0; i--) {
-      const element = elements[i];
-      const x = element.x * Viewport.scale + Viewport.offsetX;
-      const y = element.y * Viewport.scale + Viewport.offsetY;
-      const width = element.width * Viewport.scale;
-      const height = element.height * Viewport.scale;
+        // Добавляем точку
+        lineModeObj.points.push({ x, y });
 
-      if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
-        if (isAttack) {
-          isAttack = false
-          attackObj(selectedElement, element)
-          return
-        }
+        // Перерисовываем холст
+        lineActionsObj.drawLineCanvas();
 
-        if (isPin) {
-          isPin = false
-          if (element !== selectedElement) { // Не позволяем объекту владеть самим собой
-            Pins.removePreviousOwnership(selectedElement);
-            Pins.addChildToOwner(element.id, selectedElement);
-          }
-          drawCanvas()
-          return
-        }
-
-        selectedElement = element;
-        UI.drawEditPanel(mouseX, mouseY, element);
-
-        // if(Ownership.isOwnedObj(element)) return
-        isDraggingElement = true;
-
-        // Сохраняем начальные координаты дочерних элементов
-        if (Pins.isOwner(selectedElement)) {
-          const children = Pins.listOwnedBy(selectedElement.id);
-          for (const child of children) {
-            child.originalX = child.x;
-            child.originalY = child.y;
-          }
-        }
-
-
-        // Начинаем перетаскивание
-        isDragging = true;
-        dragStartTime = Date.now()
-        dragStartX = mouseX;
-        dragStartY = mouseY;
-        Viewport.tempOffsetX = element.x;
-        Viewport.tempOffsetY = element.y;
-
-        drawCanvas();
-        return;
+        e.preventDefault();
       }
     }
-    isAttack = false
-  }
+  },
 
+  handleTouchStart(e) {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      Pointer.touchIdentifier = touch.identifier;
+      Pointer.startDrag(touch.clientX, touch.clientY);
+    } else if (e.touches.length === 2) {
+      // Обработка масштабирования двумя пальцами
+      e.preventDefault();
+      Pointer.touchIdentifier = null;
+    }
+  },
 
-  // Если не кликнули на элемент, начинаем перемещение холста
-  isDragging = true;
-  dragStartTime = Date.now()
-  isDraggingElement = false;
-  dragStartX = clientX;
-  dragStartY = clientY;
-  Viewport.tempOffsetX = Viewport.offsetX;
-  Viewport.tempOffsetY = Viewport.offsetY;
+  handleMouseMove(e) {
+    Pointer.mousePos = {
+      x: e.clientX,
+      y: e.clientY
+    }
+    if (!Pointer.isDragging) return;
+    e.preventDefault();
+    Pointer.updateDrag(e.clientX, e.clientY);
+  },
 
-  // Скрываем панель редактирования, если ничего не выбрано
-  if (selectedElement) {
-    selection.drop()
-  }
-}
+  handleTouchMove(e) {
+    if (!Pointer.isDragging || !Pointer.touchIdentifier) return;
+    e.preventDefault();
+
+    // Находим нужное касание
+    for (let i = 0; i < e.touches.length; i++) {
+      if (e.touches[i].identifier === Pointer.touchIdentifier) {
+        Pointer.updateDrag(e.touches[i].clientX, e.touches[i].clientY);
+        break;
+      }
+    }
+  },
+
+  handleMouseUp(evt) {
+    Pointer.endDrag(evt.button);
+  },
+
+  handleTouchEnd() {
+    Pointer.endDrag();
+    Pointer.touchIdentifier = null;
+  },
+};
+
 
 const selection = {
   drop() {
@@ -1716,84 +1804,6 @@ const selection = {
   }
 }
 
-function handleMouseMove(e) {
-  mousePos = {
-    x: e.clientX,
-    y: e.clientY
-  }
-  if (!isDragging) return;
-  e.preventDefault();
-  updateDrag(e.clientX, e.clientY);
-}
-
-function handleTouchMove(e) {
-  if (!isDragging || !touchIdentifier) return;
-  e.preventDefault();
-
-  // Находим нужное касание
-  for (let i = 0; i < e.touches.length; i++) {
-    if (e.touches[i].identifier === touchIdentifier) {
-      updateDrag(e.touches[i].clientX, e.touches[i].clientY);
-      break;
-    }
-  }
-}
-
-function updateDrag(clientX, clientY) {
-  const rect = canvas.getBoundingClientRect();
-  const mouseX = clientX - rect.left;
-  const mouseY = clientY - rect.top;
-
-  if (isDraggingElement && selectedElement) {
-    // Вычисляем смещение
-    const deltaX = (mouseX - dragStartX) / Viewport.scale;
-    const deltaY = (mouseY - dragStartY) / Viewport.scale;
-
-    // Перемещаем выбранный элемент
-    selectedElement.x = +(Viewport.tempOffsetX + deltaX).toFixed(2);
-    selectedElement.y = +(Viewport.tempOffsetY + deltaY).toFixed(2);
-
-    // Перемещаем все дочерние элементы синхронно
-    if (Pins.isOwner(selectedElement)) {
-      const children = Pins.listOwnedBy(selectedElement.id);
-      for (const child of children) {
-        child.x = +(child.originalX + deltaX).toFixed(2);
-        child.y = +(child.originalY + deltaY).toFixed(2);
-      }
-    }
-
-    // Обновляем позицию панели редактирования
-    editPanel.style.left = `${mouseX + 10}px`;
-    editPanel.style.top = `${mouseY + 10}px`;
-  } else {
-    // Перемещаем холст
-    Viewport.offsetX = Viewport.tempOffsetX + (clientX - dragStartX);
-    Viewport.offsetY = Viewport.tempOffsetY + (clientY - dragStartY);
-  }
-
-  drawCanvas();
-}
-
-function handleMouseUp(evt) {
-  endDrag(evt.button);
-}
-
-function handleTouchEnd() {
-  endDrag();
-  touchIdentifier = null;
-}
-
-function endDrag(mouseButton = 0) {
-  const isMiddleClick = mouseButton === 1
-  const insertOnMiddleClick = document.getElementById('el_insertOnMiddleClick')?.checked
-  if (isMiddleClick && (Date.now() - dragStartTime < 170) && insertOnMiddleClick) {
-    placeShape()
-  }
-
-  isDragging = false;
-  dragStartTime = 0
-  isDraggingElement = false;
-}
 
 // Функции тулбара
 // eslint-disable-next-line no-unused-vars
@@ -1934,13 +1944,13 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
     :
     driftObj
       ? (+driftObj.x + (width * (Math.random() * 2 - 1)))
-      : (mousePos.x - canvas.getBoundingClientRect().left - Viewport.offsetX - width * Viewport.scale / 2) / Viewport.scale
+      : (Pointer.mousePos.x - canvas.getBoundingClientRect().left - Viewport.offsetX - width * Viewport.scale / 2) / Viewport.scale
 
   const y = isMenu
     ? (-Viewport.offsetY + canvas.height / 5 - height * Viewport.scale / 2) / Viewport.scale
     : driftObj
       ? (+driftObj.y + (height * (Math.random() * 2 - 1)))
-      : (mousePos.y - canvas.getBoundingClientRect().top - Viewport.offsetY - height * Viewport.scale / 2) / Viewport.scale
+      : (Pointer.mousePos.y - canvas.getBoundingClientRect().top - Viewport.offsetY - height * Viewport.scale / 2) / Viewport.scale
 
   /** @type {elements[0]} */
   const shape = {
