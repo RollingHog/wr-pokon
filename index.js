@@ -50,13 +50,10 @@ const turnDisplay = document.getElementById('turnDisplay');
 const info_panel = document.getElementById('info_panel');
 const info_panel_body = document.getElementById('info_panel_body');
 
-let scale = 1;
 let isDragging = false;
 let isDraggingElement = false;
 let dragStartTime = Date.now();
 let dragStartX, dragStartY;
-let canvasOffsetX = 0, canvasOffsetY = 0;
-let tempOffsetX = 0, tempOffsetY = 0;
 let mousePos = {
   x: 0,
   y: 0
@@ -158,7 +155,7 @@ function init() {
     }
   })
 
-  resizeCanvas();
+  Viewport.resizeCanvas();
   drawCanvas({infoPanel: true});
   drawTurnDisplay();
 
@@ -244,7 +241,7 @@ function init() {
     });
   }
 
-  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('resize', Viewport.resizeCanvas);
 
   // Активируем первую фигуру по умолчанию
   document.querySelector('.shape-preview:not(.category-divider)')?.click();
@@ -343,7 +340,7 @@ function addListeners() {
   fogCanvas.addEventListener('mouseup', handleMouseUp);
   canvas.addEventListener('contextmenu', lineActionsObj.finishLineDrawing);
 
-  fogCanvas.addEventListener('wheel', handleWheel, { passive: false });
+  fogCanvas.addEventListener('wheel', Viewport.handleWheel, { passive: false });
 
   // События касания для мобильных устройств
   canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -384,7 +381,7 @@ function addListeners() {
   document.getElementById('obj-lvl').addEventListener('input', updateElementLvl);
 
   // Масштабирование
-  scaleSlider.addEventListener('input', updateScale);
+  scaleSlider.addEventListener('input', Viewport.updateScale);
 
   const lockBtn = document.getElementById('lockBtn');
   lockBtn.addEventListener('click', function () {
@@ -402,6 +399,62 @@ function addListeners() {
   // Обработчик клика по индикатору хода
   turnDisplay.addEventListener('click', onEndTurn);
 }
+
+// Масштаб и смещение видимой области.
+// Внутри методов обращаемся к Viewport.* явно (а не через this),
+// потому что handleWheel/updateScale передаются в addEventListener
+const Viewport = {
+  /** текущий масштаб, 1 = 100% */
+  scale: 1,
+  offsetX: 0,
+  offsetY: 0,
+  // смещение на момент начала перетаскивания:
+  // для карты — смещение холста, для элемента — его координаты
+  tempOffsetX: 0,
+  tempOffsetY: 0,
+
+  MIN_SCALE: 0.25,
+  MAX_SCALE: 3,
+
+  resizeCanvas() {
+    canvas.width = canvasContainer.clientWidth;
+    canvas.height = canvasContainer.clientHeight;
+
+    fogCanvas.width = canvasContainer.clientWidth;
+    fogCanvas.height = canvasContainer.clientHeight;
+
+    drawCanvas();
+  },
+
+  handleWheel(e) {
+    e.preventDefault();
+
+    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+    const newScale = Math.min(Math.max(Viewport.scale * delta, Viewport.MIN_SCALE), Viewport.MAX_SCALE);
+
+    if (newScale !== Viewport.scale) {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      // Корректируем смещение для масштабирования относительно курсора
+      Viewport.offsetX = mouseX - (mouseX - Viewport.offsetX) * (newScale / Viewport.scale);
+      Viewport.offsetY = mouseY - (mouseY - Viewport.offsetY) * (newScale / Viewport.scale);
+
+      Viewport.scale = newScale;
+      scaleValue.textContent = `${Math.round(Viewport.scale * 100)}%`;
+      scaleSlider.value = Viewport.scale * 100;
+
+      drawCanvas();
+    }
+  },
+
+  updateScale() {
+    Viewport.scale = parseInt(scaleSlider.value) / 100;
+    scaleValue.textContent = `${scaleSlider.value}%`;
+    drawCanvas();
+  },
+};
 
 let turnEndChecked = false
 
@@ -659,12 +712,12 @@ function loadDefaultData() {
 
   if (typeof OTHER_SAVE_DATA !== 'undefined') {
     const oth = OTHER_SAVE_DATA
-    scale = oth.scale
+    Viewport.scale = oth.scale
     if (oth.shapeColor) {
       setTimeout(_ => setShapeColor(oth.shapeColor), 0)
     }
-    // canvasOffsetX = oth.canvasOffsetX 
-    // canvasOffsetY = oth.canvasOffsetY 
+    // Viewport.offsetX = oth.canvasOffsetX
+    // Viewport.offsetY
   }
 
   if (typeof OWNER_MAP !== 'undefined') {
@@ -791,16 +844,6 @@ function getCurrentMap() {
 }
 
 // Функции отрисовки
-function resizeCanvas() {
-  canvas.width = canvasContainer.clientWidth;
-  canvas.height = canvasContainer.clientHeight;
-
-  fogCanvas.width = canvasContainer.clientWidth;
-  fogCanvas.height = canvasContainer.clientHeight;
-
-  drawCanvas();
-}
-
 // let lastPaint = Date.now()
 function drawCanvas(options = {infoPanel: false}) {
 
@@ -822,8 +865,8 @@ function drawCanvas(options = {infoPanel: false}) {
   if (currentMapIndex >= 0 && maps[currentMapIndex]) {
     const map = maps[currentMapIndex];
     ctx.save();
-    ctx.translate(canvasOffsetX, canvasOffsetY);
-    ctx.scale(scale, scale);
+    ctx.translate(Viewport.offsetX, Viewport.offsetY);
+    ctx.scale(Viewport.scale, Viewport.scale);
     ctx.drawImage(map.image, 0, 0, map.image.width, map.image.height);
     ctx.restore();
   }
@@ -868,9 +911,9 @@ const draw = {
  */
   fogOfWar(localCtx, options = {}) {
     const {
-      lScale = scale,
-      lOffsetX = canvasOffsetX,
-      lOffsetY = canvasOffsetY,
+      lScale = Viewport.scale,
+      lOffsetX = Viewport.offsetX,
+      lOffsetY = Viewport.offsetY,
       width,
       height
     } = options
@@ -1253,8 +1296,8 @@ const draw = {
 */
 function drawShape(shape) {
   ctx.save();
-  ctx.translate(shape.x * scale + canvasOffsetX, shape.y * scale + canvasOffsetY);
-  ctx.scale(scale, scale);
+  ctx.translate(shape.x * Viewport.scale + Viewport.offsetX, shape.y * Viewport.scale + Viewport.offsetY);
+  ctx.scale(Viewport.scale, Viewport.scale);
 
   if (shape.shape === 'custom') {
     draw.customObj(ctx, shape, 0, 0)
@@ -1312,8 +1355,8 @@ function drawShape(shape) {
 
 function drawText(text) {
   ctx.save();
-  ctx.translate(text.x * scale + canvasOffsetX, text.y * scale + canvasOffsetY);
-  ctx.scale(scale, scale);
+  ctx.translate(text.x * Viewport.scale + Viewport.offsetX, text.y * Viewport.scale + Viewport.offsetY);
+  ctx.scale(Viewport.scale, Viewport.scale);
 
   ctx.font = `${text.size}px Arial`;
   ctx.fillStyle = text.color;
@@ -1536,10 +1579,10 @@ function startDrag(clientX, clientY, mouseButton = 0) {
     // Проверяем, не кликнули ли мы на элемент
     for (let i = elements.length - 1; i >= 0; i--) {
       const element = elements[i];
-      const x = element.x * scale + canvasOffsetX;
-      const y = element.y * scale + canvasOffsetY;
-      const width = element.width * scale;
-      const height = element.height * scale;
+      const x = element.x * Viewport.scale + Viewport.offsetX;
+      const y = element.y * Viewport.scale + Viewport.offsetY;
+      const width = element.width * Viewport.scale;
+      const height = element.height * Viewport.scale;
 
       if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height) {
         if (isAttack) {
@@ -1579,8 +1622,8 @@ function startDrag(clientX, clientY, mouseButton = 0) {
         dragStartTime = Date.now()
         dragStartX = mouseX;
         dragStartY = mouseY;
-        tempOffsetX = element.x;
-        tempOffsetY = element.y;
+        Viewport.tempOffsetX = element.x;
+        Viewport.tempOffsetY = element.y;
 
         drawCanvas();
         return;
@@ -1596,8 +1639,8 @@ function startDrag(clientX, clientY, mouseButton = 0) {
   isDraggingElement = false;
   dragStartX = clientX;
   dragStartY = clientY;
-  tempOffsetX = canvasOffsetX;
-  tempOffsetY = canvasOffsetY;
+  Viewport.tempOffsetX = Viewport.offsetX;
+  Viewport.tempOffsetY = Viewport.offsetY;
 
   // Скрываем панель редактирования, если ничего не выбрано
   if (selectedElement) {
@@ -1703,12 +1746,12 @@ function updateDrag(clientX, clientY) {
 
   if (isDraggingElement && selectedElement) {
     // Вычисляем смещение
-    const deltaX = (mouseX - dragStartX) / scale;
-    const deltaY = (mouseY - dragStartY) / scale;
+    const deltaX = (mouseX - dragStartX) / Viewport.scale;
+    const deltaY = (mouseY - dragStartY) / Viewport.scale;
 
     // Перемещаем выбранный элемент
-    selectedElement.x = +(tempOffsetX + deltaX).toFixed(2);
-    selectedElement.y = +(tempOffsetY + deltaY).toFixed(2);
+    selectedElement.x = +(Viewport.tempOffsetX + deltaX).toFixed(2);
+    selectedElement.y = +(Viewport.tempOffsetY + deltaY).toFixed(2);
 
     // Перемещаем все дочерние элементы синхронно
     if (Pins.isOwner(selectedElement)) {
@@ -1724,8 +1767,8 @@ function updateDrag(clientX, clientY) {
     editPanel.style.top = `${mouseY + 10}px`;
   } else {
     // Перемещаем холст
-    canvasOffsetX = tempOffsetX + (clientX - dragStartX);
-    canvasOffsetY = tempOffsetY + (clientY - dragStartY);
+    Viewport.offsetX = Viewport.tempOffsetX + (clientX - dragStartX);
+    Viewport.offsetY = Viewport.tempOffsetY + (clientY - dragStartY);
   }
 
   drawCanvas();
@@ -1750,32 +1793,6 @@ function endDrag(mouseButton = 0) {
   isDragging = false;
   dragStartTime = 0
   isDraggingElement = false;
-}
-
-const MAX_SCALE = 0.25 // 0.25
-const MIN_SCALE = 3
-
-function handleWheel(e) {
-  e.preventDefault();
-
-  const delta = e.deltaY > 0 ? 0.9 : 1.1;
-  const newScale = Math.min(Math.max(scale * delta, MAX_SCALE), MIN_SCALE);
-
-  if (newScale !== scale) {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    // Корректируем смещение для масштабирования относительно курсора
-    canvasOffsetX = mouseX - (mouseX - canvasOffsetX) * (newScale / scale);
-    canvasOffsetY = mouseY - (mouseY - canvasOffsetY) * (newScale / scale);
-
-    scale = newScale;
-    scaleValue.textContent = `${Math.round(scale * 100)}%`;
-    scaleSlider.value = scale * 100;
-
-    drawCanvas();
-  }
 }
 
 // Функции тулбара
@@ -1913,17 +1930,17 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
   const isMenu = typeof spawnNearMenu === 'boolean' && spawnNearMenu
   const driftObj = selectedElement
   const x = isMenu
-    ? (-canvasOffsetX + canvas.width * 0.05 - width * scale / 2) / scale
+    ? (-Viewport.offsetX + canvas.width * 0.05 - width * Viewport.scale / 2) / Viewport.scale
     :
     driftObj
       ? (+driftObj.x + (width * (Math.random() * 2 - 1)))
-      : (mousePos.x - canvas.getBoundingClientRect().left - canvasOffsetX - width * scale / 2) / scale
+      : (mousePos.x - canvas.getBoundingClientRect().left - Viewport.offsetX - width * Viewport.scale / 2) / Viewport.scale
 
   const y = isMenu
-    ? (-canvasOffsetY + canvas.height / 5 - height * scale / 2) / scale
+    ? (-Viewport.offsetY + canvas.height / 5 - height * Viewport.scale / 2) / Viewport.scale
     : driftObj
       ? (+driftObj.y + (height * (Math.random() * 2 - 1)))
-      : (mousePos.y - canvas.getBoundingClientRect().top - canvasOffsetY - height * scale / 2) / scale
+      : (mousePos.y - canvas.getBoundingClientRect().top - Viewport.offsetY - height * Viewport.scale / 2) / Viewport.scale
 
   /** @type {elements[0]} */
   const shape = {
@@ -1977,8 +1994,8 @@ function placeText() {
     content: content,
     color: color,
     size: size,
-    x: (-canvasOffsetX + canvas.width / 2 - metrics.width / 2) / scale,
-    y: (-canvasOffsetY + canvas.height / 2) / scale,
+    x: (-Viewport.offsetX + canvas.width / 2 - metrics.width / 2) / Viewport.scale,
+    y: (-Viewport.offsetY + canvas.height / 2) / Viewport.scale,
     width: metrics.width,
     height: size
   };
@@ -2750,12 +2767,6 @@ function updateElementLvl() {
     selectedElement.lvl = +document.getElementById('obj-lvl').value || MIN_LVL;
     drawCanvas({infoPanel: true})
   }
-}
-
-function updateScale() {
-  scale = parseInt(scaleSlider.value) / 100;
-  scaleValue.textContent = `${scaleSlider.value}%`;
-  drawCanvas();
 }
 
 const TechUtils = {
@@ -3610,8 +3621,8 @@ function loadMap(index) {
   currentMapIndex = index;
 
   // Центрируем карту
-  canvasOffsetX = (canvas.width - map.image.width * scale) / 2;
-  canvasOffsetY = (canvas.height - map.image.height * scale) / 2;
+  Viewport.offsetX = (canvas.width - map.image.width * Viewport.scale) / 2;
+  Viewport.offsetY = (canvas.height - map.image.height * Viewport.scale) / 2;
 
   renderMapList();
   drawCanvas({infoPanel: true});
@@ -3719,7 +3730,10 @@ function saveGame() {
   })
   const ownerMap = Pins.toJSON()
   const otherData = {
-    scale, canvasOffsetX, canvasOffsetY,
+    // ключи canvasOffsetX/canvasOffsetY — формат сейва, не переименовывать
+    scale: Viewport.scale,
+    canvasOffsetX: Viewport.offsetX,
+    canvasOffsetY: Viewport.offsetY,
     shapeColor: getShapeColor(),
   }
 

@@ -37,8 +37,18 @@
    `colorFromUsername` → `colorByName`, `playerByColor` → `byColor`,
    `listPlayers` → `list`, `NPCPlayers` → `NPC`, два кэша поиска по DOM
    (комментарий про то, что кэши не инвалидируются, — над модулем).
-2. **Viewport** — следующий: `scale`, `canvasOffsetX/Y`, `tempOffsetX/Y`,
-   `MAX_SCALE/MIN_SCALE`, `handleWheel`, `updateScale`, `resizeCanvas`.
+2. **Viewport** — ✅ сделано (2026-09-08): `scale`, `canvasOffsetX/Y` →
+   `Viewport.offsetX/Y`, `tempOffsetX/Y`, `handleWheel`, `updateScale`,
+   `resizeCanvas`. Нюансы:
+   - `MAX_SCALE`/`MIN_SCALE` были перепутаны местами (MAX_SCALE = 0.25 —
+     это нижняя граница); переименованы в `Viewport.MIN_SCALE = 0.25` /
+     `Viewport.MAX_SCALE = 3`, поведение не менялось.
+   - В `saveGame` ключи сейва оставлены `canvasOffsetX`/`canvasOffsetY`
+     (формат data.json.js не менялся), маппинг на `Viewport.offsetX/Y`.
+   - Методы внутри модуля обращаются к `Viewport.*` явно, без `this`
+     (передаются в `addEventListener`).
+   - Обновлены `tests/tests.js` (resetGame, canvasPoint, тест зума).
+   - Tests.html: 13/13 зелёные.
 3. **Pointer** (drag) — `isDragging`, `isDraggingElement`, `dragStart*`,
    `touchIdentifier`, `mousePos`, `handleMouse*`, `handleTouch*`,
    `startDrag`, `updateDrag`, `endDrag`.

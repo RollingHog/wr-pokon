@@ -82,9 +82,9 @@
     editPanel.style.display = 'none'
     isAttack = false
     isPin = false
-    scale = 1
-    canvasOffsetX = 0
-    canvasOffsetY = 0
+    Viewport.scale = 1
+    Viewport.offsetX = 0
+    Viewport.offsetY = 0
     mousePos = { x: 300, y: 300 }
     payCheckbox.checked = false
   }
@@ -106,8 +106,8 @@
   function canvasPoint(el) {
     const rect = canvas.getBoundingClientRect()
     return {
-      x: rect.left + el.x * scale + canvasOffsetX + el.width * scale / 2,
-      y: rect.top + el.y * scale + canvasOffsetY + el.height * scale / 2,
+      x: rect.left + el.x * Viewport.scale + Viewport.offsetX + el.width * Viewport.scale / 2,
+      y: rect.top + el.y * Viewport.scale + Viewport.offsetY + el.height * Viewport.scale / 2,
     }
   }
 
@@ -207,22 +207,22 @@
 
   test('перетаскивание пустого места двигает карту', () => {
     resetGame([])
-    const ox0 = canvasOffsetX
-    const oy0 = canvasOffsetY
+    const ox0 = Viewport.offsetX
+    const oy0 = Viewport.offsetY
     const rect = canvas.getBoundingClientRect()
     drag(rect.left + 400, rect.top + 300, -70, 30)
-    assertNear(canvasOffsetX - ox0, -70, 'смещение карты по X')
-    assertNear(canvasOffsetY - oy0, 30, 'смещение карты по Y')
+    assertNear(Viewport.offsetX - ox0, -70, 'смещение карты по X')
+    assertNear(Viewport.offsetY - oy0, 30, 'смещение карты по Y')
   })
 
   test('зум колесом: границы масштаба и подпись', () => {
     resetGame([])
     fogCanvas.dispatchEvent(new WheelEvent('wheel', { deltaY: -100, bubbles: true, cancelable: true }))
-    assertNear(scale, 1.1, 'масштаб не увеличился', 0.001)
+    assertNear(Viewport.scale, 1.1, 'масштаб не увеличился', 0.001)
     assertEq(scaleValue.textContent, '110%', 'подпись масштаба')
-    scale = 2.9
+    Viewport.scale = 2.9
     fogCanvas.dispatchEvent(new WheelEvent('wheel', { deltaY: -100, bubbles: true, cancelable: true }))
-    assertEq(scale, 3, 'масштаб не ограничился сверху')
+    assertEq(Viewport.scale, 3, 'масштаб не ограничился сверху')
   })
 
   test('конец хода: подтверждение, номер хода, доход, autosave', () => {
