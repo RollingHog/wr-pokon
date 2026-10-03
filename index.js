@@ -102,6 +102,8 @@ const lineModeObj = {
 // Инициализация
 function init() {
 
+  generateFactionButtons()
+
   processRuleFile()
 
   loadDefaultMap()
@@ -798,6 +800,33 @@ function loadDefaultCustomImages() {
     for (const objName of items) {
       onCustomImageLoad(objName, `${root}/images/units/${objName}.png`);
     }
+  }
+}
+
+function generateFactionButtons() {
+  if (typeof FACTIONS === 'undefined' || !FACTIONS) {
+    alert('Ошибка: объект FACTIONS не определен!');
+    return;
+  }
+
+  const container = document.getElementById('player-btns-list');
+
+  if(!container) {
+    alert('Ошибка: html-элемент #player-btns-list не существует!');
+    return;
+  }
+
+  // Очищаем контейнер перед добавлением новых элементов
+  container.innerHTML = '';
+
+  // Проходим по всем фракциям и создаем кнопки
+  for (const [name, color] of Object.entries(FACTIONS)) {
+    const button = document.createElement('button');
+    button.className = 'player-btn';
+    button.setAttribute('data-color', color);
+    button.textContent = name;
+
+    container.appendChild(button);
   }
 }
 
