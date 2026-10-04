@@ -31,7 +31,7 @@
       background: linear-gradient(145deg, #f5f9ff 0%, #dce6f0 100%);
       border-radius: 2.5rem;
       box-shadow: 0 20px 40px rgba(0, 10, 25, 0.6), inset 0 1px 3px rgba(255, 255, 255, 0.6);
-      padding: 2rem 2rem 2.5rem;
+      padding: 1.5rem;
     }
 
     h1 {
@@ -64,7 +64,7 @@
       padding: 1.5rem 1.5rem 1.2rem;
       border-radius: 2rem;
       box-shadow: inset 0 2px 6px rgba(0,0,0,0.04), 0 6px 12px rgba(0, 18, 40, 0.12);
-      margin-bottom: 2rem;
+      /* margin-bottom: 2rem; */
     }
 
     label {
@@ -264,28 +264,32 @@
 </head>
 <body>
 <div class="card">
-  <h1>
+  <h2>
     ⚡ Расшифровка системы
-  </h1>
+  </h2>
 
   <div class="input-area">
-    Нажмите чтобы скопировать
-    <pre onclick='navigator.clipboard.writeText(this.textContent)' title="Нажмите чтобы скопировать">
+    Нажмите чтобы скопировать (не больше 3 в одном посте)
+    <pre 
+      onclick="this.style.backgroundColor='#4cd67d'; navigator.clipboard.writeText(this.textContent); setTimeout(() => this.style.backgroundColor='transparent', 100)" 
+      title="Нажмите чтобы скопировать">
 ##1d6##
-##4d6##</pre>
-    <label for="diceInput">Вставьте результаты бросков (1d6 и 4d6) в одно поле:
+##4d6##
+##1d20##
+</pre>
+    <label for="diceInput">Вставьте результаты бросков (1d6, 4d6, 1d20) в одно поле:
     </label>
     <textarea id="diceInput" placeholder="Например:&#10;1d6: (4) = 4 количество планет&#10;4d6: (5 + 6 + 2 + 6) = 19 типы планет"></textarea>
     <div class="actions">
       <button class="btn" id="decodeBtn">🔮 Расшифровать</button>
-      <button class="btn btn-outline" id="removeLinesBtn">🗑️ Удалить 3 строки</button>
+      <button class="btn btn-outline" id="removeLinesBtn">🗑️ Удалить 4 строки</button>
     </div>
   </div>
 
   <div class="result-box" id="resultBox">
-    <div class="result-header">
+    <!-- <div class="result-header">
       <span>🪐 Система</span>
-    </div>
+    </div> -->
     <div id="systemContainer">
       <div class="empty-state">⏳ Вставьте броски и нажмите «Расшифровать»</div>
     </div>
@@ -305,6 +309,22 @@
       6: { letter: 'F', name: 'газовый гигант', class: 'type-F' }
     };
 
+    // ---- Словарь особенностей системы (1d20) ----
+    // Формат: "Название": [массив значений кубика]
+    const FEATURE_MAP = {
+      "критическая задница (мастер выбирает эффект или придумывает уникальный)": [1],
+      "нет особенностей": [2, 3, 4, 5, 6, 7, 8, 9],
+      "древний артефакт (+10 ОИ разово)": [10],
+      "аборигены: средневековье (замок)": [11],
+      "аборигены: индустриальный век (офисы)": [12],
+      "аборигены: вышли в космос (колония 1 ур. + станция на своей планете)": [13],
+      "аборигены: колонизировали звездную систему (колония 2 ур., станции, военные корабли)": [14],
+      "космический монстр (система хороша для колонизации, доп. бросок 1d5 или как мастер решит)": [15, 16],
+      "пираты (1d3 фрегата)": [17, 18],
+      "обломки неизвестного корабля (1d3: металлы/соседняя система/фрегат)": [19],
+      "критическая удача (мастер выбирает эффект или придумывает уникальный)": [20]
+    };
+
     // Родной тип (для колонизации) – пусть будет B (умеренный), как в правилах
     const NATIVE_TYPE = 2;   // B
 
@@ -321,8 +341,9 @@
 
       let planetCount = null;
       let typeRolls = [];
+      let featureRoll = null; // Новая переменная для 1d20
 
-      // проходим по строкам, ищем 1d6 и 4d6
+      // проходим по строкам, ищем 1d6, 4d6 и 1d20
       for (let line of lines) {
         // ищем 1d6: (X) = Y ...
         const pCountMatch = line.match(/1d6\s*:\s*\((\d+)\)\s*=\s*(\d+)/i);
@@ -356,6 +377,16 @@
           }
           continue;
         }
+
+        // ищем 1d20: (X) = Y ...
+        const d20Match = line.match(/1d20\s*:\s*\((\d+)\)\s*=\s*(\d+)/i);
+        if (d20Match) {
+          const val = parseInt(d20Match[2], 10);
+          if (!isNaN(val) && val >= 1 && val <= 20) {
+            featureRoll = val;
+          }
+          continue;
+        }
       }
 
       // если количество не найдено, но есть типы, пробуем найти первое число в строке с "количество"
@@ -385,11 +416,11 @@
         }
       }
 
-      return { planetCount, typeRolls };
+      return { planetCount, typeRolls, featureRoll };
     }
 
     // ---- отрисовка ----
-    function renderSystem(planetCount, typeRolls) {
+    function renderSystem(planetCount, typeRolls, featureRoll) {
       if (planetCount === null || planetCount < 1 || planetCount > 4) {
         systemContainer.innerHTML = `<div class="empty-state">⚠️ Не удалось определить количество планет (1d6). Проверьте формат.</div>`;
         return;
@@ -405,13 +436,12 @@
 
       // строим строку
       let html = `<div class="planet-system">`;
-      html += `<div class="system-row">`;
-      html += `<span class="sys-label">🌌 Система</span>`;
-      html += `<span style="color:#b8d6f0; font-weight:500;">${planetCount} планеты</span>`;
+      // html += `<div class="system-row">`;
+      // // html += `<span class="sys-label">🌌 Система</span>`;
+      // html += `<span style="color:#b8d6f0; font-weight:500;">${planetCount} планеты</span>`;
 
-      // добавим метку о родном типе
-      html += `<span class="meta-info">⭐ родной тип: B (умеренный)</span>`;
-      html += `</div>`;
+      // // html += `<span class="meta-info">⭐ родной тип: B (умеренный)</span>`;
+      // html += `</div>`;
 
       // каждая планета
       for (let i = 0; i < usedTypes.length; i++) {
@@ -430,14 +460,41 @@
       }
 
       // если планет меньше 4, покажем оставшиеся типы (но по правилам они не используются)
-      if (usedTypes.length < 4) {
-        const remaining = typeRolls.slice(usedTypes.length);
-        if (remaining.length > 0) {
-          const remainStr = remaining.map(v => `${TYPE_MAP[v]?.letter || v}`).join(' ');
-          html += `<div style="color:#7f9ab5; font-size:0.8rem; padding:0.5rem 0.8rem; background:#1a3146; border-radius:2rem; margin-top:0.3rem; text-align:center;">
-            🔄 неиспользованные типы: ${remainStr}
-          </div>`;
+      // if (usedTypes.length < 4) {
+      //   const remaining = typeRolls.slice(usedTypes.length);
+      //   if (remaining.length > 0) {
+      //     const remainStr = remaining.map(v => `${TYPE_MAP[v]?.letter || v}`).join(' ');
+      //     html += `<div style="color:#7f9ab5; font-size:0.8rem; padding:0.5rem 0.8rem; background:#1a3146; border-radius:2rem; margin-top:0.3rem; text-align:center;">
+      //       🔄 неиспользованные типы: ${remainStr}
+      //     </div>`;
+      //   }
+      // }
+
+      // ---- Вывод особенностей системы (1d20) ----
+      let featureName = "не определено";
+      let featureColor = "#7f9ab5"; // серый по умолчанию
+
+      if (featureRoll !== null) {
+        // Ищем название особенности по значению кубика
+        for (const [name, values] of Object.entries(FEATURE_MAP)) {
+          if (values.includes(featureRoll)) {
+            featureName = name;
+            // Можно добавить цвета для разных типов особенностей, если нужно
+            if (name === "нет особенностей") featureColor = "#7f9ab5";
+            else if (["богатые недра", "торговый форпост"].includes(name)) featureColor = "#4cd67d"; // зеленый
+            else if (["древние руины", "аномальная гравитация"].includes(name)) featureColor = "#d64c9e"; // розовый/фиолетовый
+            else featureColor = "#d69e4c"; // оранжевый для опасностей/баз
+            break;
+          }
         }
+        
+        html += `<div class="system-row" style="margin-top: 0.5rem; border-left-color: ${featureColor};">`;
+        html += `<span class="sys-label">🎲 Особенность</span>`;
+        html += `<span style="color:${featureColor}; font-weight:500;">${featureName} (1d20: ${featureRoll})</span>`;
+        html += `</div>`;
+      } else {
+         // Если бросок не найден, можно вывести заглушку или ничего
+         // html += `<div style="color:#7f9ab5; font-size:0.8rem; text-align:center; margin-top:0.5rem;">Бросок 1d20 не найден</div>`;
       }
 
       html += `</div>`;
@@ -445,17 +502,18 @@
     }
 
     // ---- удаление трёх последних строк ----
-    function removeLastThreeLines() {
+    function removeLastFourLines() {
       const lines = textarea.value.split('\n');
       
       // Проверяем, что есть хотя бы 3 строки
-      if (lines.length < 3) {
+      if (lines.length < 4) {
         textarea.value = ""
+        decode();
         return;
       }
       
       // Удаляем последние 3 строки
-      const remainingLines = lines.slice(0, -3);
+      const remainingLines = lines.slice(0, -4);
       textarea.value = remainingLines.join('\n');
       
       // Автоматически запускаем расшифровку после удаления
@@ -470,14 +528,14 @@
         return;
       }
 
-      const { planetCount, typeRolls } = parseDiceResults(raw);
-      renderSystem(planetCount, typeRolls);
+      const { planetCount, typeRolls, featureRoll } = parseDiceResults(raw);
+      renderSystem(planetCount, typeRolls, featureRoll);
     }
     
     // ---- обработчики ----
     decodeBtn.addEventListener('click', decode);
     diceInput.addEventListener('input', decode);
-    document.getElementById('removeLinesBtn').addEventListener('click', removeLastThreeLines);
+    document.getElementById('removeLinesBtn').addEventListener('click', removeLastFourLines);
 
     // автозапуск при загрузке с примером (если поле пустое)
     window.addEventListener('DOMContentLoaded', function() {
