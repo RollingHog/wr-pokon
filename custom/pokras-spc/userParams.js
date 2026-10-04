@@ -15,7 +15,7 @@ const FACTIONS = {
   "Колорады": "#008000"
 };
 
-const DICT_USER = {
+var DICT_USER = {
 
   Десант: {
     "Столица":
