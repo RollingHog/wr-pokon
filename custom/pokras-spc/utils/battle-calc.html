@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Калькулятор космического боя</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1e1e2e; color: #cdd6f4; padding: 20px; }
+        h1, h2, h3 { color: #89b4fa; }
+        .container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .fleet-panel { background: #313244; padding: 15px; border-radius: 8px; flex: 1; min-width: 350px; }
+        .log-panel { background: #11111b; padding: 15px; border-radius: 8px; width: 100%; margin-top: 20px; white-space: pre-wrap; font-family: monospace; height: 300px; overflow-y: auto;}
+        .ship-config, .tech-config { background: #45475a; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+        label { display: inline-block; width: 100px; font-size: 14px; }
+        input { width: 50px; padding: 4px; background: #1e1e2e; color: #cdd6f4; border: 1px solid #585b70; border-radius: 3px; text-align: center; }
+        button { background: #a6e3a1; color: #1e1e2e; border: none; padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #94e2d5; }
+        .warning { color: #f38ba8; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<h1>⚔️ Калькулятор космического боя</h1>
+<p>Реализация правил из раздела 3.2 и 4. Технологии дают множитель (1 + Уровень) к каждому слоту.</p>
+
+<div class="container">
+    <!-- ФЛОТ А -->
+    <div class="fleet-panel">
+        <h2>Флот Игрока А</h2>
+        
+        <h3>Конфигурация кораблей (слоты)</h3>
+        <div id="shipsA"></div>
+
+        <h3>Уровни технологий (бонус +X)</h3>
+        <div class="tech-config">
+            <label>Броня (Б):</label> <input type="number" id="techA_B" value="0" min="0"><br><br>
+            <label>Щиты (Щ):</label> <input type="number" id="techA_S" value="0" min="0"><br><br>
+            <label>Обычн. (ОО):</label> <input type="number" id="techA_OO" value="0" min="0"><br><br>
+            <label>Энерго (ЭО):</label> <input type="number" id="techA_EO" value="0" min="0">
+        </div>
+    </div>
+
+    <!-- ФЛОТ Б -->
+    <div class="fleet-panel">
+        <h2>Флот Игрока Б</h2>
+        
+        <h3>Конфигурация кораблей (слоты)</h3>
+        <div id="shipsB"></div>
+
+        <h3>Уровни технологий (бонус +X)</h3>
+        <div class="tech-config">
+            <label>Броня (Б):</label> <input type="number" id="techB_B" value="0" min="0"><br><br>
+            <label>Щиты (Щ):</label> <input type="number" id="techB_S" value="0" min="0"><br><br>
+            <label>Обычн. (ОО):</label> <input type="number" id="techB_OO" value="0" min="0"><br><br>
+            <label>Энерго (ЭО):</label> <input type="number" id="techB_EO" value="0" min="0">
+        </div>
+    </div>
+</div>
+
+<button onclick="calculateBattle()">РАССЧИТАТЬ БОЙ</button>
+
+<div class="log-panel" id="log">Здесь появится отчет о бое...</div>
+
+<script>
+const SHIP_TYPES = [
+    { id: 'frigate', name: 'Фрегат', size: 5, maxArmor: 3 },
+    { id: 'cruiser', name: 'Крейсер', size: 10, maxArmor: 6 },
+    { id: 'battleship', name: 'Линкор', size: 20, maxArmor: 15 }
+];
+
+function initUI() {
+    ['A', 'B'].forEach(fleet => {
+        const container = document.getElementById(`ships${fleet}`);
+        let html = '';
+        SHIP_TYPES.forEach(ship => {
+            html += `<div class="ship-config">
+                <strong>${ship.name}</strong> (Размер: ${ship.size}, Макс.Б: ${ship.maxArmor})<br>
+                <label>Количество:</label> <input type="number" id="count_${fleet}_${ship.id}" value="0" min="0"><br>
+                <label>Броня (Б):</label> <input type="number" id="b_${fleet}_${ship.id}" value="${ship.id==='frigate'?2:ship.id==='cruiser'?4:8}" min="0" max="${ship.maxArmor}">
+                <label>Щиты (Щ):</label> <input type="number" id="s_${fleet}_${ship.id}" value="0" min="0"><br>
+                <label>Об. оруж (ОО):</label> <input type="number" id="oo_${fleet}_${ship.id}" value="${ship.id==='frigate'?3:ship.id==='cruiser'?4:6}" min="0">
+                <label>Эн. оруж (ЭО):</label> <input type="number" id="eo_${fleet}_${ship.id}" value="0" min="0">
+                <div class="warning" id="warn_${fleet}_${ship.id}"></div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    });
+}
+
+function getFleetData(fleetId) {
+    let ships = [];
+    let tech = {
+        B: parseInt(document.getElementById(`tech${fleetId}_B`).value) || 0,
+        S: parseInt(document.getElementById(`tech${fleetId}_S`).value) || 0,
+        OO: parseInt(document.getElementById(`tech${fleetId}_OO`).value) || 0,
+        EO: parseInt(document.getElementById(`tech${fleetId}_EO`).value) || 0
+    };
+
+    SHIP_TYPES.forEach(type => {
+        let count = parseInt(document.getElementById(`count_${fleetId}_${type.id}`).value) || 0;
+        if (count <= 0) return;
+
+        let b = parseInt(document.getElementById(`b_${fleetId}_${type.id}`).value) || 0;
+        let s = parseInt(document.getElementById(`s_${fleetId}_${type.id}`).value) || 0;
+        let oo = parseInt(document.getElementById(`oo_${fleetId}_${type.id}`).value) || 0;
+        let eo = parseInt(document.getElementById(`eo_${fleetId}_${type.id}`).value) || 0;
+
+        let warnEl = document.getElementById(`warn_${fleetId}_${type.id}`);
+        let totalSlots = b + s + oo + eo;
+        let warnings = [];
+
+        if (totalSlots > type.size) warnings.push(`Ошибка: занято ${totalSlots}/${type.size} слотов!`);
+        if (b > type.maxArmor) warnings.push(`Ошибка: Броня ${b} > макс ${type.maxArmor}!`);
+        if (oo + eo < 1) warnings.push(`Ошибка: нужно хотя бы 1 оружие!`);
+        
+        warnEl.innerText = warnings.join(' | ');
+
+        for (let i = 0; i < count; i++) {
+            ships.push({
+                name: type.name,
+                armor: b,
+                shields: s,
+                oo: oo,
+                eo: eo
+            });
+        }
+    });
+
+    return { ships, tech };
+}
+
+function calculateBattle() {
+    const log = document.getElementById('log');
+    log.innerHTML = "--- НАЧАЛО РАСЧЕТА ---\n";
+
+    const fleetA = getFleetData('A');
+    const fleetB = getFleetData('B');
+
+    if (fleetA.ships.length === 0 || fleetB.ships.length === 0) {
+        log.innerHTML += "ОШИБКА: У обоих флотов должен быть хотя бы 1 корабль.\n";
+        return;
+    }
+
+    // 1. Расчет эффективных значений
+    const calcStats = (fleet) => {
+        let oo_eff = 0, eo_eff = 0, s_eff = 0, total_armor = 0;
+        fleet.ships.forEach(ship => {
+            oo_eff += ship.oo * (1 + fleet.tech.OO);
+            eo_eff += ship.eo * (1 + fleet.tech.EO);
+            s_eff += ship.shields * (1 + fleet.tech.S);
+            total_armor += ship.armor;
+        });
+        return { oo_eff, eo_eff, s_eff, total_armor };
+    };
+
+    const statsA = calcStats(fleetA);
+    const statsB = calcStats(fleetB);
+
+    log.innerHTML += `\n[Флот А] Эффективные статы: ОО=${statsA.oo_eff}, ЭО=${statsA.eo_eff}, Щиты=${statsA.s_eff}, Пул Брони=${statsA.total_armor}\n`;
+    log.innerHTML += `[Флот Б] Эффективные статы: ОО=${statsB.oo_eff}, ЭО=${statsB.eo_eff}, Щиты=${statsB.s_eff}, Пул Брони=${statsB.total_armor}\n`;
+
+    // 2. Расчет Силы (Power)
+    // Power A = OO_A + 2*EO_A - Shields_B
+    let powerA = statsA.oo_eff + (2 * statsA.eo_eff) - statsB.s_eff;
+    let powerB = statsB.oo_eff + (2 * statsB.eo_eff) - statsA.s_eff;
+
+    powerA = Math.max(0, powerA);
+    powerB = Math.max(0, powerB);
+
+    log.innerHTML += `\n--- СИЛА ФЛОТОВ ---\n`;
+    log.innerHTML += `Сила Флота А (наносит урон Б): ${powerA}\n`;
+    log.innerHTML += `Сила Флота Б (наносит урон А): ${powerB}\n`;
+
+    // 3. Применение урона
+    const applyDamage = (fleet, damage, fleetName) => {
+        log.innerHTML += `\n--- ПОТЕРИ ${fleetName} ---\n`;
+        if (damage === 0) {
+            log.innerHTML += `Урон 0. Потерь нет.\n`;
+            return;
+        }
+
+        let totalArmor = 0;
+        fleet.ships.forEach(s => totalArmor += s.armor);
+
+        if (damage <= totalArmor) {
+            log.innerHTML += `Урон (${damage}) полностью поглощен пулом брони (${totalArmor}). Корабли не уничтожены.\n`;
+            return;
+        }
+
+        let excessDamage = damage - totalArmor;
+        log.innerHTML += `Броня (${totalArmor}) пробита! Избыточный урон по кораблям: ${excessDamage}\n`;
+
+        // Сортируем корабли по броне (от меньшего к большему), чтобы убивать тонкие первыми
+        // Это соответствует примеру из правил
+        let sortedShips = [...fleet.ships].sort((a, b) => a.armor - b.armor);
+        let destroyedCount = 0;
+        let destroyedNames = {};
+
+        for (let ship of sortedShips) {
+            if (excessDamage <= 0) break;
+            
+            // Правило: "ничего не теряем, если все корабли имеют 5 и более компонентов брони"
+            // Интерпретация: урон списывается только если HP(броня) корабля меньше остатка урона, 
+            // либо мы трактуем это как "урон 1 ед избытка убивает 1 ед брони корабля, если брони 0 - умирает сразу"
+            // Строгая интерпретация примера: Сила 4 -> 2 корабля с Б=2 (4 единицы брони поглощают 4 урона, но они умерли? Нет, в примере сказано "теряем 2 корабля с 2 компонентами брони").
+            // Значит, 1 единица силы врага = 1 единица брони. Если сила 4, она сжирает 4 брони. 
+            // Корабли с суммарной броней 4 считаются потерянными.
+            
+            if (ship.armor <= excessDamage) {
+                excessDamage -= ship.armor;
+                destroyedCount++;
+                destroyedNames[ship.name] = (destroyedNames[ship.name] || 0) + 1;
+            } else {
+                // Если у корабля брони больше, чем осталось избыточного урона, он выживает (поглощает остаток)
+                excessDamage = 0; 
+            }
+        }
+
+        if (destroyedCount > 0) {
+            log.innerHTML += `Уничтожено кораблей: ${destroyedCount}\n`;
+            for (let name in destroyedNames) {
+                log.innerHTML += `  - ${name}: ${destroyedNames[name]} шт.\n`;
+            }
+        } else {
+            log.innerHTML += `Все выжившие корабли имеют достаточно брони, чтобы пережить остаток урона.\n`;
+        }
+    };
+
+    applyDamage(fleetA, powerB, "ФЛОТА А");
+    applyDamage(fleetB, powerA, "ФЛОТА Б");
+
+    log.innerHTML += `\n--- КОНЕЦ РАСЧЕТА ---\n`;
+}
+
+initUI();
+</script>
+</body>
+</html>
