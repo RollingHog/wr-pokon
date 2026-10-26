@@ -325,12 +325,26 @@
 
   test('SquareGrid: cellName учитывает offsetX/offsetY', () => {
     withSquareGrid({ size: 100, offsetX: 50, offsetY: 30 }, () => {
-      // 0;0 попадает в клетку слева от начала сетки (отрицательная колонка)
-      assertEq(SquareGrid.cellName(0, 0), '-A0')
+      // левее/выше A1 клеток нет — отсчёт начинается с единицы
+      assertEq(SquareGrid.cellName(0, 0), null)
+      assertEq(SquareGrid.cellName(49, 100), null)
+      assertEq(SquareGrid.cellName(100, 29), null)
       assertEq(SquareGrid.cellName(50, 30), 'A1')
       assertEq(SquareGrid.cellName(149, 129), 'A1')   // всё ещё внутри первой клетки
       assertEq(SquareGrid.cellName(150, 130), 'B2')   // границы — уже следующая клетка
       assertEq(SquareGrid.cellName(150, 129), 'B1')
+    })
+  })
+
+  test('SquareGrid: CELL_WIDTH/CELL_HEIGHT задают прямоугольные клетки', () => {
+    withSquareGrid({ CELL_WIDTH: 120, CELL_HEIGHT: 90 }, () => {
+      assertEq(SquareGrid.cellName(119, 89), 'A1')
+      assertEq(SquareGrid.cellName(120, 90), 'B2')
+      assertEq(SquareGrid.cellName(250, 100), 'C2')
+    })
+    // если задана только ширина, клетка остаётся квадратной
+    withSquareGrid({ CELL_WIDTH: 120 }, () => {
+      assertEq(SquareGrid.cellName(120, 120), 'B2')
     })
   })
 

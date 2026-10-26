@@ -456,8 +456,10 @@ const Viewport = {
  * Поля конфига:
  *   enabled       — false полностью выключает сетку;
  *   offsetX/Y     — левый верхний угол сетки в пикселях карты;
- *   stepX/stepY   — шаг клетки по осям (если не заданы, берётся size);
- *   size          — общий шаг для квадратных клеток (устаревший, но поддержан);
+ *   CELL_WIDTH    — ширина клетки в пикселях карты (по умолчанию size или 100);
+ *   CELL_HEIGHT   — высота клетки в пикселях карты (по умолчанию CELL_WIDTH);
+ *   stepX/stepY   — устаревшие синонимы CELL_WIDTH/CELL_HEIGHT;
+ *   size          — общий размер квадратной клетки (устаревший, запасной вариант);
  *   cols/rows     — сколько клеток рисовать и учитывать; если не заданы —
  *                   сетка строится на всю карту (старое поведение);
  *   label         — подписи клеток поверх карты;
@@ -480,15 +482,19 @@ const SquareGrid = {
     if (typeof SETTINGS === 'undefined' || !SETTINGS || !SETTINGS.SQUARE_GRID) return null
     const conf = SETTINGS.SQUARE_GRID
     if (conf.enabled === false) return null
-    const size = +conf.size || 100
-    const stepX = +conf.stepX || size
-    const stepY = +conf.stepY || size
+    const fallbackSize = +conf.size || 100
+    const widthConf = +conf.CELL_WIDTH || +conf.cellWidth || 0
+    const heightConf = +conf.CELL_HEIGHT || +conf.cellHeight || 0
+    const stepX = widthConf || +conf.stepX || fallbackSize
+    const stepY = heightConf || +conf.stepY || (widthConf ? stepX : fallbackSize)
     const cols = conf.cols === undefined || conf.cols === null
       ? null : Math.max(0, Math.floor(+conf.cols) || 0)
     const rows = conf.rows === undefined || conf.rows === null
       ? null : Math.max(0, Math.floor(+conf.rows) || 0)
     return {
-      size,
+      size: fallbackSize,
+      cellWidth: stepX,
+      cellHeight: stepY,
       stepX,
       stepY,
       offsetX: +conf.offsetX || 0,
@@ -513,8 +519,8 @@ const SquareGrid = {
 
   /**
    * Пересчёт мета: колонка/строка (0-based) или null.
-   * null — сетка выключена или точка вне заданных cols/rows.
-   * Если cols/rows не заданы, отрицательные координаты допустимы.
+   * null — сетка выключена или точка вне сетки: левее/выше A1 клеток нет,
+   * отсчёт начинается с единицы, а не с нуля.
    */
   cellCoords(x, y) {
     const conf = this.conf()
@@ -522,8 +528,9 @@ const SquareGrid = {
     const col = Math.floor((x - conf.offsetX) / conf.stepX)
     const row = Math.floor((y - conf.offsetY) / conf.stepY)
     if (!Number.isFinite(col) || !Number.isFinite(row)) return null
-    if (conf.cols !== null && (col < 0 || col >= conf.cols)) return null
-    if (conf.rows !== null && (row < 0 || row >= conf.rows)) return null
+    if (col < 0 || row < 0) return null
+    if (conf.cols !== null && col >= conf.cols) return null
+    if (conf.rows !== null && row >= conf.rows) return null
     return { col, row }
   },
 
@@ -631,21 +638,29 @@ const SquareGrid = {
     if (!conf) return
 
     const { stepX, stepY, offsetX, offsetY, cols, rows } = conf
-    const firstCol = cols !== null ? 0 : Math.floor((0 - offsetX) / stepX)
-    const lastCol = cols !== null ? cols : Math.ceil((mapW - offsetX) / stepX)
-    const firstRow = rows !== null ? 0 : Math.floor((0 - offsetY) / stepY)
-    const lastRow = rows !== null ? rows : Math.ceil((mapH - offsetY) / stepY)
+    // Клетки нумеруются с A1: левее/выше offsetX/offsetY сетки нет.
+    const firstCol = 0
+    const firstRow = 0
+    const lastCol = cols !== null
+      ? cols : Math.max(0, Math.ceil((mapW - offsetX) / stepX))
+    const lastRow = rows !== null
+      ? rows : Math.max(0, Math.ceil((mapH - offsetY) / stepY))
 
     const x0 = offsetX + firstCol * stepX
     const y0 = offsetY + firstRow * stepY
-    const x1 = offsetX + lastCol * stepX
-    const y1 = offsetY + lastRow * stepY
+    const x1 = Math.min(offsetX + lastCol * stepX, mapW)
+    const y1 = Math.min(offsetY + lastRow * stepY, mapH)
 
     // Линии задаются в мировых координатах, поэтому делим на масштаб,
     // чтобы толщина оставалась одинаковой на экране при любом зуме.
     const scale = Viewport.scale || 1
 
     ctx.save()
+    // Сетка и подписи не должны вылезать за пределы карты.
+    ctx.beginPath()
+    ctx.rect(0, 0, mapW, mapH)
+    ctx.clip()
+
     ctx.strokeStyle = conf.contrast ? conf.contrastColor : conf.color
     ctx.lineWidth = (conf.contrast ? 3 : conf.lineWidth) / scale
     ctx.beginPath()
