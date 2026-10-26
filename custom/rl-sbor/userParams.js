@@ -1,11 +1,23 @@
 /* exported
-DICT_USER USER_TECH_LVLS
+FACTIONS DICT_USER USER_TECH_LVLS
 */
 
 /// <reference path="../../src/keywords.js"/>
 /* global
 KW
 */
+
+/** colors only in lowercase! */
+const FACTIONS = {
+  "Мэрия": "#006699",
+  "Армия": "#990000",
+  "Семья": "#006600",
+  "Церковь": "#996600",
+  "Торговцы": "#660066",
+  "Приют": "#333333",
+  "Жители": "#cc6600",
+  "Игротехи": "#009999"
+}
 
 const DICT_USER = {
   Нью_Лоуландс: {

@@ -1,11 +1,20 @@
 /* exported
-DICT_USER USER_TECH_LVLS
+FACTIONS DICT_USER USER_TECH_LVLS
 */
 
 /// <reference path="../../src/keywords.js"/>
 /* global
 KW
 */
+
+/** colors only in lowercase! */
+const FACTIONS = {
+  "Нейтралы": "#d3d3d3",
+  "Варвары": "#930000",
+  "Шогготы": "#92d2d3",
+  "Синие": "#0000ff",
+  "Красные": "#ff0000"
+}
 
 const DICT_USER = {
   Нью_Лоуландс: {

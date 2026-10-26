@@ -1,11 +1,24 @@
 /* exported
-DICT_USER USER_TECH_LVLS
+FACTIONS DICT_USER USER_TECH_LVLS
 */
 
 /// <reference path="../../src/keywords.js"/>
 /* global
 KW
 */
+
+/** colors only in lowercase! */
+const FACTIONS = {
+  "Онид": "#d3d3d3",
+  "Йод": "#930000",
+  "Мамонты": "#006699",
+  "Нео": "#ff69b4",
+  "Чайки": "#640cff",
+  "Паксе": "#ffa500",
+  "Эгмат": "#ff4500",
+  "Авпац": "#9acd32",
+  "Гешксен": "#808000"
+}
 
 const DICT_USER = {
   Нео: {

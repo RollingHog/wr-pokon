@@ -26,8 +26,6 @@
   Тесты гоняют движок на базовых данных ChillyMorning, а не на активной кампании,
   поэтому после правок движка дополнительно проверяйте `custom/pokras-spc.html`.
 - `.eslintrc.json` — конфиг для редактора; eslint в репозитории не установлен.
-- Сейчас почти все страницы, кроме `pokras-spc`, при загрузке показывают `alert`
-  (`FACTIONS` не определён); в браузерной автоматизации его надо принять.
 - Тесты обращаются к глобалам движка и подменяют `saveFile`/`confirm`/`prompt`.
   При переименовании глобалов обновляйте `tests/tests.js`.
 
@@ -43,10 +41,12 @@
   `rules.js`, `userParams.js`, `data.json.js`. `custom/BnB.html` грузит `../bnb/*`,
   остальные — `../custom/<name>/*`. Новую кампанию добавлять как HTML + папку +
   ссылку в `index.html`.
-- Фракции задаются HTML-кнопками `.player-btn` (имя = `textContent`, цвет =
-  `data-color`); `Players` читает и кеширует их из DOM при старте. Исключение —
-  `pokras-spc`: там `FACTIONS` в `userParams.js`, кнопки генерируются. Меняя
-  фракцию, правьте HTML (или `FACTIONS`) и данные сейва.
+- Фракции задаются объектом `FACTIONS` в `userParams.js` кампании (для базовых
+  страниц — `data/userParams.js`): ключ = имя, значение = цвет в нижнем регистре.
+  Порядок ключей = порядок игроков. `generateFactionButtons()` создаёт кнопки
+  `.player-btn` в `<span id="player-btns-list">`, `Players` читает и кеширует их
+  из DOM при старте. В HTML статических кнопок быть не должно. Меняя фракцию,
+  правьте `FACTIONS` и данные сейва (`OWNER_MAP`/`color` объектов).
 - `SETTINGS.MAP_PATH` и пути `images/{units,buildings}/<name>.png` резолвятся
   относительно HTML-страницы, а не `rules.js`. Для custom-страниц
   `IS_CUSTOM: true` даёт корень `..`; `pokras-spc` переопределяет `IMAGE_ROOT`.
