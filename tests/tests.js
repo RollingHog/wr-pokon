@@ -289,6 +289,83 @@
     assertEq(sum['Железо'], 0, 'ресурсы без дохода должны присутствовать')
   })
 
+  // ---------- квадратная сетка (SETTINGS.SQUARE_GRID) ----------
+  // Тестовая кампания не включает SQUARE_GRID, поэтому каждый тест
+  // временно подставляет свой конфиг и восстанавливает прежнее состояние.
+  function withSquareGrid(conf, fn) {
+    const saved = SETTINGS.SQUARE_GRID
+    try {
+      if (conf) SETTINGS.SQUARE_GRID = conf
+      else delete SETTINGS.SQUARE_GRID
+      fn()
+    } finally {
+      if (saved) SETTINGS.SQUARE_GRID = saved
+      else delete SETTINGS.SQUARE_GRID
+    }
+  }
+
+  test('SquareGrid: выключен по умолчанию — cellName возвращает null', () => {
+    withSquareGrid(null, () => {
+      assertEq(SETTINGS.SQUARE_GRID, undefined, 'в базовой кампании SQUARE_GRID не задан')
+      assertEq(SquareGrid.cellName(0, 0), null)
+      assertEq(SquareGrid.cellName(500, 300), null)
+      assertEq(SquareGrid.unitSuffix({ x: 10, y: 10, width: 40, height: 40 }), '')
+    })
+  })
+
+  test('SquareGrid: cellName считает квадраты по size', () => {
+    withSquareGrid({ size: 100 }, () => {
+      assertEq(SquareGrid.cellName(50, 50), 'A1')       // 0..99 → A1
+      assertEq(SquareGrid.cellName(0, 0), 'A1')         // граница слева
+      assertEq(SquareGrid.cellName(100, 0), 'B1')       // граница справа — уже следующая клетка
+      assertEq(SquareGrid.cellName(150, 250), 'B3')
+      assertEq(SquareGrid.cellName(999, 50), 'J1')
+    })
+  })
+
+  test('SquareGrid: cellName учитывает offsetX/offsetY', () => {
+    withSquareGrid({ size: 100, offsetX: 50, offsetY: 30 }, () => {
+      // 0;0 попадает в клетку слева от начала сетки (отрицательная колонка)
+      assertEq(SquareGrid.cellName(0, 0), '-A0')
+      assertEq(SquareGrid.cellName(50, 30), 'A1')
+      assertEq(SquareGrid.cellName(149, 129), 'A1')   // всё ещё внутри первой клетки
+      assertEq(SquareGrid.cellName(150, 130), 'B2')   // границы — уже следующая клетка
+      assertEq(SquareGrid.cellName(150, 129), 'B1')
+    })
+  })
+
+  test('SquareGrid: colLabel — колонки как в таблицах (A, Z, AA)', () => {
+    assertEq(SquareGrid.colLabel(0), 'A')
+    assertEq(SquareGrid.colLabel(25), 'Z')
+    assertEq(SquareGrid.colLabel(26), 'AA')
+    assertEq(SquareGrid.colLabel(27), 'AB')
+  })
+
+  test('SquareGrid: unitSuffix даёт квадрат юнита по его центру', () => {
+    withSquareGrid({ size: 100 }, () => {
+      const el = { x: 90, y: 90, width: 40, height: 40 } // центр 110;110 → B2
+      assertEq(SquareGrid.unitSuffix(el), ' [B2]')
+      assertEq(SquareGrid.unitSuffix(null), '')
+    })
+    withSquareGrid({ size: 100, showUnitCell: false }, () => {
+      assertEq(SquareGrid.unitSuffix({ x: 90, y: 90, width: 40, height: 40 }), '')
+    })
+  })
+
+  test('SquareGrid: drawCanvas не падает с сеткой и подписями', () => {
+    withSquareGrid({ size: 96, label: true }, () => {
+      resetGame([])
+      const el = placeTestObject('Жители', '#0000ff', 300, 300)
+      // подпись юнита содержит квадрат, вычисленный из его реальных координат
+      const expected = SquareGrid.cellName(
+        el.x + el.width / 2, el.y + el.height / 2)
+      assert(expected, 'имя квадрата вычислилось')
+      drawCanvas()
+      assertEq(SquareGrid.cellName(
+        el.x + el.width / 2, el.y + el.height / 2), expected)
+    })
+  })
+
   // ---------- запуск ----------
   async function runAll() {
     try {

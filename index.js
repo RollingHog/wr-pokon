@@ -4,7 +4,7 @@
 /// <reference path="./data/data.json.js"/>
 /* global
 CURRENT_TURN DEFAULT_DATA OTHER_SAVE_DATA 
-OWNER_MAP
+OWNER_MAP GRID_BIOMES
 USER_RESOURCES 
 USER_TECH_LVLS
 */
@@ -449,6 +449,250 @@ const Viewport = {
   },
 };
 
+/**
+ * Квадратная сетка поверх карты (опционально, включается в rules.js кампании
+ * через SETTINGS.SQUARE_GRID).
+ *
+ * Поля конфига:
+ *   enabled       — false полностью выключает сетку;
+ *   offsetX/Y     — левый верхний угол сетки в пикселях карты;
+ *   stepX/stepY   — шаг клетки по осям (если не заданы, берётся size);
+ *   size          — общий шаг для квадратных клеток (устаревший, но поддержан);
+ *   cols/rows     — сколько клеток рисовать и учитывать; если не заданы —
+ *                   сетка строится на всю карту (старое поведение);
+ *   label         — подписи клеток поверх карты;
+ *   lineWidth     — толщина линий сетки в пикселях экрана (по умолчанию 1);
+ *   labelSize     — размер шрифта подписей в пикселях экрана
+ *                   (по умолчанию ~1/8 клетки);
+ *   contrast      — контрастные толстые границы для подгонки сетки;
+ *   showUnitCell  — справочный суффикс " [C7]" в подписи юнита;
+ *   defaultBiome  — биом по умолчанию ('' = биома нет).
+ *
+ * Биомы клеток хранятся отдельно от конфига — в save-файле, в структуре
+ * GRID_BIOMES = { "A1": "XX", ... }. Отсутствие ключа = биома нет.
+ */
+const SquareGrid = {
+  /** @type {Record<string, string>} разреженная карта биомов: "A1" -> "XX" */
+  biomes: {},
+
+  /** конфиг кампании или null, если сетка выключена */
+  conf() {
+    if (typeof SETTINGS === 'undefined' || !SETTINGS || !SETTINGS.SQUARE_GRID) return null
+    const conf = SETTINGS.SQUARE_GRID
+    if (conf.enabled === false) return null
+    const size = +conf.size || 100
+    const stepX = +conf.stepX || size
+    const stepY = +conf.stepY || size
+    const cols = conf.cols === undefined || conf.cols === null
+      ? null : Math.max(0, Math.floor(+conf.cols) || 0)
+    const rows = conf.rows === undefined || conf.rows === null
+      ? null : Math.max(0, Math.floor(+conf.rows) || 0)
+    return {
+      size,
+      stepX,
+      stepY,
+      offsetX: +conf.offsetX || 0,
+      offsetY: +conf.offsetY || 0,
+      cols,
+      rows,
+      label: conf.label !== false,
+      lineWidth: +conf.lineWidth > 0 ? +conf.lineWidth : 1,
+      labelSize: +conf.labelSize > 0 ? +conf.labelSize : null,
+      contrast: conf.contrast === true,
+      showUnitCell: conf.showUnitCell !== false,
+      defaultBiome: typeof conf.defaultBiome === 'string' ? conf.defaultBiome : '',
+      color: conf.color || 'rgba(255,255,255,0.35)',
+      contrastColor: conf.contrastColor || '#ff00ff',
+      labelColor: conf.labelColor || 'rgba(255,255,255,0.55)',
+    }
+  },
+
+  isEnabled() {
+    return !!this.conf()
+  },
+
+  /**
+   * Пересчёт мета: колонка/строка (0-based) или null.
+   * null — сетка выключена или точка вне заданных cols/rows.
+   * Если cols/rows не заданы, отрицательные координаты допустимы.
+   */
+  cellCoords(x, y) {
+    const conf = this.conf()
+    if (!conf) return null
+    const col = Math.floor((x - conf.offsetX) / conf.stepX)
+    const row = Math.floor((y - conf.offsetY) / conf.stepY)
+    if (!Number.isFinite(col) || !Number.isFinite(row)) return null
+    if (conf.cols !== null && (col < 0 || col >= conf.cols)) return null
+    if (conf.rows !== null && (row < 0 || row >= conf.rows)) return null
+    return { col, row }
+  },
+
+  /** подпись клетки по её координатам, например "C7" */
+  nameByCoords(col, row) {
+    return this.colLabel(col) + (row + 1)
+  },
+
+  /** ссылочное имя квадрата, например "C7"; null если сетка выключена/вне */
+  cellName(x, y) {
+    const c = this.cellCoords(x, y)
+    if (!c) return null
+    return this.nameByCoords(c.col, c.row)
+  },
+
+  /** подпись колонки в стиле электронных таблиц: A..Z, AA, AB..., отрицательные с минусом */
+  colLabel(i) {
+    if (i < 0) return '-' + SquareGrid.colLabel(-i - 1)
+    return i < 26
+      ? String.fromCharCode(65 + i)
+      : SquareGrid.colLabel(Math.floor(i / 26) - 1) + String.fromCharCode(65 + i % 26)
+  },
+
+  /** клетка, в которой находится объект (по центру объекта) */
+  cellOfElement(el) {
+    if (!el) return null
+    const width = +el.width || 0
+    const height = +el.height || 0
+    return this.cellCoords(+el.x + width / 2, +el.y + height / 2)
+  },
+
+  /** ключ биома совпадает с подписью клетки, которую видит пользователь */
+  cellKey(col, row) {
+    return this.nameByCoords(col, row)
+  },
+
+  /** биом — строка не длиннее двух символов */
+  normalizeBiome(value) {
+    return Array.from(String(value == null ? '' : value).trim()).slice(0, 2).join('')
+  },
+
+  getBiome(col, row) {
+    return this.biomes[this.cellKey(col, row)] || this.conf()?.defaultBiome || ''
+  },
+
+  /** задать/удалить биом клетки (пустая строка удаляет) */
+  setBiome(col, row, value) {
+    const key = this.cellKey(col, row)
+    const biome = this.normalizeBiome(value)
+    if (biome) this.biomes[key] = biome
+    else delete this.biomes[key]
+  },
+
+  /** заменить всю карту биомов (используется при загрузке сейва) */
+  setBiomes(biomes) {
+    this.biomes = {}
+    if (!biomes || typeof biomes !== 'object') return
+    for (const [key, value] of Object.entries(biomes)) {
+      const biome = this.normalizeBiome(value)
+      if (biome) this.biomes[key] = biome
+    }
+  },
+
+  /** данные для записи в save-файл */
+  exportBiomes() {
+    return Object.assign({}, this.biomes)
+  },
+
+  /** биом клетки, в которой стоит объект ('' = нет) */
+  biomeOfElement(obj) {
+    const c = this.cellOfElement(obj)
+    return c ? this.getBiome(c.col, c.row) : ''
+  },
+
+  /** справка для панели/алерта: "C7 (биом: XX)" или "вне сетки" */
+  describeElement(el) {
+    if (!this.isEnabled()) return ''
+    const c = this.cellOfElement(el)
+    if (!c) return 'вне сетки'
+    const name = this.nameByCoords(c.col, c.row)
+    const biome = this.getBiome(c.col, c.row)
+    return biome ? `${name} (биом: ${biome})` : name
+  },
+
+  /** суффикс для подписи юнита, например " [C7]" / " [C7:биом]"; '' если не нужен */
+  unitSuffix(el) {
+    const conf = this.conf()
+    if (!conf || !conf.showUnitCell || !el) return ''
+    const c = this.cellOfElement(el)
+    if (!c) return ' [вне]'
+    const biome = this.getBiome(c.col, c.row)
+    const suffix = this.nameByCoords(c.col, c.row) + (biome ? `:${biome}` : '')
+    return ` [${suffix}]`
+  },
+
+  /**
+   * Рисует сетку и подписи квадратов в мировых координатах.
+   * Вызывается из drawCanvas внутри ctx.translate/scale.
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {number} mapW ширина картинки карты
+   * @param {number} mapH высота картинки карты
+   */
+  draw(ctx, mapW, mapH) {
+    const conf = this.conf()
+    if (!conf) return
+
+    const { stepX, stepY, offsetX, offsetY, cols, rows } = conf
+    const firstCol = cols !== null ? 0 : Math.floor((0 - offsetX) / stepX)
+    const lastCol = cols !== null ? cols : Math.ceil((mapW - offsetX) / stepX)
+    const firstRow = rows !== null ? 0 : Math.floor((0 - offsetY) / stepY)
+    const lastRow = rows !== null ? rows : Math.ceil((mapH - offsetY) / stepY)
+
+    const x0 = offsetX + firstCol * stepX
+    const y0 = offsetY + firstRow * stepY
+    const x1 = offsetX + lastCol * stepX
+    const y1 = offsetY + lastRow * stepY
+
+    // Линии задаются в мировых координатах, поэтому делим на масштаб,
+    // чтобы толщина оставалась одинаковой на экране при любом зуме.
+    const scale = Viewport.scale || 1
+
+    ctx.save()
+    ctx.strokeStyle = conf.contrast ? conf.contrastColor : conf.color
+    ctx.lineWidth = (conf.contrast ? 3 : conf.lineWidth) / scale
+    ctx.beginPath()
+    for (let col = firstCol; col <= lastCol; col++) {
+      const x = offsetX + col * stepX
+      ctx.moveTo(x, y0)
+      ctx.lineTo(x, y1)
+    }
+    for (let row = firstRow; row <= lastRow; row++) {
+      const y = offsetY + row * stepY
+      ctx.moveTo(x0, y)
+      ctx.lineTo(x1, y)
+    }
+    ctx.stroke()
+
+    // Внешняя рамка — чтобы на этапе подгонки сразу видеть весь диапазон cols×rows.
+    if (conf.contrast) {
+      ctx.strokeStyle = conf.contrastColor
+      ctx.lineWidth = 4 / scale
+      ctx.strokeRect(x0, y0, x1 - x0, y1 - y0)
+    }
+
+    // подписи в каждом квадрате (левый верхний угол клетки)
+    if (conf.label) {
+      const labelSize = conf.labelSize
+        ? conf.labelSize / scale
+        : Math.max(8, Math.round(Math.min(stepX, stepY) / 8) / scale)
+      ctx.fillStyle = conf.contrast ? conf.contrastColor : conf.labelColor
+      ctx.font = `${labelSize}px Arial`
+      ctx.textAlign = 'left'
+      ctx.textBaseline = 'top'
+      for (let col = firstCol; col < lastCol; col++) {
+        for (let row = firstRow; row < lastRow; row++) {
+          const cellX = offsetX + col * stepX
+          const cellY = offsetY + row * stepY
+          ctx.fillText(
+            this.nameByCoords(col, row),
+            cellX + labelSize / 3,
+            cellY + 2 / scale
+          )
+        }
+      }
+    }
+    ctx.restore()
+  },
+}
+
 let turnEndChecked = false
 
 function onEndTurn() {
@@ -716,6 +960,10 @@ function loadDefaultData() {
   if (typeof OWNER_MAP !== 'undefined') {
     Pins.fromJSON(OWNER_MAP)
   }
+
+  if (typeof GRID_BIOMES !== 'undefined') {
+    SquareGrid.setBiomes(GRID_BIOMES)
+  }
 }
 
 function assignIdsToElements() {
@@ -888,6 +1136,7 @@ function drawCanvas(options = {infoPanel: false}) {
     ctx.translate(Viewport.offsetX, Viewport.offsetY);
     ctx.scale(Viewport.scale, Viewport.scale);
     ctx.drawImage(map.image, 0, 0, map.image.width, map.image.height);
+    SquareGrid.draw(ctx, map.image.width, map.image.height)
     ctx.restore();
   }
 
@@ -1075,11 +1324,13 @@ const draw = {
         el.curr_hp || Unit.getMaxHP(el.name), Unit.getMaxHP(el.name)
       )
     }
-    if (el.title) {
+    // справка о квадрате (при включённой квадратной сетке в SETTINGS.SQUARE_GRID)
+    const cellSuffix = SquareGrid.unitSuffix(el)
+    if (el.title || cellSuffix) {
       draw.textBelow(
         // TODO performance?
         ctx, x, y + (SETTINGS?.TITLE_ABOVE ? 0 : el.height), el.width,
-        el.title
+        (el.title || '') + cellSuffix
       )
     }
 
@@ -1829,7 +2080,8 @@ const selection = {
 
   info() {
     if(!selectedElement) return
-    alert(JSON.stringify(selectedElement, 0, 2))
+    const gridInfo = SquareGrid.describeElement(selectedElement)
+    alert(JSON.stringify(selectedElement, 0, 2) + (gridInfo ? `\n\nКлетка: ${gridInfo}` : ''))
   }
 }
 
@@ -3782,6 +4034,7 @@ OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
 USER_RESOURCES=${JSON.stringify(userResources, 0, 2)};
 USER_TECH_LVLS=${JSON.stringify(typeof USER_TECH_LVLS !== 'undefined' ? USER_TECH_LVLS : {}, 0, 2)};
 OWNER_MAP=${JSON.stringify(typeof ownerMap !== 'undefined' ? ownerMap : {})};
+GRID_BIOMES=${JSON.stringify(SquareGrid.exportBiomes(), 0, 2)};
 DEFAULT_DATA=`
     + JSON.stringify(defaultData, 0, 2)
   )
