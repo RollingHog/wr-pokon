@@ -20,7 +20,7 @@ const SETTINGS = {
   // DEFAULT_FIGURE_BG: 'circle',
 
   MAX_UNIT_HP: 1,
-  VISION_RADIUS: CELL_SIZE * 1.7,
+  VISION_RADIUS: CELL_SIZE * 1.2,
   CAPITAL_SPECIAL_VISION: false,
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
@@ -214,6 +214,8 @@ const EFFECT_LISTS = {
   // статичные эффекты, нам важно текущее значение
   static: [
     "Горячая_родина",
+    "Земная_родина",
+    "Водная_родина",
     "Холодная_родина",
     
     "Предел_торговли",
