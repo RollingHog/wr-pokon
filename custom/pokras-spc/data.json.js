@@ -1,9 +1,9 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 0.9069369124125392,
-  "canvasOffsetX": -1164.2859367744097,
-  "canvasOffsetY": -648.7176563210413,
-  "shapeColor": "#d3d3d3"
+  "scale": 0.9244190611889804,
+  "canvasOffsetX": -1045.8354893825358,
+  "canvasOffsetY": -300.76415668508446,
+  "shapeColor": "#930000"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -61,7 +61,7 @@ USER_TECH_LVLS={
     "Щиты": 0
   }
 };
-OWNER_MAP={"117":[55],"121":[118],"122":[120]};
+OWNER_MAP={"117":[55],"121":[118],"122":[120],"140":[70]};
 GRID_BIOMES={};
 DEFAULT_DATA=[
   {
@@ -719,14 +719,13 @@ DEFAULT_DATA=[
     "type": "shape",
     "name": "Умеренный_мир",
     "shape": "custom",
-    "color": "#d3d3d3",
-    "x": 1540.43,
-    "y": 576.59,
+    "color": "#930000",
+    "x": 1542.29,
+    "y": 579.38,
     "width": 50,
     "height": 50,
     "src": "pokras-spc/images/buildings/Умеренный_мир.png",
     "curr_hp": 1,
-    "disabled": 1,
     "endedTurn": false
   },
   {
@@ -734,14 +733,13 @@ DEFAULT_DATA=[
     "type": "shape",
     "name": "Газовый_гигант",
     "shape": "custom",
-    "color": "#d3d3d3",
+    "color": "#930000",
     "x": 1751.89,
     "y": 582.16,
     "width": 50,
     "height": 50,
     "src": "pokras-spc/images/buildings/Газовый_гигант.png",
     "curr_hp": 1,
-    "disabled": 1,
     "endedTurn": false
   },
   {
@@ -749,14 +747,13 @@ DEFAULT_DATA=[
     "type": "shape",
     "name": "Водный_мир",
     "shape": "custom",
-    "color": "#d3d3d3",
+    "color": "#930000",
     "x": 1751.89,
     "y": 786.19,
     "width": 50,
     "height": 50,
     "src": "pokras-spc/images/buildings/Водный_мир.png",
     "curr_hp": 1,
-    "disabled": 1,
     "endedTurn": false
   },
   {
@@ -1380,6 +1377,143 @@ DEFAULT_DATA=[
     "src": "pokras-spc/images/buildings/Горячий_мир.png",
     "curr_hp": 1,
     "disabled": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 131,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 807.37,
+    "y": 2244.02,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "пусто"
+  },
+  {
+    "id": 132,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 928.33,
+    "y": 1938.5,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "критпровал"
+  },
+  {
+    "id": 133,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1447.43,
+    "y": 1878.07,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "пусто"
+  },
+  {
+    "id": 134,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1491.78,
+    "y": 2225.88,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "древний артефакт"
+  },
+  {
+    "id": 135,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1035.95,
+    "y": 333.99,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "аборигены: индустриальные"
+  },
+  {
+    "id": 136,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1684.18,
+    "y": 636.41,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "аборигены: звездный век"
+  },
+  {
+    "id": 137,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1214.78,
+    "y": 1066.37,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "пираты"
+  },
+  {
+    "id": 138,
+    "type": "shape",
+    "name": "Добывающая_станция",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 1755.14,
+    "y": 535.25,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 139,
+    "type": "shape",
+    "name": "Добывающая_станция",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 1758.58,
+    "y": 742.73,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 140,
+    "type": "shape",
+    "name": "Развивающаяся_колония",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 1546.46,
+    "y": 582.7,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
     "endedTurn": false
   }
 ]
