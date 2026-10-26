@@ -463,9 +463,12 @@ const Viewport = {
  *   cols/rows     — сколько клеток рисовать и учитывать; если не заданы —
  *                   сетка строится на всю карту (старое поведение);
  *   label         — подписи клеток поверх карты;
- *   lineWidth     — толщина линий сетки в пикселях экрана (по умолчанию 1);
- *   labelSize     — размер шрифта подписей в пикселях экрана
- *                   (по умолчанию ~1/8 клетки);
+ *   showGrid      — false скрывает линии и подписи, но клетки продолжают
+ *                   работать (cellName, биомы, суффиксы юнитов);
+ *   lineWidth     — толщина линий сетки в пикселях карты (по умолчанию 1),
+ *                   масштабируется вместе с картой;
+ *   labelSize     — размер шрифта подписей в пикселях карты
+ *                   (по умолчанию ~1/8 клетки), масштабируется вместе с картой;
  *   contrast      — контрастные толстые границы для подгонки сетки;
  *   showUnitCell  — справочный суффикс " [C7]" в подписи юнита;
  *   defaultBiome  — биом по умолчанию ('' = биома нет).
@@ -502,6 +505,7 @@ const SquareGrid = {
       cols,
       rows,
       label: conf.label !== false,
+      showGrid: conf.showGrid !== false,
       lineWidth: +conf.lineWidth > 0 ? +conf.lineWidth : 1,
       labelSize: +conf.labelSize > 0 ? +conf.labelSize : null,
       contrast: conf.contrast === true,
@@ -635,7 +639,7 @@ const SquareGrid = {
    */
   draw(ctx, mapW, mapH) {
     const conf = this.conf()
-    if (!conf) return
+    if (!conf || !conf.showGrid) return
 
     const { stepX, stepY, offsetX, offsetY, cols, rows } = conf
     // Клетки нумеруются с A1: левее/выше offsetX/offsetY сетки нет.
@@ -651,10 +655,6 @@ const SquareGrid = {
     const x1 = Math.min(offsetX + lastCol * stepX, mapW)
     const y1 = Math.min(offsetY + lastRow * stepY, mapH)
 
-    // Линии задаются в мировых координатах, поэтому делим на масштаб,
-    // чтобы толщина оставалась одинаковой на экране при любом зуме.
-    const scale = Viewport.scale || 1
-
     ctx.save()
     // Сетка и подписи не должны вылезать за пределы карты.
     ctx.beginPath()
@@ -662,7 +662,8 @@ const SquareGrid = {
     ctx.clip()
 
     ctx.strokeStyle = conf.contrast ? conf.contrastColor : conf.color
-    ctx.lineWidth = (conf.contrast ? 3 : conf.lineWidth) / scale
+    const lineWidth = conf.contrast ? 3 : conf.lineWidth
+    ctx.lineWidth = lineWidth
     ctx.beginPath()
     for (let col = firstCol; col <= lastCol; col++) {
       const x = offsetX + col * stepX
@@ -679,27 +680,29 @@ const SquareGrid = {
     // Внешняя рамка — чтобы на этапе подгонки сразу видеть весь диапазон cols×rows.
     if (conf.contrast) {
       ctx.strokeStyle = conf.contrastColor
-      ctx.lineWidth = 4 / scale
+      ctx.lineWidth = 4
       ctx.strokeRect(x0, y0, x1 - x0, y1 - y0)
     }
 
-    // подписи в каждом квадрате (левый верхний угол клетки)
+    // подписи в каждом квадрате (по центру нижнего края клетки)
     if (conf.label) {
       const labelSize = conf.labelSize
-        ? conf.labelSize / scale
-        : Math.max(8, Math.round(Math.min(stepX, stepY) / 8) / scale)
+        ? conf.labelSize
+        : Math.max(8, Math.round(Math.min(stepX, stepY) / 8))
+      // не наезжаем на нижнюю линию сетки
+      const labelPad = lineWidth / 2 + 2
       ctx.fillStyle = conf.contrast ? conf.contrastColor : conf.labelColor
       ctx.font = `${labelSize}px Arial`
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'top'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'bottom'
       for (let col = firstCol; col < lastCol; col++) {
         for (let row = firstRow; row < lastRow; row++) {
           const cellX = offsetX + col * stepX
           const cellY = offsetY + row * stepY
           ctx.fillText(
             this.nameByCoords(col, row),
-            cellX + labelSize / 3,
-            cellY + 2 / scale
+            cellX + stepX / 2,
+            cellY + stepY - labelPad
           )
         }
       }

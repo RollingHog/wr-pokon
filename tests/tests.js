@@ -380,6 +380,50 @@
     })
   })
 
+  test('SquareGrid: толщина линий и шрифт масштабируются вместе с картой', () => {
+    withSquareGrid({ size: 100, lineWidth: 2, labelSize: 10 }, () => {
+      const fake = {
+        lineWidth: 0, font: '', strokeStyle: '', fillStyle: '',
+        textAlign: '', textBaseline: '', texts: [],
+        save() {}, restore() {}, beginPath() {}, rect() {}, clip() {},
+        moveTo() {}, lineTo() {}, stroke() {}, strokeRect() {},
+        fillText(text, x, y) { this.texts.push({ text, x, y }) },
+      }
+      const savedScale = Viewport.scale
+      try {
+        for (const scale of [0.5, 2]) {
+          Viewport.scale = scale
+          fake.lineWidth = 0
+          fake.font = ''
+          fake.texts = []
+          SquareGrid.draw(fake, 1000, 1000)
+          // размеры заданы в координатах карты — зум их не меняет
+          assertEq(fake.lineWidth, 2, `толщина при масштабе ${scale}`)
+          assertEq(fake.font, '10px Arial', `шрифт при масштабе ${scale}`)
+          // подпись по центру нижнего края клетки A1 (size 100, lineWidth 2)
+          assertEq(fake.textAlign, 'center', `выравнивание при масштабе ${scale}`)
+          assertEq(fake.textBaseline, 'bottom', `базовая линия при масштабе ${scale}`)
+          const a1 = fake.texts.find(t => t.text === 'A1')
+          assertEq(a1 && a1.x, 50, `центр по X при масштабе ${scale}`)
+          assertEq(a1 && a1.y, 97, `низ по Y при масштабе ${scale}`)
+        }
+      } finally {
+        Viewport.scale = savedScale
+      }
+    })
+  })
+
+  test('SquareGrid: showGrid=false скрывает отрисовку, но клетки работают', () => {
+    withSquareGrid({ size: 100, showGrid: false, label: true }, () => {
+      // ctx не должен использоваться вообще
+      SquareGrid.draw(null, 1000, 1000)
+      assert(SquareGrid.isEnabled(), 'сетка существует')
+      assertEq(SquareGrid.cellName(50, 50), 'A1')
+      assertEq(SquareGrid.cellName(150, 50), 'B1')
+      assertEq(SquareGrid.unitSuffix({ x: 90, y: 90, width: 40, height: 40 }), ' [B2]')
+    })
+  })
+
   // ---------- запуск ----------
   async function runAll() {
     try {
