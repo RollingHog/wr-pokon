@@ -110,6 +110,7 @@ function init() {
   loadDefaultData()
   loadDefaultCustomImages()
   SpecialOps.init()
+  Delta.init()
   hotkeysLib.init({
     'Escape': () => {
       selection.drop()
@@ -3965,10 +3966,14 @@ function loadMap(index) {
   drawCanvas({infoPanel: true});
 }
 
-function saveMap() {
-  if (currentMapIndex === -1) {
-    alert('Сначала загрузите карту');
-    return;
+/**
+ * Полное игровое поле (карта + объекты + туман) в offscreen-canvas.
+ * Возвращает { canvas, ctx, dx, dy }, где dx/dy — сдвиг координат элементов
+ * внутри канваса; null, если карта не загружена.
+ */
+function renderFullFieldCanvas() {
+  if (currentMapIndex === -1 || !maps[currentMapIndex]) {
+    return null;
   }
 
   // Создаем временный canvas для сохранения
@@ -4052,10 +4057,48 @@ function saveMap() {
   });
   tempCtx.drawImage(fullFogCanvas, 0, 0);
 
+  return { canvas: tempCanvas, ctx: tempCtx, dx: padding - minX, dy: padding - minY };
+}
+
+/**
+ * toDataURL с понятным сообщением вместо SecurityError:
+ * при открытии страницы как локального файла картинки file:// "портят"
+ * canvas, и браузер запрещает выгрузку пикселей (Tainted canvas).
+ * Возвращает dataURL или null, если выгрузка невозможна.
+ */
+function canvasToPngUrl(canvas) {
+  try {
+    return canvas.toDataURL('image/png');
+  } catch (err) {
+    if (window.location.protocol === 'file:') {
+      alert('Экспорт PNG недоступен: страница открыта как локальный файл, поэтому\n'
+        + 'браузер запрещает выгрузку изображений с canvas (Tainted canvas).\n'
+        + 'Варианты:\n'
+        + '1) в корне проекта запустить "python -m http.server" и открыть страницу\n'
+        + '     по адресу http://localhost:8123/custom/pokras-spc.html;\n'
+        + '2) запустить Chrome с флагом --allow-file-access-from-files\n'
+        + '     (тогда локальные картинки перестают портить canvas).');
+    } else {
+      alert('Не удалось выгрузить PNG: ' + err.message);
+    }
+    return null;
+  }
+}
+
+function saveMap() {
+  const field = renderFullFieldCanvas();
+  if (!field) {
+    alert('Сначала загрузите карту');
+    return;
+  }
+
+  const url = canvasToPngUrl(field.canvas);
+  if (!url) return;
+
   // Создаем ссылку для скачивания
   const link = document.createElement('a');
   link.download = 'map-editor-export.png';
-  link.href = tempCanvas.toDataURL('image/png');
+  link.href = url;
   link.click();
 }
 
@@ -4101,6 +4144,226 @@ function loadGame(e) {
     drawCanvas()
   }
   reader.readAsText(file);
+}
+
+/**
+ * Дельта карты: сравнение текущего состояния с предыдущим сейвом (.json.js,
+ * выбирается в диалоге по кнопке "Дельта"). Результат — PNG полного поля
+ * со стрелками (куда кто сместился), крестиками (что уничтожено) и зелёной
+ * обводкой (что появилось).
+ * Сопоставление объектов — по id (стабильны между сейвами одной партии),
+ * остатки — ближайший с той же парой имя+цвет.
+ */
+const Delta = {
+
+  /** значимы для дельты только юниты/здания (картинки), без могил/декора/текста */
+  isMarkable(el) {
+    return el.type === 'shape' && el.shape === 'custom' && el.name
+      && typeof el.x === 'number' && typeof el.y === 'number'
+      && !isNoHealth(el)
+  },
+
+  /**
+   * @param {object[]} prevElements - элементы предыдущего сейва
+   * @param {object[]} curElements - текущие элементы
+   * @returns {{moves: {from: object, to: object}[], deaths: object[], added: object[]}}
+   */
+  movesAndDeaths(prevElements, curElements) {
+    const prev = prevElements.filter(Delta.isMarkable)
+    const cur = curElements.filter(Delta.isMarkable)
+    const moves = []
+    const deaths = []
+    const usedCur = new Set()
+    const matchedPrev = new Set()
+
+    // 1) по id
+    const curById = new Map(cur.map(el => [el.id, el]))
+    for (const p of prev) {
+      if (p.id === undefined) continue
+      const c = curById.get(p.id)
+      if (!c || usedCur.has(c)) continue
+      usedCur.add(c)
+      matchedPrev.add(p)
+      if (p.x !== c.x || p.y !== c.y) moves.push({ from: p, to: c })
+    }
+
+    // 2) остатки без id/пары — ближайший с тем же именем и цветом
+    for (const p of prev) {
+      if (matchedPrev.has(p)) continue
+      let best = null
+      let bestDist = Infinity
+      for (const c of cur) {
+        if (usedCur.has(c) || c.name !== p.name || c.color !== p.color) continue
+        const dist = (c.x - p.x) ** 2 + (c.y - p.y) ** 2
+        if (dist < bestDist) { bestDist = dist; best = c }
+      }
+      if (best) {
+        usedCur.add(best)
+        matchedPrev.add(p)
+        if (bestDist > 0) moves.push({ from: p, to: best })
+      }
+    }
+
+    for (const p of prev) {
+      if (!matchedPrev.has(p)) deaths.push(p)
+    }
+    const added = cur.filter(el => !usedCur.has(el))
+    return { moves, deaths, added }
+  },
+
+  /**
+   * Разбор текста сейва. Присваивания перехватываются локальными var,
+   * чтобы не трогать одноимённые глобалы страницы.
+   */
+  parseSaveText(text) {
+    return new Function(
+      'var CURRENT_TURN,OTHER_SAVE_DATA,USER_RESOURCES,USER_TECH_LVLS,OWNER_MAP,GRID_BIOMES,DEFAULT_DATA;\n'
+      + text
+      + '\n;return { turn: CURRENT_TURN || 1, elements: DEFAULT_DATA || [] };'
+    )()
+  },
+
+  /** Метки рисуются с белой подложкой — видны и на тёмной карте, и на тумане */
+  drawMarks(ctx, dx, dy, delta) {
+    ctx.save()
+    ctx.translate(dx, dy)
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+
+    const center = el => ({
+      x: el.x + (el.width || 0) / 2,
+      y: el.y + (el.height || 0) / 2,
+    })
+
+    const lineWidth = 8
+    const headSize = 26
+    for (const m of delta.moves) {
+      const a = center(m.from)
+      const b = center(m.to)
+      const color = m.to.color || 'black'
+      const angle = Math.atan2(b.y - a.y, b.x - a.x)
+      const baseX = b.x - headSize * Math.cos(angle)
+      const baseY = b.y - headSize * Math.sin(angle)
+
+      for (const [style, width] of [['white', lineWidth + 5], [color, lineWidth]]) {
+        ctx.strokeStyle = style
+        ctx.lineWidth = width
+        ctx.beginPath()
+        ctx.moveTo(a.x, a.y)
+        ctx.lineTo(baseX, baseY)
+        ctx.stroke()
+      }
+
+      ctx.fillStyle = color
+      ctx.strokeStyle = 'white'
+      ctx.lineWidth = 3
+      ctx.beginPath()
+      ctx.moveTo(b.x, b.y)
+      ctx.lineTo(baseX - headSize * 0.5 * Math.sin(angle), baseY + headSize * 0.5 * Math.cos(angle))
+      ctx.lineTo(baseX + headSize * 0.5 * Math.sin(angle), baseY - headSize * 0.5 * Math.cos(angle))
+      ctx.closePath()
+      ctx.stroke()
+      ctx.fill()
+    }
+
+    const crossR = 20
+    for (const d of delta.deaths) {
+      const c = center(d)
+      for (const [style, width] of [['white', lineWidth + 5], ['red', lineWidth]]) {
+        ctx.strokeStyle = style
+        ctx.lineWidth = width
+        ctx.beginPath()
+        ctx.moveTo(c.x - crossR, c.y - crossR)
+        ctx.lineTo(c.x + crossR, c.y + crossR)
+        ctx.moveTo(c.x + crossR, c.y - crossR)
+        ctx.lineTo(c.x - crossR, c.y + crossR)
+        ctx.stroke()
+      }
+    }
+
+    // появившиеся объекты — зелёная рамка вокруг спрайта
+    const pad = 4
+    for (const el of delta.added) {
+      for (const [style, width] of [['white', lineWidth], ['green', lineWidth - 3]]) {
+        ctx.strokeStyle = style
+        ctx.lineWidth = width
+        ctx.strokeRect(el.x - pad, el.y - pad, (el.width || 0) + pad * 2, (el.height || 0) + pad * 2)
+      }
+    }
+    ctx.restore()
+  },
+
+  fromFile(evt) {
+    const file = evt.target.files[0]
+    evt.target.value = ''
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = event => {
+      let prev
+      try {
+        prev = Delta.parseSaveText(event.target.result)
+      } catch (err) {
+        alert('Не удалось разобрать файл сейва: ' + err.message)
+        return
+      }
+
+      const delta = Delta.movesAndDeaths(prev.elements, elements)
+      if (!delta.moves.length && !delta.deaths.length && !delta.added.length) {
+        alert(`Изменений относительно хода ${prev.turn} не найдено`)
+        return
+      }
+
+      const field = renderFullFieldCanvas()
+      if (!field) {
+        alert('Сначала загрузите карту')
+        return
+      }
+
+      Delta.drawMarks(field.ctx, field.dx, field.dy, delta)
+
+      if (typeof CURRENT_TURN !== 'undefined' && CURRENT_TURN !== prev.turn) {
+        field.ctx.font = 'bold 48px Arial'
+        field.ctx.lineWidth = 6
+        field.ctx.strokeStyle = 'white'
+        field.ctx.fillStyle = 'black'
+        const label = `Ход ${prev.turn} → ${CURRENT_TURN}`
+        field.ctx.strokeText(label, 20, 56)
+        field.ctx.fillText(label, 20, 56)
+      }
+
+      const url = canvasToPngUrl(field.canvas);
+      if (!url) return;
+
+      const link = document.createElement('a');
+      link.download = `map-delta_${prev.turn}-${typeof CURRENT_TURN !== 'undefined' ? CURRENT_TURN : '?'}.png`;
+      link.href = url;
+      link.click();
+    }
+    reader.readAsText(file)
+  },
+
+  /** Кнопка и скрытый file-input добавляются в секцию "Управление" тулбара */
+  init() {
+    const anchor = document.getElementById('save-objects-btn')?.parentElement
+      || document.getElementById('toolbar')
+    if (!anchor) return
+
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json.js'
+    input.style.display = 'none'
+    input.addEventListener('change', Delta.fromFile)
+
+    const btn = document.createElement('button')
+    btn.id = 'delta-btn'
+    btn.textContent = 'Дельта'
+    btn.title = 'Выбрать предыдущий сейв (.json.js): PNG полного поля — стрелки (перемещения), крестики (уничтожено), зелёная обводка (новое)'
+    btn.onclick = _ => input.click()
+
+    anchor.appendChild(btn)
+    anchor.appendChild(input)
+  },
 }
 
 // eslint-disable-next-line no-global-assign

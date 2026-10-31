@@ -424,6 +424,53 @@
     })
   })
 
+  test('Delta: сопоставление по id — стрелки и кресты', () => {
+    const prev = [
+      { type: 'shape', shape: 'custom', name: 'Фрегат', color: 'red', id: 1, x: 100, y: 100, width: 40, height: 40 },
+      { type: 'shape', shape: 'custom', name: 'Строитель', color: 'red', id: 2, x: 200, y: 200, width: 40, height: 40 },
+      { type: 'shape', shape: 'custom', name: 'Крейсер', color: 'blue', id: 3, x: 300, y: 300, width: 40, height: 40 },
+      { type: 'shape', shape: 'custom', name: KW.GRAVE_UNIT, color: 'red', id: 4, x: 400, y: 400, width: 40, height: 40 },
+      { type: 'text', content: 'заметка', color: 'black', x: 0, y: 0, size: 20 },
+    ]
+    const cur = [
+      { type: 'shape', shape: 'custom', name: 'Фрегат', color: 'red', id: 1, x: 140, y: 100, width: 40, height: 40 },
+      { type: 'shape', shape: 'custom', name: 'Строитель', color: 'red', id: 2, x: 200, y: 200, width: 40, height: 40 },
+      { type: 'shape', shape: 'custom', name: 'Колонизатор', color: 'blue', id: 9, x: 500, y: 500, width: 40, height: 40 },
+    ]
+    const delta = Delta.movesAndDeaths(prev, cur)
+    assertEq(delta.moves.length, 1, 'одно перемещение')
+    assertEq(delta.moves[0].from.id, 1, 'переместился Фрегат')
+    assertEq(delta.moves[0].to.x, 140, 'новая позиция Фрегата')
+    assertEq(delta.deaths.length, 1, 'один крест')
+    assertEq(delta.deaths[0].id, 3, 'крест на месте Крейсера')
+    assertEq(delta.added.length, 1, 'один новый объект')
+    assertEq(delta.added[0].id, 9, 'обведён Колонизатор')
+  })
+
+  test('Delta: запасное сопоставление имя+цвет к ближайшему', () => {
+    const prev = [
+      { type: 'shape', shape: 'custom', name: 'Фрегат', color: 'red', x: 0, y: 0, width: 40, height: 40 },
+    ]
+    const cur = [
+      { type: 'shape', shape: 'custom', name: 'Фрегат', color: 'blue', x: 10, y: 10, width: 40, height: 40 },
+      { type: 'shape', shape: 'custom', name: 'Фрегат', color: 'red', x: 80, y: 60, width: 40, height: 40 },
+    ]
+    const delta = Delta.movesAndDeaths(prev, cur)
+    assertEq(delta.moves.length, 1, 'стрелка есть')
+    assertEq(delta.moves[0].to.x, 80, 'выбран ближайший того же цвета')
+    assertEq(delta.deaths.length, 0, 'уничтоженных нет')
+  })
+
+  test('Delta: parseSaveText не трогает глобалы страницы', () => {
+    const savedTurn = CURRENT_TURN
+    const prev = Delta.parseSaveText('CURRENT_TURN=7;DEFAULT_DATA=[{"type":"shape","shape":"custom",'
+      + '"name":"Фрегат","color":"red","id":1,"x":1,"y":2,"width":40,"height":40}]')
+    assertEq(prev.turn, 7, 'ход из файла')
+    assertEq(prev.elements.length, 1, 'элементы из файла')
+    assertEq(prev.elements[0].name, 'Фрегат', 'имя элемента')
+    assertEq(CURRENT_TURN, savedTurn, 'глобальный CURRENT_TURN не изменился')
+  })
+
   // ---------- запуск ----------
   async function runAll() {
     try {
