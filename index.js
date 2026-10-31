@@ -1135,20 +1135,44 @@ function getCurrentMap() {
 
 // Функции отрисовки
 // let lastPaint = Date.now()
+
+/**
+ * Offscreen-кеш шахматного фона: вместо тысяч fillRect на каждый кадр —
+ * один drawImage. Перестраивается только при смене размера холста.
+ */
+let backgroundCanvasEl = null;
+function getBackgroundCanvas() {
+  if (!canvas.width || !canvas.height) return null;
+  if (!backgroundCanvasEl
+    || backgroundCanvasEl.width !== canvas.width
+    || backgroundCanvasEl.height !== canvas.height) {
+    backgroundCanvasEl = document.createElement('canvas');
+    backgroundCanvasEl.width = canvas.width;
+    backgroundCanvasEl.height = canvas.height;
+    const bgCtx = backgroundCanvasEl.getContext('2d');
+
+    // Рисуем фон (шахматный узор)
+    const gridSize = 20;
+    for (let x = 0; x < backgroundCanvasEl.width; x += gridSize) {
+      for (let y = 0; y < backgroundCanvasEl.height; y += gridSize) {
+        const isEven = ((x + y) / gridSize) % 2 === 0;
+        bgCtx.fillStyle = isEven ? '#eee' : '#ddd';
+        bgCtx.fillRect(x, y, gridSize, gridSize);
+      }
+    }
+  }
+  return backgroundCanvasEl;
+}
+
 function drawCanvas(options = {infoPanel: false}) {
 
   // console.time('draw')
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Рисуем фон (шахматный узор)
-  const gridSize = 20;
-  for (let x = 0; x < canvas.width; x += gridSize) {
-    for (let y = 0; y < canvas.height; y += gridSize) {
-      const isEven = ((x + y) / gridSize) % 2 === 0;
-      ctx.fillStyle = isEven ? '#eee' : '#ddd';
-      ctx.fillRect(x, y, gridSize, gridSize);
-    }
+  const background = getBackgroundCanvas();
+  if (background) {
+    ctx.drawImage(background, 0, 0);
   }
 
   // Рисуем фоновое изображение (карту)
