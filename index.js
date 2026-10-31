@@ -109,6 +109,7 @@ function init() {
   loadDefaultMap()
   loadDefaultData()
   loadDefaultCustomImages()
+  SpecialOps.init()
   hotkeysLib.init({
     'Escape': () => {
       selection.drop()
@@ -142,6 +143,9 @@ function init() {
     },
     'F2': () => {
       selection.setTitle(prompt('new title?', selectedElement?.title || selectedElement?.content))
+    },
+    'Alt F2': () => {
+      SpecialOps.toggle()
     },
     'Space': () => {
       onEndTurn()
@@ -4101,6 +4105,7 @@ function showHelp() {
 * E - пометить закончившим ход
 * B, Alt + B - bind/pin
 * F2 - редактировать название
+* Alt + F2 - меню спецопераций (если список задан в rules.js)
 
     `)
 }
@@ -4201,6 +4206,70 @@ const hotkeysLib = {
       }
       if (evt.altKey) console.log(keyComb)
     })
+  },
+}
+
+/**
+ * Меню специальных операций (Alt+F2). Список задаётся в rules.js кампании:
+ * SPECIAL_OPERATIONS = { "Название": {Ресурс: цена, ...}, ... }.
+ * Нажатие кнопки списывает цену с текущего игрока; если ресурсов не хватает,
+ * покупка отменяется. Если SPECIAL_OPERATIONS не задан — меню не создаётся.
+ */
+const SpecialOps = {
+  MENU_ID: 'special-ops-menu',
+
+  init() {
+    if (typeof SPECIAL_OPERATIONS === 'undefined' || !Object.keys(SPECIAL_OPERATIONS).length) return
+
+    document.body.insertAdjacentHTML('beforeend', `
+      <style>
+        #${SpecialOps.MENU_ID} { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+          z-index: 30; display: none; background: white; border: 1px solid #444; padding: 8px; }
+        #${SpecialOps.MENU_ID} .ops-title { display: flex; align-items: center; margin: 0 0 6px 0; }
+        #${SpecialOps.MENU_ID} .ops-title h3 { flex: 1; margin: 0; font-size: 14px; }
+        #${SpecialOps.MENU_ID} .ops-title button { width: auto; margin: 0 0 0 8px; padding: 6px 12px; }
+        #${SpecialOps.MENU_ID} button { display: block; width: 100%; margin: 3px 0; }
+      </style>
+      <div id="${SpecialOps.MENU_ID}"></div>`)
+
+    const menu = document.getElementById(SpecialOps.MENU_ID)
+    menu.title = 'Alt+F2 — показать/скрыть'
+    const titleRow = document.createElement('div')
+    titleRow.className = 'ops-title'
+    const titleEl = document.createElement('h3')
+    titleRow.appendChild(titleEl)
+    const closeBtn = document.createElement('button')
+    closeBtn.textContent = '×'
+    closeBtn.title = 'Закрыть'
+    closeBtn.onclick = _ => SpecialOps.toggle()
+    titleRow.appendChild(closeBtn)
+    menu.appendChild(titleRow)
+    for (const [name, price] of Object.entries(SPECIAL_OPERATIONS)) {
+      const btn = document.createElement('button')
+      btn.textContent = `${name} — ${SpecialOps.priceText(price)}`
+      btn.onclick = _ => SpecialOps.pay(name, price)
+      menu.appendChild(btn)
+    }
+  },
+
+  priceText(price) {
+    return Object.entries(price).map(([res, amount]) => `${res}:${amount}`).join(', ')
+  },
+
+  toggle() {
+    const menu = document.getElementById(SpecialOps.MENU_ID)
+    if (!menu) return
+    const show = menu.style.display !== 'block'
+    menu.style.display = show ? 'block' : 'none'
+    if (show) {
+      menu.querySelector('h3').innerText = `Спецоперации — ${Players.current()}`
+    }
+  },
+
+  pay(name, price) {
+    if (subtractUnitCost(name, Players.current(), price)) {
+      UI.drawInfoPanel()
+    }
   },
 }
 

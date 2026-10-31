@@ -4,6 +4,7 @@ CATEGORY_PRICES OBJ_CATEGORIES
 EFFECT_LISTS DEFAULT 
 MAX_UNIT_HP MAP_PATH POP_PROP 
 TECH_EFFECTS
+SPECIAL_OPERATIONS
 */
 
 /// <reference path="../../src/keywords.js"/>
@@ -796,4 +797,12 @@ const TECH_EFFECTS = {
 
 const CUSTOM_REPORTS = {
 
+}
+
+/**
+ * Меню специальных операций
+ * Ключ = название операции (надпись на кнопке), значение = цена {Ресурс: количество}.
+ */
+const SPECIAL_OPERATIONS = {
+  "Терраформирование":  { Металл: 50, Кремний: 120, Уран: 50  },
 }
