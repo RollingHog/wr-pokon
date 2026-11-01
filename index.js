@@ -2167,23 +2167,37 @@ const selection = {
     if (!selectedElement) return
     if (newTitle === null) return
 
+    // при смене title меняются именные эффекты объекта: если старому или новому
+    // title сопоставлены эффекты (KW.TITLE_EFFECTS), панель игрока пересчитывается
+    const hasTitleEffects = (t) => !!t && !!DICT_COMMON_A?.[KW.TITLE_EFFECTS]?.[t]?.length
+    const needPanelRecalc = hasTitleEffects(selectedElement.title) || hasTitleEffects(newTitle)
+
     if(selectedElement.type === 'text') {
       selectedElement.content = newTitle
     } else {
       if (newTitle === '') {
         delete selectedElement.title
         draw.element(selectedElement)
+        if (needPanelRecalc) UI.drawInfoPanel()
         return
       }
       selectedElement.title = newTitle
     }
     draw.element(selectedElement)
+    if (needPanelRecalc) UI.drawInfoPanel()
   },
 
   info() {
     if(!selectedElement) return
     const gridInfo = SquareGrid.describeElement(selectedElement)
-    alert(JSON.stringify(selectedElement, 0, 2) + (gridInfo ? `\n\nКлетка: ${gridInfo}` : ''))
+
+    // именные эффекты объекта — списком в начало информации
+    const namedEff = userEffectsObj.getNamedEffects(selectedElement)
+    const namedStr = namedEff.length
+      ? 'Именные эффекты:\n' + namedEff.map(e => `${e[0]}: ${e[1]} [${e[2]}]`).join('\n') + '\n\n'
+      : ''
+
+    alert(namedStr + JSON.stringify(selectedElement, 0, 2) + (gridInfo ? `\n\nКлетка: ${gridInfo}` : ''))
   }
 }
 
@@ -2615,6 +2629,36 @@ const userEffectsObj = {
       : baseNum - lvlPart;
 
     return +result.toFixed(1);
+  },
+
+  /**
+   * Именные эффекты объекта — привязанные к нему лично:
+   * по имени (DICT_COMMON), по title (DICT_COMMON[KW.TITLE_EFFECTS])
+   * и от игрока (DICT_USER + технологии). Общие по типу
+   * ('_unit_'/'_building_') и содержание (_upkeep_) не входят.
+   * @param {elements[0]} obj
+   * @returns {Array<[string, (string|number), string]>} [эффект, значение, источник]
+   */
+  getNamedEffects(obj) {
+    const username = Players.byColor(obj.color)
+    const groups = [
+      ['по имени', DICT_COMMON_A?.[obj.name]],
+      ['по title «' + (obj.title ?? '') + '»',
+        obj.title ? DICT_COMMON_A?.[KW.TITLE_EFFECTS]?.[obj.title] : undefined],
+      ['от игрока', [].concat(
+        DICT_USER[username]?.[obj.name],
+        TechUtils.getUnitTechEffects(username, obj.name),
+      ).filter(e => e)],
+    ]
+
+    const result = []
+    for (const [label, entries] of groups) {
+      for (const entry of (entries || [])) {
+        if (!entry || EFFECTS_TO_IGNORE.includes(entry[0])) continue
+        result.push([entry[0], entry[1], label])
+      }
+    }
+    return result
   },
 
   /**

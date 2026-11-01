@@ -542,6 +542,78 @@
     }
   })
 
+  test('userEffectsObj.getNamedEffects: по имени, по title, от игрока', () => {
+    const savedCommonA = DICT_COMMON_A
+    const savedKreiser = DICT_COMMON['Крейсер']
+    const savedTitle = DICT_COMMON[KW.TITLE_EFFECTS]
+    const savedUser = DICT_USER['Синие']
+
+    DICT_COMMON['Крейсер'] = { Уран: -1, [KW.COST]: { Металл: 50 } }
+    DICT_COMMON[KW.TITLE_EFFECTS] = { 'Флагман': { 'Сила Б': 1 } }
+    DICT_USER['Синие'] = { 'Крейсер': [['ОО', 3]] }
+    DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
+
+    try {
+      const effs = userEffectsObj.getNamedEffects(
+        { name: 'Крейсер', color: '#0000ff', title: 'Флагман', x: 0, y: 0 })
+      assert(effs.some(e => e[0] === 'Уран' && e[2] === 'по имени'), 'эффект по имени')
+      assert(effs.some(e => e[0] === 'Сила Б' && e[2] === 'по title «Флагман»'), 'эффект по title')
+      assert(effs.some(e => e[0] === 'ОО' && e[2] === 'от игрока'), 'эффект игрока')
+      assert(!effs.some(e => e[0] === KW.COST), 'цена не попадает в именные эффекты')
+
+      const noTitle = userEffectsObj.getNamedEffects(
+        { name: 'Крейсер', color: '#0000ff', x: 0, y: 0 })
+      assert(!noTitle.some(e => e[2].startsWith('по title')), 'без title группы по title нет')
+    } finally {
+      if (typeof savedKreiser === 'undefined') {
+        delete DICT_COMMON['Крейсер']
+      } else {
+        DICT_COMMON['Крейсер'] = savedKreiser
+      }
+      if (typeof savedTitle === 'undefined') {
+        delete DICT_COMMON[KW.TITLE_EFFECTS]
+      } else {
+        DICT_COMMON[KW.TITLE_EFFECTS] = savedTitle
+      }
+      DICT_USER['Синие'] = savedUser
+      DICT_COMMON_A = savedCommonA
+    }
+  })
+
+  test('setTitle: смена title пересчитывает панель эффектов игрока', () => {
+    resetGame([])
+    const savedCommonA = DICT_COMMON_A
+    const savedTitle = DICT_COMMON[KW.TITLE_EFFECTS]
+    DICT_COMMON[KW.TITLE_EFFECTS] = { 'Флагман': { 'Сила Б': 1 } }
+    DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
+
+    try {
+      const farm = placeTestObject('Ферма', '#0000ff')
+      selectedElement = farm
+
+      selection.setTitle('')
+      UI.drawInfoPanel()
+      assert(!info_panel_body.innerHTML.includes('Сила Б'), 'до назначения title эффекта нет')
+
+      selection.setTitle('Флагман')
+      assert(info_panel_body.innerHTML.includes('Сила Б'), 'после смены title панель пересчитана')
+
+      selection.setTitle('Рядовой')
+      assert(!info_panel_body.innerHTML.includes('Сила Б'), 'смена на title без эффектов убирает эффект')
+
+      selection.setTitle('Флагман')
+      assert(info_panel_body.innerHTML.includes('Сила Б'), 'эффект вернулся при возврате title')
+    } finally {
+      selectedElement = null
+      if (typeof savedTitle === 'undefined') {
+        delete DICT_COMMON[KW.TITLE_EFFECTS]
+      } else {
+        DICT_COMMON[KW.TITLE_EFFECTS] = savedTitle
+      }
+      DICT_COMMON_A = savedCommonA
+    }
+  })
+
   // ---------- запуск ----------
   async function runAll() {
     try {
