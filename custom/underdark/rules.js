@@ -8,6 +8,7 @@ onEndTurnCb
 */
 
 /// <reference path="../../src/keywords.js"/>
+/// <reference path="../../src/rules.d.ts"/>
 /* global
 KW
 */

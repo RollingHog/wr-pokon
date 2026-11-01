@@ -7,6 +7,7 @@ TECH_EFFECTS
 */
 
 /// <reference path="../src/keywords.js"/>
+/// <reference path="./rules.d.ts"/>
 /* global
 KW
 */

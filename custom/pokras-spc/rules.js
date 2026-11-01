@@ -8,12 +8,14 @@ SPECIAL_OPERATIONS
 */
 
 /// <reference path="../../src/keywords.js"/>
+/// <reference path="../../src/rules.d.ts"/>
 /* global
 KW KW_RULES KW_LOCALS
 */
 
 const CELL_SIZE = 105
 
+/** @type {Settings} */
 const SETTINGS = {
   IS_CUSTOM: true,
   MAP_PATH: 'pokras-spc/map.png',
@@ -51,6 +53,7 @@ const SETTINGS = {
 } 
 
 
+/** @type {RulesDefaults} */
 const DEFAULT = {
   /* filled up later */
   buildings: [],
@@ -72,6 +75,7 @@ const DEFAULT = {
   ],
 }
 
+/** @type {EmojiImages} */
 const EMOJI_IMAGES = {
   [KW.GRAVE_UNIT]: '💀',
   // [KW.WRECK_UNIT]: '🔩',
@@ -130,6 +134,7 @@ const EMOJI_IMAGES = {
 const WEATHER_EFF = {}
 
 /** usually it means prices */
+/** @type {ObjCategories} */
 const OBJ_CATEGORIES = {
   UNITS: {
     // _none_: [
@@ -202,6 +207,7 @@ DEFAULT.noHealth = DEFAULT.noHealth
   .concat(OBJ_CATEGORIES.UNITS.Предметы)
   .concat(OBJ_CATEGORIES.BUILDINGS.Декор)
 
+/** @type {ObjCategories} */
 const CATEGORY_PRICES = {
   UNITS: {
     _default_: [], 
@@ -211,6 +217,7 @@ const CATEGORY_PRICES = {
   }
 }
 
+/** @type {EffectLists} */
 const EFFECT_LISTS = {
   // статичные эффекты, нам важно текущее значение
   static: [
@@ -250,6 +257,7 @@ const EFFECT_LISTS = {
   ],
 }
 
+/** @type {RulesDict} */
 const DICT_COMMON = {
   '_upkeep_': {
     '_building_': {
@@ -578,6 +586,7 @@ DEFAULT.noUpkeep = DEFAULT.noUpkeep.concat(OBJ_CATEGORIES.BUILDINGS.Планет
 // )
 
 
+/** @type {TechEffects} */
 const TECH_EFFECTS = {
   Энергетика: {
     [KW.COST]: {
@@ -802,6 +811,7 @@ const CUSTOM_REPORTS = {
 /**
  * Меню специальных операций
  * Ключ = название операции (надпись на кнопке), значение = цена {Ресурс: количество}.
+ * @type {SpecialOperations}
  */
 const SPECIAL_OPERATIONS = {
   "Терраформирование":  { Металл: 50, Кремний: 120, Уран: 50  },

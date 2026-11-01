@@ -3,6 +3,7 @@ FACTIONS DICT_USER USER_TECH_LVLS
 */
 
 /// <reference path="../../src/keywords.js"/>
+/// <reference path="../../src/rules.d.ts"/>
 /* global
 KW
 */
@@ -16,6 +17,7 @@ const FACTIONS = {
   "Колорады": "#008000",
 };
 
+/** @type {UserDict} */
 var DICT_USER = {
 
   МСФК: {
