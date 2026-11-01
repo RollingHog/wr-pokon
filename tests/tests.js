@@ -471,6 +471,77 @@
     assertEq(CURRENT_TURN, savedTurn, 'глобальный CURRENT_TURN не изменился')
   })
 
+  test('userEffectsObj: персональные эффекты по title через KW.TITLE_EFFECTS', () => {
+    const savedDict = DICT_COMMON[KW.TITLE_EFFECTS]
+    const savedCommonA = DICT_COMMON_A
+    DICT_COMMON[KW.TITLE_EFFECTS] = { 'Флагман': { 'Сила Б': 1 } }
+    DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
+    try {
+      const titled = { name: 'Пехота', color: '#0000ff', title: 'Флагман', x: 0, y: 0 }
+      const groups = userEffectsObj.getRawEffectsList(titled).flat()
+      assert(groups.some(e => e[0] === 'Сила Б'), 'эффекты по title из TITLE_EFFECTS применены')
+      assert(groups.some(e => e[0] === 'Еда'), 'обычные эффекты Пехоты на месте')
+
+      const untitled = { name: 'Пехота', color: '#0000ff', x: 0, y: 0 }
+      const plain = userEffectsObj.getRawEffectsList(untitled).flat()
+      assert(!plain.some(e => e[0] === 'Сила Б'), 'без title эффекта нет')
+
+      const other = { name: 'Пехота', color: '#0000ff', title: 'Рядовой', x: 0, y: 0 }
+      const otherList = userEffectsObj.getRawEffectsList(other).flat()
+      assert(!otherList.some(e => e[0] === 'Сила Б'), 'другой title эффекта не получает')
+    } finally {
+      if (typeof savedDict === 'undefined') {
+        delete DICT_COMMON[KW.TITLE_EFFECTS]
+      } else {
+        DICT_COMMON[KW.TITLE_EFFECTS] = savedDict
+      }
+      DICT_COMMON_A = savedCommonA
+    }
+  })
+
+  test('init: кнопки панели объекта и панели фигур создаются из JS', () => {
+    assert(!!document.getElementById('edit-atk-btn'), 'кнопка Атк есть')
+    assert(!!document.getElementById('edit-pin-btn'), 'кнопка P есть')
+    assert(!!document.getElementById('obj-lvl'), 'поле уровня есть')
+    assert(!!document.getElementById('sel-info-btn'), 'кнопка info есть')
+
+    const span = document.getElementById('shape-controls')
+    assert(!!span, 'span контролов фигур есть')
+    assert(span.contains(document.getElementById('place-shape-btn')), 'place-shape-btn внутри span')
+    assert(span.contains(document.getElementById('clone-shape-btn')), 'clone-shape-btn внутри span')
+    assert(span.contains(document.getElementById('user-effects-btn')), 'user-effects-btn внутри span')
+    assert(span.contains(document.getElementById('ch_switch_edits')), 'галочка Ed внутри span')
+    assert(span.contains(document.getElementById('ch_pay')), 'галочка Pay внутри span')
+    assert(span.contains(document.getElementById('ch_fog')), 'галочка Т.В. внутри span')
+    // checked-атрибут отражает дефолт из разметки: свойство .checked тесты сбрасывают через resetGame
+    assert(document.getElementById('ch_pay').hasAttribute('checked'), 'Pay включён по умолчанию')
+    assert(fogCheckbox && fogCheckbox.checked, 'fogCheckbox перевыполнен после инъекции')
+  })
+
+  test('applyFogOfWarDefault: SETTINGS.DEFAULT_FOG_OF_WAR задаёт галочку Т.В.', () => {
+    const saved = SETTINGS.DEFAULT_FOG_OF_WAR
+    try {
+      SETTINGS.DEFAULT_FOG_OF_WAR = false
+      applyFogOfWarDefault()
+      assert(!document.getElementById('ch_fog').checked, 'флаг false — туман выключен')
+
+      delete SETTINGS.DEFAULT_FOG_OF_WAR
+      applyFogOfWarDefault()
+      assert(document.getElementById('ch_fog').checked, 'флаг не задан — туман включён (прежнее поведение)')
+
+      SETTINGS.DEFAULT_FOG_OF_WAR = true
+      applyFogOfWarDefault()
+      assert(document.getElementById('ch_fog').checked, 'флаг true — туман включён')
+    } finally {
+      if (typeof saved === 'undefined') {
+        delete SETTINGS.DEFAULT_FOG_OF_WAR
+      } else {
+        SETTINGS.DEFAULT_FOG_OF_WAR = saved
+      }
+      applyFogOfWarDefault()
+    }
+  })
+
   // ---------- запуск ----------
   async function runAll() {
     try {

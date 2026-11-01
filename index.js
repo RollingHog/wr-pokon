@@ -99,8 +99,62 @@ const lineModeObj = {
   points: [],
 }
 
+/**
+ * Применяет SETTINGS.DEFAULT_FOG_OF_WAR к галочке "Туман Войны".
+ * Флаг опционален: при отсутствии туман включён (прежнее поведение).
+ */
+function applyFogOfWarDefault() {
+  const fog = document.getElementById('ch_fog');
+  if (fog) fog.checked = SETTINGS?.DEFAULT_FOG_OF_WAR !== false;
+}
+
 // Инициализация
 function init() {
+
+  // Кнопки панели объекта задаются здесь, а не в HTML каждой страницы
+  editPanel.innerHTML = `
+        <button id="edit-delete-btn" class="mobile-only">Del</button>
+        <button id="edit-atk-btn">Атк</button>
+        <button id="edit-pin-btn" title="pin / select owner" hotkey="B">P</button>
+        <button id="remove-pin-btn" title="unpin / unselect owner">U</button>
+        <br>
+        <div id="edit-obj-name" list="obj-names-list"></div>
+        <div class="color-picker">
+            <span>Ур.:</span>
+            <input type="text" id="obj-lvl" title="Уровень объекта" style="width: 40px;">
+            <button id="sel-info-btn" title="info on selection">i</button>
+        </div>`;
+
+  // Кнопки и галочки панели фигур задаются здесь, а не в HTML каждой страницы
+  const shapePanel = document.getElementById('shape-panel');
+  if (shapePanel) {
+    const controlsSpan = document.createElement('span');
+    controlsSpan.id = 'shape-controls';
+    controlsSpan.innerHTML = `
+        <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Р</button>
+        <button id="clone-shape-btn" hotkey="C" title="Копировать фигуру" hidden>Копия</button>
+        <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
+        <label for="ch_switch_edits" title="Переключать параметры выбранного юнита при переключении цвета и типа">
+          <input type="checkbox" name="ch_switch_edits" id="ch_switch_edits">
+          Ed
+        </label>
+        <label for="ch_pay" title="платить цену при расположении юнита">
+          <input type="checkbox" name="ch_pay" id="ch_pay" onclick="drawCanvas({infoPanel: true})" checked>
+          Pay
+        </label>
+        <label for="ch_fog" title="Туман Войны">
+          <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()">
+          Т.В.
+        </label>`;
+    shapePanel.appendChild(controlsSpan);
+  }
+
+  // чекбоксы переехали в генерируемый span — перевыполняем захваты,
+  // сделанные на верхнем уровне до init()
+  switchEditsCheckbox = document.getElementById('ch_switch_edits') || {}
+  fogCheckbox = document.getElementById('ch_fog')
+  payCheckbox = document.getElementById('ch_pay') || {}
+  applyFogOfWarDefault()
 
   generateFactionButtons()
 
@@ -902,7 +956,8 @@ function getUnitDescription(filename, playerColor) {
 }
 
 /** @type {HTMLInputElement} */
-const switchEditsCheckbox = document.getElementById('ch_switch_edits') || {}
+// чекбоксы генерируются в init() — здесь заглушки, реальные значения присваиваются там
+let switchEditsCheckbox = document.getElementById('ch_switch_edits') || {}
 
 function onCustomImageLoad(filename, src) {
   const shapeId = 'custom-shape-' + Date.now() + Math.random().toString(36).substr(2, 5);
@@ -1201,7 +1256,7 @@ function drawCanvas(options = {infoPanel: false}) {
   // console.timeEnd('draw')
 }
 
-const fogCheckbox = document.getElementById('ch_fog')
+let fogCheckbox = document.getElementById('ch_fog')
 const visionRadius = SETTINGS.VISION_RADIUS || 160
 
 const lvlTextSize = Math.floor(parseInt(document.getElementById('shape-size').value) / 2.2)
@@ -2165,7 +2220,7 @@ function cloneShape() {
 }
 
 /** @type {HTMLInputElement} */
-const payCheckbox = document.getElementById('ch_pay') || {}
+let payCheckbox = document.getElementById('ch_pay') || {}
 
 let currentId = 1
 
@@ -2465,6 +2520,12 @@ const userEffectsObj = {
 
       if (key === '_upkeep_') {
         result[key] = value;
+      } else if (key === '_title_effects_') {
+        // персональные эффекты по title: { "Название": {эффекты} } → { "Название": [пары] }
+        result[key] = {};
+        for (const titleName in value) {
+          result[key][titleName] = Object.entries(value[titleName]);
+        }
       } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         result[key] = Object.entries(value);
       } else {
@@ -2483,7 +2544,7 @@ const userEffectsObj = {
 
     for (const key in result) {
       const topValue = result[key];
-      if(key === '_upkeep_') continue
+      if(key === '_upkeep_' || key === '_title_effects_') continue
 
       for (const subKey in topValue) {
         const value = topValue[subKey];
@@ -2566,6 +2627,13 @@ const userEffectsObj = {
 
     const typeKey = isBuilding(obj) ? '_building_' : '_unit_'
 
+    // Дополнительные персональные эффекты по title объекта. Задаются в rules.js:
+    // DICT_COMMON[KW.TITLE_EFFECTS] = { "Название": {эффекты}, ... },
+    // где "Название" — точное значение title (задаётся через F2)
+    const titleEffects = obj.title
+      ? DICT_COMMON_A?.[KW.TITLE_EFFECTS]?.[obj.title]
+      : undefined
+
     const userEff = username
       ? [].concat(
         DICT_USER[username]?.[typeKey],
@@ -2579,6 +2647,7 @@ const userEffectsObj = {
       [].concat(
         DICT_COMMON_A?.[typeKey],
         DICT_COMMON_A?.[obj.name],
+        titleEffects,
       ).filter(e => e),
       userEff
     ]

@@ -41,8 +41,7 @@ interface RulesObjectDef {
 }
 
 /** Содержимое DICT_USER[player]: эффекты по ключу объекта.
- *  Ключи: имя юнита/здания, '_unit_'/'_building_' (ко всем), '_upkeep_' (содержание),
- *  а также "title:Название" — персональные эффекты объекту с таким title (задаётся через F2). */
+ *  Ключи: имя юнита/здания, '_unit_'/'_building_' (ко всем), '_upkeep_' (содержание). */
 interface UserEffectsList extends Array<[string, number | string]> {
 }
 
@@ -61,13 +60,20 @@ interface UserDict {
   [player: string]: UserPlayerDict;
 }
 
+/** Персональные эффекты по title объекта: DICT_COMMON['_title_effects_'].
+ *  Ключ = точное значение title (задаётся объекту через F2), значение = эффекты. */
+interface TitleEffectsDict {
+  [title: string]: RulesObjectDef;
+}
+
 /** Содержимое DICT_COMMON: имя объекта → описание.
- *  Тоже поддерживает ключ "title:Название" — эффекты любому объекту с таким title. */
+ *  '_title_effects_' — отдельный подобъект с эффектами по title (см. KW.TITLE_EFFECTS). */
 interface RulesDict {
-  [name: string]: RulesObjectDef | RulesUpkeep;
+  [name: string]: RulesObjectDef | RulesUpkeep | TitleEffectsDict;
   '_building_'?: RulesObjectDef;
   '_unit_'?: RulesObjectDef;
   '_upkeep_'?: RulesUpkeep;
+  '_title_effects_'?: TitleEffectsDict;
 }
 
 /** Содержимое SETTINGS */
@@ -90,6 +96,8 @@ interface Settings {
   CANNOT_ACT_AFTER_PLACEMENT?: boolean;
   /** false — отключает автосейв в конце хода */
   AUTOSAVE?: boolean;
+  /** начальное состояние галочки "Туман Войны" (по умолчанию — включён) */
+  DEFAULT_FOG_OF_WAR?: boolean;
   MIN_LVL?: number;
   DEFAULT_FIGURE_BG?: string;
   /** квадратная сетка поверх карты */

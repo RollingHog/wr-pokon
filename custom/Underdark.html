@@ -42,14 +42,6 @@
                     <input type="range" id="shape-size" min="20" max="90" value="40" step="20" oninput="this.previousElementSibling.value = this.value">
 
                 </div>
-                <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Разм.</button>
-                <button id="clone-shape-btn" hotkey="C" title="Копировать фигуру" hidden>Копия</button>
-                <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
-                <button id="count-food-btn" title="Купить юнит и заплатить цену">Куп</button>
-                <label for="ch_fog" title="Туман Войны">
-                  <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()" checked>
-                  Т.В.
-                </label>
             </div>
             <hr>
             <div id="text-panel">
@@ -90,19 +82,7 @@
         <canvas id="fog-canvas"  oncontextmenu="return false;"></canvas>
     </div>
     
-    <div id="edit-panel">
-        <button id="edit-delete-btn" class="mobile-only">Del</button>
-        <button id="edit-atk-btn">Атк</button>
-        <button id="edit-pin-btn" title="pin / select owner" hotkey="B">P</button>
-        <button id="remove-pin-btn" title="unpin / unselect owner">U</button>
-        <br>
-        <div id="edit-obj-name" list="obj-names-list"></div>
-        <div class="color-picker">
-            <span>Ур.:</span>
-            <!-- <input type="color" id="edit-color" style="width: 24px;"> -->
-            <input type="text" id="obj-lvl" title="Уровень объекта" style="width: 40px;">
-        </div>
-    </div>
+    <div id="edit-panel"></div>
     
     <div id="shape-modal" class="modal">
         <div class="modal-content">

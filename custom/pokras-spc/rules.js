@@ -27,7 +27,8 @@ const SETTINGS = {
   CAPITAL_SPECIAL_VISION: false,
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
-  // NO_GRAVES: true, 
+  // NO_GRAVES: true,
+  // DEFAULT_FOG_OF_WAR: false,  // начальное состояние галочки "Туман Войны" (по умолчанию включён)
 
   MAX_TECH_LVL: 5,
   DEFAULT_LINE_COLOR: 'white',
@@ -271,6 +272,12 @@ const DICT_COMMON = {
   },
   '_unit_': {
   },
+
+  // Персональные эффекты по title объекта (title задаётся через F2).
+  // Ключ = точное значение title:
+  // [KW.TITLE_EFFECTS]: {
+  //   "Флагман": { "Сила Б": 1 },
+  // },
 
   // колонии
 

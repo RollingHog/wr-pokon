@@ -45,6 +45,11 @@ const KW = /** @type {const} */ ({
    * all ЛВЛ-options in children not supported yet
   */
   OUTPUT_MULT: "_output_mult_",
+
+  /** подобъект DICT_COMMON с персональными эффектами по title объекта:
+      DICT_COMMON[KW.TITLE_EFFECTS] = { "Название": {эффекты}, ... },
+      где "Название" — точное значение title (задаётся через F2) */
+  TITLE_EFFECTS: "_title_effects_",
 })
 
 const KW_LOCALS = [
