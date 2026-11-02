@@ -697,6 +697,28 @@ const Viewport = {
 const SquareGrid = {
   /** @type {Record<string, string>} разреженная карта биомов: "A1" -> "XX" */
   biomes: {},
+  _rangeCache: null,
+  _rangeKey: null,
+  getRange(mapW, mapH) {
+    const conf = this.conf()
+    if (!conf) return null
+    const key = (mapW||0) + '|' + (mapH||0) + '|' + JSON.stringify(conf)
+    if (this._rangeCache && this._rangeKey === key) return this._rangeCache
+    const { stepX, stepY, offsetX, offsetY, cols, rows } = conf
+    const firstCol = 0
+    const firstRow = 0
+    const lastCol = cols !== null
+      ? cols : Math.max(0, Math.ceil((mapW - offsetX) / stepX))
+    const lastRow = rows !== null
+      ? rows : Math.max(0, Math.ceil((mapH - offsetY) / stepY))
+    this._rangeCache = { firstCol, firstRow, lastCol, lastRow }
+    this._rangeKey = key
+    return this._rangeCache
+  },
+  invalidateRange() {
+    this._rangeCache = null
+    this._rangeKey = null
+  },
 
   /** конфиг кампании или null, если сетка выключена */
   conf() {
@@ -816,6 +838,7 @@ const SquareGrid = {
     const biome = this.normalizeBiome(value)
     if (biome) this.biomes[key] = biome
     else delete this.biomes[key]
+    this.invalidateRange()
   },
 
   /** заменить всю карту биомов (используется при загрузке сейва) */
@@ -826,6 +849,7 @@ const SquareGrid = {
       const biome = this.normalizeBiome(value)
       if (biome) this.biomes[key] = biome
     }
+    this.invalidateRange()
   },
 
   /** данные для записи в save-файл */
@@ -871,14 +895,9 @@ const SquareGrid = {
     const conf = this.conf()
     if (!conf || !conf.showGrid) return
 
-    const { stepX, stepY, offsetX, offsetY, cols, rows } = conf
-    // Клетки нумеруются с A1: левее/выше offsetX/offsetY сетки нет.
-    const firstCol = 0
-    const firstRow = 0
-    const lastCol = cols !== null
-      ? cols : Math.max(0, Math.ceil((mapW - offsetX) / stepX))
-    const lastRow = rows !== null
-      ? rows : Math.max(0, Math.ceil((mapH - offsetY) / stepY))
+    const { stepX, stepY, offsetX, offsetY } = conf
+    const range = this.getRange(mapW, mapH)
+    const { firstCol, firstRow, lastCol, lastRow } = range
 
     const x0 = offsetX + firstCol * stepX
     const y0 = offsetY + firstRow * stepY
@@ -1450,6 +1469,15 @@ function drawCanvas(options = {infoPanel: false}) {
   elements.forEach(element => {
     draw.element(element)
   });
+  // Подсветка ходов шахматных фигур (в мировых координатах)
+  if (currentMapIndex >= 0 && maps[currentMapIndex] && typeof chessMoves !== 'undefined') {
+    const map = maps[currentMapIndex];
+    ctx.save();
+    ctx.translate(Viewport.offsetX, Viewport.offsetY);
+    ctx.scale(Viewport.scale, Viewport.scale);
+    try { chessMoves.draw(ctx) } catch(e) {}
+    ctx.restore();
+  }
 
   draw.fogOfWar(fogCtx);
 
@@ -1464,6 +1492,230 @@ let fogCheckbox = document.getElementById('ch_fog')
 const visionRadius = SETTINGS.VISION_RADIUS || 160
 
 const lvlTextSize = Math.floor(parseInt(document.getElementById('shape-size').value) / 2.2)
+
+// Шахматные ходы для Stach-подобных кампаний
+const chessMoves = {
+  cache: null,
+  cacheKey: null,
+  getKey(el) {
+    if (!el) return null
+    return el.id + '|' + el.x + '|' + el.y + '|' + el.color + '|' + el.name + '|' + (el.endedTurn ? 1 : 0)
+  },
+  invalidate() {
+    this.cache = null
+    this.cacheKey = null
+  },
+  getMoves(el) {
+    if (!el || el.type !== 'shape') return []
+    if (!SquareGrid.isEnabled()) return []
+    if (el.endedTurn) return []
+    const k = this.getKey(el)
+    if (this.cache && this.cacheKey === k) return this.cache
+    const moves = this.computeMoves(el)
+    this.cache = moves
+    this.cacheKey = k
+    return moves
+  },
+  computeMoves(el) {
+    const conf = SquareGrid.conf()
+    if (!conf) return []
+    const start = SquareGrid.cellOfElement(el)
+    if (!start) return []
+    const name = el.name
+    const playerColor = el.color
+    const dirsRook = [[1,0],[-1,0],[0,1],[0,-1]]
+    const dirsBishop = [[1,1],[1,-1],[-1,1],[-1,-1]]
+    const dirsQueen = dirsRook.concat(dirsBishop)
+    const kingDirs = dirsQueen
+    const knight = [[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2],[1,-2],[2,-1]]
+    if (name === 'Пешка') {
+      const res = []
+      const ortho = [[1,0],[-1,0],[0,1],[0,-1]]
+      const diag = [[1,1],[1,-1],[-1,1],[-1,-1]]
+      // Ход по вертикалям и горизонталям
+      for (const d of ortho) {
+        const c = { col: start.col + d[0], row: start.row + d[1] }
+        if (!this.isInside(c, conf)) continue
+        const occ = this.getOccupant(c)
+        if (!occ) {
+          if (this.isVisible(c, playerColor)) res.push({ col: c.col, row: c.row, type: 'move' })
+        }
+      }
+      // Взятие по диагоналям
+      for (const d of diag) {
+        const c = { col: start.col + d[0], row: start.row + d[1] }
+        if (!this.isInside(c, conf)) continue
+        const occ = this.getOccupant(c)
+        if (occ && occ.color && occ.color !== playerColor) {
+          if (this.isVisible(c, playerColor)) res.push({ col: c.col, row: c.row, type: 'capture' })
+        }
+      }
+      return res
+    }
+    let rays = []
+    let leaps = []
+    let maxSteps = 1
+    if (name === 'Ладья') { rays = dirsRook; maxSteps = 100 }
+    else if (name === 'Слон') { rays = dirsBishop; maxSteps = 100 }
+    else if (name === 'Ферзь') { rays = dirsQueen; maxSteps = 100 }
+    else if (name === 'Король' || name === 'Магараджа') { leaps = kingDirs; maxSteps = 1 }
+    else if (name === 'Конь') { leaps = knight; maxSteps = 1 }
+    else {
+      return []
+    }
+
+    const res = []
+    if (rays.length) {
+      for (const d of rays) {
+        for (let step = 1; step <= maxSteps; step++) {
+          const c = { col: start.col + d[0] * step, row: start.row + d[1] * step }
+          if (!this.isInside(c, conf)) break
+          const occ = this.getOccupant(c)
+          if (!occ) {
+            if (this.isVisible(c, playerColor)) res.push({ col: c.col, row: c.row, type: 'move' })
+            continue
+          }
+          // есть фигура
+          if (occ.color && occ.color !== playerColor) {
+            if (this.isVisible(c, playerColor)) res.push({ col: c.col, row: c.row, type: 'capture' })
+          }
+          break // нельзя проходить
+        }
+      }
+    }
+    if (leaps.length) {
+      for (const d of leaps) {
+        const c = { col: start.col + d[0], row: start.row + d[1] }
+        if (!this.isInside(c, conf)) continue
+        const occ = this.getOccupant(c)
+        if (!occ) {
+          if (this.isVisible(c, playerColor)) res.push({ col: c.col, row: c.row, type: 'move' })
+          continue
+        }
+        if (occ.color && occ.color !== playerColor) {
+          if (this.isVisible(c, playerColor)) res.push({ col: c.col, row: c.row, type: 'capture' })
+        }
+        // свои - нельзя
+      }
+    }
+    return res
+  },
+  isInside(c, conf) {
+    if (c.col < 0 || c.row < 0) return false
+    const map = typeof getCurrentMap === 'function' ? getCurrentMap() : null
+    if (map && map.image) {
+      const range = SquareGrid.getRange(map.image.width, map.image.height)
+      if (range) {
+        if (c.col >= range.lastCol - 1) return false
+        if (c.row >= range.lastRow - 1) return false
+        return true
+      }
+    }
+    if (conf.cols !== null && c.col >= conf.cols) return false
+    if (conf.rows !== null && c.row >= conf.rows) return false
+    return true
+  },
+  getOccupant(c) {
+    const key = SquareGrid.nameByCoords(c.col, c.row)
+    for (let i = elements.length - 1; i >= 0; i--) {
+      const el = elements[i]
+      if (el.type !== 'shape') continue
+      const cc = SquareGrid.cellOfElement(el)
+      if (!cc) continue
+      if (cc.col === c.col && cc.row === c.row) return el
+    }
+    return null
+  },
+  isVisible(cell, playerColor) {
+    // Проверяем видимость для игрока
+    const player = Players.byColor ? Players.byColor(playerColor) : null
+    if (!player) {
+      // если не нашли игрока - разрешаем по умолчанию
+      return true
+    }
+    // пробуем использовать isInVision
+    const cx = cell.col * (SquareGrid.conf()?.stepX||0) + (SquareGrid.conf()?.offsetX||0) + (SquareGrid.conf()?.stepX||0)/2
+    const cy = cell.row * (SquareGrid.conf()?.stepY||0) + (SquareGrid.conf()?.offsetY||0) + (SquareGrid.conf()?.stepY||0)/2
+    if (typeof isInVision === 'function') {
+      try {
+        if (isInVision(cx, cy, player)) return true
+        return false
+      } catch(e) {}
+    }
+    return true
+  },
+  draw(ctx) {
+    if (!selectedElement || selectedElement.type !== 'shape') return
+    if (!SquareGrid.isEnabled()) return
+    const moves = this.getMoves(selectedElement)
+    if (!moves.length) return
+    const conf = SquareGrid.conf()
+    ctx.save()
+    for (const m of moves) {
+      const x = conf.offsetX + m.col * conf.stepX + conf.stepX / 2
+      const y = conf.offsetY + m.row * conf.stepY + conf.stepY / 2
+      if (m.type === 'capture') {
+        // красная мишень
+        ctx.strokeStyle = 'rgba(255,40,40,0.9)'
+        ctx.fillStyle = 'rgba(255,40,40,0.25)'
+      } else {
+        ctx.strokeStyle = 'rgba(40,120,255,0.9)'
+        ctx.fillStyle = 'rgba(40,120,255,0.18)'
+      }
+      ctx.lineWidth = 3
+      // внешний круг
+      const r1 = Math.min(conf.stepX, conf.stepY) / 2 - 6
+      const r2 = r1 * 0.5
+      ctx.beginPath()
+      ctx.arc(x, y, r1, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.stroke()
+      // внутренний круг
+      ctx.beginPath()
+      ctx.arc(x, y, r2, 0, Math.PI * 2)
+      ctx.fillStyle = m.type === 'capture' ? 'rgba(255,60,60,0.9)' : 'rgba(60,140,255,0.9)'
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)'
+      ctx.stroke()
+    }
+    ctx.restore()
+  },
+  tryMoveByRightClick(clientX, clientY) {
+    if (!selectedElement || selectedElement.type !== 'shape') return false
+    if (!SquareGrid.isEnabled()) return false
+    if (selectedElement.endedTurn) return false
+    const moves = this.getMoves(selectedElement)
+    if (!moves.length) return false
+    const rect = canvas.getBoundingClientRect()
+    const mx = clientX - rect.left
+    const my = clientY - rect.top
+    const wx = (mx - Viewport.offsetX) / Viewport.scale
+    const wy = (my - Viewport.offsetY) / Viewport.scale
+    const c = SquareGrid.cellCoords(wx, wy)
+    if (!c) return false
+    if (!this.isInside(c, SquareGrid.conf())) return false
+    const move = moves.find(m => m.col === c.col && m.row === c.row)
+    if (!move) return false
+    // выполнить ход
+    const conf = SquareGrid.conf()
+    selectedElement.x = conf.offsetX + c.col * conf.stepX + (conf.stepX - (selectedElement.width||0)) / 2
+    selectedElement.y = conf.offsetY + c.row * conf.stepY + (conf.stepY - (selectedElement.height||0)) / 2
+    // если взятие - удалить объект
+    if (move.type === 'capture') {
+      const occ = this.getOccupant(c)
+      if (occ && occ !== selectedElement) {
+        killObj(occ, true)
+      }
+    }
+    // помечаем как походивший если нужно
+    if (SETTINGS.CANNOT_ACT_AFTER_PLACEMENT || true) {
+      selectedElement.endedTurn = true
+    }
+    this.invalidate()
+    requestRedraw({infoPanel: true})
+    return true
+  }
+}
 
 const draw = {
 
@@ -2157,6 +2409,7 @@ const Pointer = {
           }
 
           selectedElement = element;
+          if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
           UI.drawEditPanel(mouseX, mouseY, element);
 
           // if(Ownership.isOwnedObj(element)) return
@@ -2197,8 +2450,8 @@ const Pointer = {
     Viewport.tempOffsetX = Viewport.offsetX;
     Viewport.tempOffsetY = Viewport.offsetY;
 
-    // Скрываем панель редактирования, если ничего не выбрано
-    if (selectedElement) {
+    // Скрываем панель редактирования только при пане ЛКМ по пустому полю
+    if (selectedElement && isLeftClick) {
       selection.drop()
     }
   },
@@ -2209,6 +2462,8 @@ const Pointer = {
     const mouseY = clientY - rect.top;
 
     if (Pointer.isDraggingElement && selectedElement) {
+      if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
+      if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
       // Вычисляем смещение
       const deltaX = (mouseX - Pointer.dragStartX) / Viewport.scale;
       const deltaY = (mouseY - Pointer.dragStartY) / Viewport.scale;
@@ -2235,6 +2490,7 @@ const Pointer = {
       Viewport.offsetY = Viewport.tempOffsetY + (clientY - Pointer.dragStartY);
     }
 
+    if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
     requestRedraw();
   },
 
@@ -2249,10 +2505,18 @@ const Pointer = {
     Pointer.dragStartTime = 0
     Pointer.isDraggingElement = false;
     biomeModeObj.lastKey = null
+    if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
   },
 
   handleMouseDown(e) {
     e.preventDefault();
+
+    // шахматные ходы по ПКМ
+    if (e.button === 2 && typeof chessMoves !== 'undefined') {
+      if (chessMoves.tryMoveByRightClick(e.clientX, e.clientY)) {
+        return
+      }
+    }
 
     // режим биомов: ЛКМ — код из select'а, ПКМ/СКМ — обычное перемещение карты
     if (biomeModeObj.active && SquareGrid.isEnabled()) {
@@ -2364,6 +2628,7 @@ const Pointer = {
 const selection = {
   drop() {
     selectedElement = null;
+    if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
     editPanel.style.display = 'none';
   },
   damage(amount = 1) {
@@ -2401,6 +2666,7 @@ const selection = {
     if (selectedElement) {
       killObj(selectedElement, true)
       selectedElement = null;
+      if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
       editPanel.style.display = 'none';
       requestRedraw({infoPanel: true});
     }

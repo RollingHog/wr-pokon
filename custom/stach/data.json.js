@@ -1,8 +1,8 @@
 CURRENT_TURN=11;
 OTHER_SAVE_DATA={
-  "scale": 0.36411769251233067,
-  "canvasOffsetX": 289.2123650351693,
-  "canvasOffsetY": 48.69313163878073,
+  "scale": 0.4026275000000002,
+  "canvasOffsetX": 0,
+  "canvasOffsetY": 0,
   "shapeColor": "#930000"
 };
 USER_RESOURCES={
@@ -76,7 +76,10 @@ USER_TECH_LVLS={
   }
 };
 OWNER_MAP={"64":[30],"92":[93]};
-GRID_BIOMES={};
+GRID_BIOMES={
+  "K12": "ЛЕ",
+  "L13": "ЛЕ",
+};
 DEFAULT_DATA=[
   {
     "id": 1,

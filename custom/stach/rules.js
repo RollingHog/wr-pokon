@@ -48,9 +48,9 @@ const SETTINGS = {
     cellHeight: CELL_SIZE - 2,
     offsetX: 16,
     offsetY: 16,
-    lineWidth: 3,
-    label: true,        
-    showUnitCell: true, 
+    lineWidth: 1,
+    label: false,        
+    showUnitCell: false, 
     biomeColors: { 
       "ЛЕ": "rgba(46,125,50,0.35)", 
       "ГО": "rgba(80,80,80,0.4)" 
