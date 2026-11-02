@@ -1,9 +1,9 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 0.9244190611889804,
-  "canvasOffsetX": -1045.8354893825358,
-  "canvasOffsetY": -300.76415668508446,
-  "shapeColor": "#930000"
+  "scale": 1.6128902945199433,
+  "canvasOffsetX": -1245.6835426839386,
+  "canvasOffsetY": -914.360900042974,
+  "shapeColor": "#0000ff"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -13,9 +13,9 @@ USER_RESOURCES={
   },
   "МСФК": {
     "Еда": 0,
-    "Металл": 20,
-    "Кремний": 20,
-    "Уран": 10,
+    "Металл": 0,
+    "Кремний": 10,
+    "Уран": 5,
     "Наука": 0
   },
   "Варвары": {},
@@ -1515,5 +1515,20 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "endedTurn": false
+  },
+  {
+    "id": 141,
+    "type": "shape",
+    "name": "Фрегат",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1046.83,
+    "y": 744.69,
+    "width": 40,
+    "height": 40,
+    "src": "pokras-spc/images/units/Фрегат.png",
+    "curr_hp": 1,
+    "endedTurn": true,
+    "title": "Кромсатель"
   }
 ]
