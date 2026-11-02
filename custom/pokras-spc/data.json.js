@@ -1,8 +1,8 @@
 CURRENT_TURN=1;
 OTHER_SAVE_DATA={
-  "scale": 1.6128902945199433,
-  "canvasOffsetX": -1245.6835426839386,
-  "canvasOffsetY": -914.360900042974,
+  "scale": 0.9805595978824272,
+  "canvasOffsetX": -629.4376848722286,
+  "canvasOffsetY": -190.17749296157,
   "shapeColor": "#0000ff"
 };
 USER_RESOURCES={
@@ -316,7 +316,7 @@ DEFAULT_DATA=[
     "type": "shape",
     "name": "Умеренный_мир",
     "shape": "custom",
-    "color": "#d3d3d3",
+    "color": "#0000ff",
     "x": 891.08,
     "y": 278.21,
     "width": 50,
@@ -338,7 +338,6 @@ DEFAULT_DATA=[
     "height": 50,
     "src": "pokras-spc/images/buildings/Водный_мир.png",
     "curr_hp": 1,
-    "disabled": 1,
     "endedTurn": false
   },
   {
@@ -346,7 +345,7 @@ DEFAULT_DATA=[
     "type": "shape",
     "name": "Холодный_мир",
     "shape": "custom",
-    "color": "#d3d3d3",
+    "color": "#0000ff",
     "x": 1108.99,
     "y": 481.5,
     "width": 50,
@@ -1015,13 +1014,13 @@ DEFAULT_DATA=[
     "name": "Фрегат",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1160.75,
-    "y": 747.95,
+    "x": 1025.11,
+    "y": 358.37,
     "width": 40,
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
     "curr_hp": 1,
-    "endedTurn": false
+    "endedTurn": true
   },
   {
     "id": 100,
@@ -1436,27 +1435,13 @@ DEFAULT_DATA=[
     "title": "древний артефакт"
   },
   {
-    "id": 135,
-    "type": "shape",
-    "name": "_info_",
-    "shape": "custom",
-    "color": "#d3d3d3",
-    "x": 1035.95,
-    "y": 333.99,
-    "width": 40,
-    "height": 40,
-    "curr_hp": 1,
-    "endedTurn": false,
-    "title": "аборигены: индустриальные"
-  },
-  {
     "id": 136,
     "type": "shape",
     "name": "_info_",
     "shape": "custom",
     "color": "#d3d3d3",
-    "x": 1684.18,
-    "y": 636.41,
+    "x": 1684.84,
+    "y": 639.72,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
@@ -1522,13 +1507,78 @@ DEFAULT_DATA=[
     "name": "Фрегат",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1046.83,
-    "y": 744.69,
+    "x": 1068.25,
+    "y": 779.37,
     "width": 40,
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
     "curr_hp": 1,
     "endedTurn": true,
     "title": "Кромсатель"
+  },
+  {
+    "id": 142,
+    "type": "shape",
+    "name": "Офис_аборигенов",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1114.24,
+    "y": 283.66,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 143,
+    "type": "shape",
+    "name": "Леталка_аборигенов",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 1654.98,
+    "y": 541.14,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 144,
+    "type": "shape",
+    "name": "Леталка_аборигенов",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 1705.97,
+    "y": 569.61,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 145,
+    "type": "shape",
+    "name": "Леталка_аборигенов",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 1656.97,
+    "y": 586.83,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 146,
+    "type": "shape",
+    "name": "Станция_аборигенов",
+    "shape": "custom",
+    "color": "#930000",
+    "x": 1544.39,
+    "y": 536.5,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
   }
 ]
