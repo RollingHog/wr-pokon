@@ -670,6 +670,180 @@
     }
   })
 
+  // ---------- редактор биомов (вариант A) ----------
+  /** экранные координаты центра клетки (при Viewport 1/0/0 после resetGame) */
+  function biomeCellClient(col, row) {
+    const rect = canvas.getBoundingClientRect()
+    const conf = SquareGrid.conf()
+    return {
+      x: rect.left + (conf.offsetX + (col + 0.5) * conf.stepX) * Viewport.scale + Viewport.offsetX,
+      y: rect.top + (conf.offsetY + (row + 0.5) * conf.stepY) * Viewport.scale + Viewport.offsetY,
+    }
+  }
+
+  test('biomeActions: клик задаёт/перезаписывает биом, «СТЕРЕТЬ» — удаляет, ПКМ двигает карту', () => {
+    const savedBiomes = SquareGrid.biomes
+    const savedMode = { ...biomeModeObj }
+    const savedDragging = Pointer.isDragging
+    const viewport = { scale: Viewport.scale, offsetX: Viewport.offsetX, offsetY: Viewport.offsetY }
+    const sel = document.getElementById('biome-code')
+    const code = sel ? sel.value : ''
+    // клик ЛКМ/ПКМ по fogCanvas: движок в режиме биома красит ЛКМ, ПКМ панит карту
+    const clickBiome = (p, button = 0) => {
+      fogCanvas.dispatchEvent(new MouseEvent('mousedown', { clientX: p.x, clientY: p.y, button, bubbles: true, cancelable: true }))
+      fogCanvas.dispatchEvent(new MouseEvent('mouseup', { clientX: p.x, clientY: p.y, button, bubbles: true }))
+    }
+    try {
+      withSquareGrid({ size: 100, defaultBiome: 'ГО', biomeColors: { 'ЛЕ': 'rgba(1,2,3,0.5)' } }, () => {
+        SquareGrid.biomes = {}
+        biomeModeObj.active = true
+        biomeActionsObj.refreshOptions()
+        // select содержит коды biomeColors + defaultBiome + СТЕРЕТЬ
+        const values = [...sel.options].map(o => o.value)
+        assert(values.includes('ЛЕ'), 'коды biomeColors в списке')
+        assert(values.includes('ГО'), 'defaultBiome в списке')
+        assert(values.includes(biomeActionsObj.ERASE_VALUE), 'СТЕРЕТЬ в списке')
+
+        sel.value = 'ЛЕ'
+        const b1 = biomeCellClient(1, 0) // клетка B1
+        clickBiome(b1)
+        assertEq(SquareGrid.biomes['B1'], 'ЛЕ', 'клик в клетку задаёт её биом')
+
+        sel.value = 'ГО'
+        clickBiome(b1)
+        assertEq(SquareGrid.biomes['B1'], 'ГО', 'повторный клик (после mouseup) перезаписывает код')
+
+        sel.value = biomeActionsObj.ERASE_VALUE
+        clickBiome(b1)
+        assert(!('B1' in SquareGrid.biomes), '«СТЕРЕТЬ» + клик удаляет биом клетки')
+
+        // ПКМ теперь не стирает, а двигает карту, биомы не трогает
+        sel.value = 'ЛЕ'
+        SquareGrid.biomes = {}
+        clickBiome(biomeCellClient(2, 0)) // обычный клик ЛКМ по C1: paint + mouseup сбрасывает lastKey
+        assertEq(SquareGrid.biomes['C1'], 'ЛЕ', 'клик подготовил клетку C1')
+        Viewport.offsetY = 0
+        const beforeX = Viewport.offsetX
+        const panStart = biomeCellClient(2, 0)
+        fogCanvas.dispatchEvent(new MouseEvent('mousedown', { clientX: panStart.x, clientY: panStart.y, button: 2, bubbles: true, cancelable: true }))
+        fogCanvas.dispatchEvent(new MouseEvent('mousemove', { clientX: panStart.x + 40, clientY: panStart.y - 18, button: 2, bubbles: true, cancelable: true }))
+        fogCanvas.dispatchEvent(new MouseEvent('mouseup', { clientX: panStart.x + 40, clientY: panStart.y - 18, button: 2, bubbles: true }))
+        assertEq(Viewport.offsetX, beforeX + 40, 'ПКМ сдвинула карту по X')
+        assertEq(SquareGrid.biomes['C1'], 'ЛЕ', 'ПКМ-драг не стирает биом клетки')
+        assertEq(Object.keys(SquareGrid.biomes).length, 1, 'во время ПКМ-драга новых биомов не появляется')
+      })
+    } finally {
+      SquareGrid.biomes = savedBiomes
+      Object.assign(biomeModeObj, savedMode)
+      Viewport.scale = viewport.scale
+      Viewport.offsetX = viewport.offsetX
+      Viewport.offsetY = viewport.offsetY
+      Pointer.isDragging = savedDragging
+      if (sel) sel.value = code
+    }
+  })
+
+  test('biomeActions: протягивание не меняет уже расписанную клетку, переносится на соседние', () => {
+    const savedBiomes = SquareGrid.biomes
+    const savedMode = { ...biomeModeObj }
+    const input = document.getElementById('biome-code')
+    const savedCode = input ? input.value : ''
+    try {
+      withSquareGrid({ size: 100 }, () => {
+        SquareGrid.biomes = {}
+        biomeModeObj.active = true
+        if (input) input.value = 'ЛЕ'
+
+        const b1 = biomeCellClient(1, 0)
+        biomeActionsObj.paint(b1.x, b1.y, false)
+        assertEq(SquareGrid.biomes['B1'], 'ЛЕ')
+
+        // drag-передвижение по той же клетке не должно затирать её новым кодом
+        if (input) input.value = 'ГО'
+        biomeActionsObj.paint(b1.x, b1.y, false)
+        assertEq(SquareGrid.biomes['B1'], 'ЛЕ', 'drag по расписанной клетке не перезаписывает')
+
+        // соседняя клетка — новый ключ, применяется уже другой активный код
+        const c1 = biomeCellClient(2, 0)
+        biomeActionsObj.paint(c1.x, c1.y, false)
+        assertEq(SquareGrid.biomes['C1'], 'ГО', 'новая клетка берёт актуальный код')
+
+        // конец драга сбрасывает lastKey: повторный.paint снова пишет
+        Pointer.endDrag()
+        biomeActionsObj.paint(b1.x, b1.y, false)
+        assertEq(SquareGrid.biomes['B1'], 'ГО', 'после endDrag клетку можно перезаписать')
+      })
+    } finally {
+      SquareGrid.biomes = savedBiomes
+      Object.assign(biomeModeObj, savedMode)
+      if (input) input.value = savedCode
+    }
+  })
+
+  test('biomeActions: hover-подсветка рисует рамку нужной клетки и метку с кодом', () => {
+    const savedBiomes = SquareGrid.biomes
+    const savedMode = { ...biomeModeObj }
+    const savedMouse = Pointer.mousePos
+    const input = document.getElementById('biome-code')
+    const savedCode = input ? input.value : ''
+    const fake = {
+      lineWidth: 0, font: '', strokeStyle: '',
+      textAlign: '', textBaseline: '', rects: [], labels: [],
+      fillStyle_inner: '',
+      save() {}, restore() {}, strokeRect(x, y, w, h) {
+        this.rects.push({ x, y, w, h })
+      },
+      get fillStyle() { return this.fillStyle_inner },
+      set fillStyle(v) { this.fillStyle_inner = v },
+      fillText(text, x, y) { this.labels.push({ text: String(text), x, y }) },
+    }
+    try {
+      withSquareGrid({ size: 100 }, () => {
+        SquareGrid.biomes = {}
+        biomeModeObj.active = true
+        if (input) input.value = 'ЛЕ'
+        Pointer.mousePos = biomeCellClient(0, 0) // клетка A1
+
+        biomeActionsObj.drawHover(fake)
+        assertEq(fake.rects.length, 1, 'рамка ровно одна')
+        assertEq(fake.rects[0].x, 0)
+        assertEq(fake.rects[0].y, 0)
+        assertEq(fake.rects[0].w, 100)
+        assertEq(fake.rects[0].h, 100)
+        assert(fake.labels.some(l => l.text.includes('A1') && l.text.includes('ЛЕ')),
+          'метка показывает клетку и будущий код')
+
+        // выключенный режим — ничего не рисуем
+        biomeModeObj.active = false
+        fake.rects.length = 0
+        biomeActionsObj.drawHover(fake)
+        assertEq(fake.rects.length, 0)
+      })
+    } finally {
+      SquareGrid.biomes = savedBiomes
+      Object.assign(biomeModeObj, savedMode)
+      Pointer.mousePos = savedMouse
+      if (input) input.value = savedCode
+    }
+  })
+
+  test('biomeActions: при выключенной сетке внутри клетки нет, рисования нет', () => {
+    const savedBiomes = SquareGrid.biomes
+    const savedMode = { ...biomeModeObj }
+    try {
+      withSquareGrid(null, () => {
+        SquareGrid.biomes = {}
+        biomeModeObj.active = true
+        assertEq(biomeActionsObj.cellFromClient(150, 150), null, 'вне сетки клетки нет')
+        biomeActionsObj.paint(150, 150, false)
+        assertEq(Object.keys(SquareGrid.biomes).length, 0, 'рисование ничего не записало')
+      })
+    } finally {
+      SquareGrid.biomes = savedBiomes
+      Object.assign(biomeModeObj, savedMode)
+    }
+  })
+
   // ---------- запуск ----------
   async function runAll() {
     try {

@@ -41,15 +41,20 @@ const SETTINGS = {
   TITLE_ABOVE: true,
   CANNOT_ACT_AFTER_PLACEMENT: true,
 
+  DEFAULT_FOG_OF_WAR: false,
+
   SQUARE_GRID: {
     cellWidth: CELL_SIZE + 2,
     cellHeight: CELL_SIZE - 2,
     offsetX: 16,
     offsetY: 16,
     lineWidth: 3,
-    label: true,        // подписи колонок/строк в каждой клетке
-    showUnitCell: true, // справочно показывать квадрат юнита под ним
-    // biomeColors: { "ЛЕ": "rgba(46,125,50,0.35)", "ГО": "rgba(80,80,80,0.4)" },
+    label: true,        
+    showUnitCell: true, 
+    biomeColors: { 
+      "ЛЕ": "rgba(46,125,50,0.35)", 
+      "ГО": "rgba(80,80,80,0.4)" 
+    },
   },
 }
 

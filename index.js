@@ -145,7 +145,10 @@ function init() {
         <label for="ch_fog" title="Туман Войны">
           <input type="checkbox" name="ch_fog" id="ch_fog" onclick="drawCanvas()">
           Т.В.
-        </label>`;
+        </label>
+        <br>
+        <button id="place-biome-btn" title="Режим правки биомов клеток">Биом</button>
+        <select id="biome-code" title="Биом клетки: коды из biomeColors + биом по умолчанию + стирание"></select>`;
     shapePanel.appendChild(controlsSpan);
   }
 
@@ -158,6 +161,9 @@ function init() {
 
   generateFactionButtons()
 
+  biomeActionsObj.refreshOptions()
+  biomeActionsObj.updateButton()
+
   processRuleFile()
 
   loadDefaultMap()
@@ -167,6 +173,7 @@ function init() {
   Delta.init()
   hotkeysLib.init({
     'Escape': () => {
+      biomeActionsObj.cancel()
       selection.drop()
     },
     'Delete': () => {
@@ -306,6 +313,149 @@ function init() {
   playerBtns[0].click()
 }
 
+/**
+ * Режим правки биомов клеток (кнопка "Биом" в панели фигур).
+ * ЛКМ — присвоить клетке код биома (протягиванием тоже),
+ * ПКМ/СКМ — обычное перемещение карты. Стирание — выбрав «СТЕРЕТЬ»
+ * в списке #biome-code. Изменения сразу видны заливкой biomeColors
+ * и попадают в сейв (GRID_BIOMES) через обычный saveGame/exportBiomes.
+ */
+const biomeModeObj = {
+  active: false,
+  /** последняя расписанная клетка — чтобы drag не перезаписывал заново */
+  lastKey: null,
+  /** клетка под курсором — для hover-подсветки */
+  hoverKey: null,
+}
+
+const biomeActionsObj = {
+  /** особое значение select'а — стирание биома клетки (вместо ПКМ) */
+  ERASE_VALUE: '__erase__',
+
+  /** ребёнок пунктов select'а: коды из biomeColors + defaultBiome + СТЕРЕТЬ */
+  refreshOptions() {
+    const sel = document.getElementById('biome-code')
+    if (!sel) return
+    const conf = SquareGrid.conf()
+    const entries = []
+    for (const code of Object.keys(conf?.biomeColors || {})) {
+      entries.push({ value: code, text: code })
+    }
+    if (conf?.defaultBiome) {
+      entries.push({ value: conf.defaultBiome, text: conf.defaultBiome + ' (по умолчанию)' })
+    }
+    entries.push({ value: biomeActionsObj.ERASE_VALUE, text: 'СТЕРЕТЬ' })
+
+    const saved = sel.value
+    sel.innerHTML = entries
+      .map(e => `<option value="${e.value}">${e.text}</option>`)
+      .join('')
+    // сохранить прежний выбор, если он ещё есть; иначе — не «СТЕРЕТЬ», а первый код
+    const stillThere = entries.some(e => e.value === saved)
+    sel.value = stillThere
+      ? saved
+      : (entries.find(e => e.value !== biomeActionsObj.ERASE_VALUE)?.value || biomeActionsObj.ERASE_VALUE)
+  },
+
+  updateButton() {
+    const btn = document.getElementById('place-biome-btn')
+    if (!btn) return
+    if (!SquareGrid.isEnabled()) {
+      btn.disabled = true
+      btn.style.opacity = '0.4'
+      btn.title = 'Режим биомов недоступен: включите SQUARE_GRID в settings'
+      return
+    }
+    btn.disabled = false
+    btn.style.opacity = ''
+    btn.style.outline = biomeModeObj.active ? '2px solid #00ff9d' : ''
+    btn.title = biomeModeObj.active
+      ? 'Выключить режим биомов (Esc)'
+      : 'Режим правки биомов: ЛКМ — код, ПКМ — стереть, протягивание тоже'
+  },
+
+  toggle() {
+    biomeModeObj.active = !biomeModeObj.active
+    biomeModeObj.lastKey = null
+    biomeModeObj.hoverKey = null
+    biomeActionsObj.updateButton()
+    biomeActionsObj.refreshOptions()
+    drawCanvas()
+  },
+
+  /** текущий выбор Painting: {ставить какие коды} +erase flag; ''; null если нет select'а */
+  selection() {
+    const sel = document.getElementById('biome-code')
+    const value = sel ? sel.value : ''
+    if (value === biomeActionsObj.ERASE_VALUE) return { erase: true, biome: '' }
+    return { erase: false, biome: SquareGrid.normalizeBiome(value) }
+  },
+
+  /** текущий код биома без особых眼的 (для岚ой совместимости вызовов) */
+  currentCode() {
+    return this.selection().biome
+  },
+
+  /** экранные координаты → клетка; null если вне сетки или сетка выключена */
+  cellFromClient(clientX, clientY) {
+    if (!SquareGrid.isEnabled()) return null
+    const rect = canvas.getBoundingClientRect()
+    const x = (clientX - rect.left - Viewport.offsetX) / Viewport.scale
+    const y = (clientY - rect.top - Viewport.offsetY) / Viewport.scale
+    return SquareGrid.cellCoords(x, y)
+  },
+
+  /**
+   * Присвоить/стереть биом клетки по экранным координатам.
+   * @param {boolean} erase true = удалить биом клетки
+   */
+  paint(clientX, clientY, erase = null) {
+    const cell = this.cellFromClient(clientX, clientY)
+    if (!cell) return
+    const key = SquareGrid.nameByCoords(cell.col, cell.row)
+    if (biomeModeObj.lastKey === key) return // уже расписали протягиванием
+    biomeModeObj.lastKey = key
+    const wantErase = erase === null ? this.selection().erase : erase
+    SquareGrid.setBiome(cell.col, cell.row, wantErase ? '' : this.selection().biome)
+    drawCanvas()
+  },
+
+  /** hover-подсветка клетки под курсором; вызывается в drawCanvas в мировых координатах */
+  drawHover(ctx) {
+    if (!biomeModeObj.active || typeof Pointer === 'undefined') return
+    const cell = this.cellFromClient(Pointer.mousePos?.x, Pointer.mousePos?.y)
+    if (!cell) return
+    const conf = SquareGrid.conf()
+    const x = conf.offsetX + cell.col * conf.stepX
+    const y = conf.offsetY + cell.row * conf.stepY
+    const sel = this.selection()
+    const color = sel.erase ? 'rgba(255,80,80,0.95)' : 'rgba(0,255,157,0.95)'
+    ctx.save()
+    ctx.strokeStyle = color
+    ctx.lineWidth = 2
+    ctx.strokeRect(x, y, conf.stepX, conf.stepY)
+    ctx.fillStyle = color
+    ctx.font = '13px Arial'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    const name = SquareGrid.nameByCoords(cell.col, cell.row)
+    const label = sel.erase
+      ? `${name} → стереть`
+      : `${name} → ${sel.biome || '(пусто)'}`
+    ctx.fillText(label, x + 4, y + 4)
+    ctx.restore()
+  },
+
+  /** выход из режима биомов (Esc): отпускаем кисть, сбрасываем подсветку */
+  cancel() {
+    biomeModeObj.active = false
+    biomeModeObj.lastKey = null
+    biomeModeObj.hoverKey = null
+    this.updateButton()
+    drawCanvas()
+  },
+}
+
 function onPlayerChange(el) {
     const color = el.dataset.color
     el.style.backgroundColor = color
@@ -391,6 +541,10 @@ function addListeners() {
   fogCanvas.addEventListener('mousemove', Pointer.handleMouseMove);
   fogCanvas.addEventListener('mouseup', Pointer.handleMouseUp);
   canvas.addEventListener('contextmenu', lineActionsObj.finishLineDrawing);
+  // ПКМ в режиме биомов стирает клетку, а не открывает меню браузера
+  fogCanvas.addEventListener('contextmenu', (e) => {
+    if (biomeModeObj.active || lineModeObj.active) e.preventDefault();
+  });
 
   fogCanvas.addEventListener('wheel', Viewport.handleWheel, { passive: false });
 
@@ -420,6 +574,8 @@ function addListeners() {
   document.getElementById('clone-shape-btn').addEventListener('click', cloneShape);
   document.getElementById('place-text-btn').addEventListener('click', placeText);
   document.getElementById('place-line-btn').addEventListener('click', lineActionsObj.placeLineClick);
+  document.getElementById('place-biome-btn')?.addEventListener('click', biomeActionsObj.toggle);
+  document.getElementById('biome-code')?.addEventListener('input', drawCanvas);
 
   // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
 
@@ -1274,6 +1430,7 @@ function drawCanvas(options = {infoPanel: false}) {
     ctx.scale(Viewport.scale, Viewport.scale);
     ctx.drawImage(map.image, 0, 0, map.image.width, map.image.height);
     SquareGrid.draw(ctx, map.image.width, map.image.height)
+    biomeActionsObj.drawHover(ctx)
     ctx.restore();
   }
 
@@ -2079,10 +2236,26 @@ const Pointer = {
     Pointer.isDragging = false;
     Pointer.dragStartTime = 0
     Pointer.isDraggingElement = false;
+    biomeModeObj.lastKey = null
   },
 
   handleMouseDown(e) {
     e.preventDefault();
+
+    // режим биомов: ЛКМ — код из select'а, ПКМ/СКМ — обычное перемещение карты
+    if (biomeModeObj.active && SquareGrid.isEnabled()) {
+      if (e.button === 0) {
+        biomeModeObj.lastKey = null
+        Pointer.isDragging = true
+        Pointer.dragStartTime = Date.now()
+        Pointer.dragStartX = e.clientX
+        Pointer.dragStartY = e.clientY
+        biomeActionsObj.paint(e.clientX, e.clientY)
+      } else {
+        Pointer.startDrag(e.clientX, e.clientY, e.button)
+      }
+      return
+    }
 
     if (!lineModeObj.active) {
       Pointer.startDrag(e.clientX, e.clientY, e.button);
@@ -2124,6 +2297,29 @@ const Pointer = {
       x: e.clientX,
       y: e.clientY
     }
+
+    // режим биомов: протягивание ЛКМ рисует, ПКМ/СКМ — обычный pan, простой ход — hover
+    if (biomeModeObj.active && SquareGrid.isEnabled()) {
+      e.preventDefault();
+      if (Pointer.isDragging) {
+        if (biomeModeObj.lastKey !== null) {
+          // идёт роспись ЛКМ (lastKey ставится в mousedown)
+          biomeActionsObj.paint(e.clientX, e.clientY)
+        } else {
+          // драг ПКМ/СКМ — перемещение карты
+          Pointer.updateDrag(e.clientX, e.clientY)
+        }
+      } else {
+        const cell = biomeActionsObj.cellFromClient(e.clientX, e.clientY)
+        const key = cell ? SquareGrid.nameByCoords(cell.col, cell.row) : null
+        if (key !== biomeModeObj.hoverKey) {
+          biomeModeObj.hoverKey = key
+          drawCanvas()
+        }
+      }
+      return
+    }
+
     if (!Pointer.isDragging) return;
     e.preventDefault();
     Pointer.updateDrag(e.clientX, e.clientY);
