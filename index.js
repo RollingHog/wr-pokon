@@ -575,7 +575,7 @@ function addListeners() {
   document.getElementById('place-text-btn').addEventListener('click', placeText);
   document.getElementById('place-line-btn').addEventListener('click', lineActionsObj.placeLineClick);
   document.getElementById('place-biome-btn')?.addEventListener('click', biomeActionsObj.toggle);
-  document.getElementById('biome-code')?.addEventListener('input', drawCanvas);
+  document.getElementById('biome-code')?.addEventListener('input', () => requestRedraw());
 
   // document.getElementById('delete-btn').addEventListener('click', deleteSelected);
 
@@ -631,7 +631,7 @@ const Viewport = {
     fogCanvas.width = canvasContainer.clientWidth;
     fogCanvas.height = canvasContainer.clientHeight;
 
-    drawCanvas();
+    requestRedraw();
   },
 
   handleWheel(e) {
@@ -653,14 +653,14 @@ const Viewport = {
       scaleValue.textContent = `${Math.round(Viewport.scale * 100)}%`;
       scaleSlider.value = Viewport.scale * 100;
 
-      drawCanvas();
+      requestRedraw();
     }
   },
 
   updateScale() {
     Viewport.scale = parseInt(scaleSlider.value) / 100;
     scaleValue.textContent = `${scaleSlider.value}%`;
-    drawCanvas();
+    requestRedraw();
   },
 };
 
@@ -1264,7 +1264,7 @@ function loadDefaultMap() {
       name: 'default',
       image: defaultMapImg
     })
-    drawCanvas()
+    requestRedraw()
     renderMapList()
   }
   defaultMapImg.src = SETTINGS.MAP_PATH;
@@ -1409,6 +1409,18 @@ function getBackgroundCanvas() {
     }
   }
   return backgroundCanvasEl;
+}
+
+let repaintQueued = false;
+let lastRedrawOptions = { infoPanel: false };
+function requestRedraw(options = { infoPanel: false }) {
+  lastRedrawOptions = options || { infoPanel: false };
+  if (repaintQueued) return;
+  repaintQueued = true;
+  requestAnimationFrame(() => {
+    repaintQueued = false;
+    drawCanvas(lastRedrawOptions);
+  });
 }
 
 function drawCanvas(options = {infoPanel: false}) {
@@ -2140,7 +2152,7 @@ const Pointer = {
               Pins.removePreviousOwnership(selectedElement);
               Pins.addChildToOwner(element.id, selectedElement);
             }
-            drawCanvas()
+            requestRedraw()
             return
           }
 
@@ -2168,7 +2180,7 @@ const Pointer = {
           Viewport.tempOffsetX = element.x;
           Viewport.tempOffsetY = element.y;
 
-          drawCanvas();
+          requestRedraw();
           return;
         }
       }
@@ -2223,7 +2235,7 @@ const Pointer = {
       Viewport.offsetY = Viewport.tempOffsetY + (clientY - Pointer.dragStartY);
     }
 
-    drawCanvas();
+    requestRedraw();
   },
 
   endDrag(mouseButton = 0) {
@@ -2314,7 +2326,7 @@ const Pointer = {
         const key = cell ? SquareGrid.nameByCoords(cell.col, cell.row) : null
         if (key !== biomeModeObj.hoverKey) {
           biomeModeObj.hoverKey = key
-          drawCanvas()
+          requestRedraw()
         }
       }
       return
@@ -2360,21 +2372,21 @@ const selection = {
     if (typeof selectedElement.lvl === 'undefined') selectedElement.lvl = MIN_LVL
     offsetUnitHp(selectedElement, -amount)
 
-    drawCanvas({infoPanel: true});
+    requestRedraw({infoPanel: true});
   },
   dropLevel(amount = 1) {
     if (!selectedElement) return
 
     if (typeof selectedElement.curr_hp === 'undefined') selectedElement.curr_hp = Unit.getMaxHP(selectedElement.name)
     offsetObjLvl(selectedElement, -amount)
-    drawCanvas({infoPanel: true});
+    requestRedraw({infoPanel: true});
   },
   switchEndedTurn() {
     if (!selectedElement) return
     if (isNoHealth(selectedElement.name)) return
     if (typeof selectedElement.endedTurn === 'undefined') selectedElement.disabled = false
     selectedElement.endedTurn = !selectedElement.endedTurn
-    drawCanvas({infoPanel: true});
+    requestRedraw({infoPanel: true});
   },
   switchDisable() {
     if (!selectedElement) return
@@ -2383,14 +2395,14 @@ const selection = {
     } else {
       delete selectedElement.disabled
     }
-    drawCanvas({infoPanel: true});
+    requestRedraw({infoPanel: true});
   },
   delete() {
     if (selectedElement) {
       killObj(selectedElement, true)
       selectedElement = null;
       editPanel.style.display = 'none';
-      drawCanvas({infoPanel: true});
+      requestRedraw({infoPanel: true});
     }
   },
 
@@ -2410,12 +2422,14 @@ const selection = {
         delete selectedElement.title
         draw.element(selectedElement)
         if (needPanelRecalc) UI.drawInfoPanel()
+        requestRedraw()
         return
       }
       selectedElement.title = newTitle
     }
     draw.element(selectedElement)
     if (needPanelRecalc) UI.drawInfoPanel()
+    requestRedraw()
   },
 
   info() {
@@ -2608,6 +2622,7 @@ function placeShape({ spawnNearMenu = false, selectedElement } = {}) {
   draw.element(shape)
   draw.fogOfWar(fogCtx)
   UI.drawInfoPanel()
+  requestRedraw()
 }
 
 function placeText() {
@@ -2642,6 +2657,7 @@ function placeText() {
   elements.push(text);
   document.getElementById('text-input').value = '';
   draw.element(text);
+  requestRedraw()
 }
 
 const lineActionsObj = {
