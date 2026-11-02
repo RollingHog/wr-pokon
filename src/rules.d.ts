@@ -102,15 +102,36 @@ interface Settings {
   DEFAULT_FIGURE_BG?: string;
   /** квадратная сетка поверх карты */
   SQUARE_GRID?: {
+    /** false — сетка выключена (конфиг живёт в settings, но не рисуется) */
+    enabled?: boolean;
+    /** размер квадратной клетки в пикселях карты (по ширине и высоте) */
+    size?: number;
+    /** acts as both width and height for rectangular cell */
     cellWidth?: number;
     cellHeight?: number;
+    /** сдвиг сетки, чтобы квадраты совпали с рисунком карты */
     offsetX?: number;
     offsetY?: number;
+    /** ограничить сетку: число колонок/строк (иначе — до края картинки карты) */
+    cols?: number;
+    rows?: number;
     showGrid?: boolean;
     label?: boolean;
     showUnitCell?: boolean;
     lineWidth?: number;
     labelSize?: number;
+    /** контрастная толстая рамка для подгонки сетки под рисунок карты */
+    contrast?: boolean;
+    contrastColor?: string;
+    /** цвет линий и подписей (обычные) */
+    color?: string;
+    labelColor?: string;
+    /** биом клетки по умолчанию ('' = биома нет); справочный: суффикс "[C7:XX]" и info.
+     *  Заливкой карты НЕ рисуется. */
+    defaultBiome?: string;
+    /** заливка клеток, у которых биом задан явно (GRID_BIOMES в data.json.js):
+     *  код биома -> CSS-цвет, напр. { "ЛЕ": "rgba(46,125,50,0.35)" } */
+    biomeColors?: { [biome: string]: string };
   };
 }
 

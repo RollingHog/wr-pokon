@@ -556,9 +556,9 @@
     try {
       const effs = userEffectsObj.getNamedEffects(
         { name: 'Крейсер', color: '#0000ff', title: 'Флагман', x: 0, y: 0 })
-      assert(effs.some(e => e[0] === 'Уран' && e[2] === 'по имени'), 'эффект по имени')
-      assert(effs.some(e => e[0] === 'Сила Б' && e[2] === 'по title «Флагман»'), 'эффект по title')
-      assert(effs.some(e => e[0] === 'ОО' && e[2] === 'от игрока'), 'эффект игрока')
+      assert(effs.some(e => e[0] === 'Уран' && e[2] === 'DICT_COMMON'), 'эффект по имени')
+      assert(effs.some(e => e[0] === 'Сила Б' && e[2] === 'TITLE «Флагман»'), 'эффект по title')
+      assert(effs.some(e => e[0] === 'ОО' && e[2] === 'DICT_USER'), 'эффект игрока')
       assert(!effs.some(e => e[0] === KW.COST), 'цена не попадает в именные эффекты')
 
       const noTitle = userEffectsObj.getNamedEffects(
@@ -611,6 +611,62 @@
         DICT_COMMON[KW.TITLE_EFFECTS] = savedTitle
       }
       DICT_COMMON_A = savedCommonA
+    }
+  })
+
+  test('SquareGrid: биомы заливаются цветом из biomeColors', () => {
+    // подставляем биомы временно: реальное состояние SquareGrid.biomes вернём в конце
+    const savedBiomes = SquareGrid.biomes
+    SquareGrid.biomes = {}
+    const fake = {
+      lineWidth: 0, font: '', strokeStyle: '', fillStyle: '',
+      textAlign: '', textBaseline: '',
+      save() {}, restore() {}, beginPath() {},
+      rect() {}, clip() {}, moveTo() {}, lineTo() {}, stroke() {}, strokeRect() {},
+      fills: [],
+      fillRect(x, y, w, h) {
+        this.fills.push({ fillStyle: this.fillStyle, x, y, w, h })
+      },
+      fillText(text, x, y) {},
+    }
+    try {
+      // B2 → явный биом 'ЛЕ'; A1 → только defaultBiome (справочный, НЕ заливается)
+      withSquareGrid({ size: 100, defaultBiome: 'ГО', biomeColors: {
+        'ЛЕ': 'rgba(1,2,3,0.5)',
+        'ГО': 'rgba(9,9,9,0.4)',
+      } }, () => {
+        SquareGrid.setBiome(1, 1, ' ЛЕ ') // B2, с пробелами — код нормализуется
+        SquareGrid.draw(fake, 500, 500)
+
+        assertEq(fake.fills.length, 1, 'заливается только клетка с явным биомом')
+        const b2 = fake.fills.find(f => f.x === 100 && f.y === 100)
+        assert(b2, 'клетка B2 залита по своему прямоугольнику')
+        assertEq(b2 && b2.fillStyle, 'rgba(1,2,3,0.5)', 'цвет B2 — из biomeColors')
+        assert(!fake.fills.some(f => f.x === 0 && f.y === 0),
+          'клетка только с defaultBiome не заливается (defaultBiome — справочный)')
+        assert(!fake.fills.some(f => f.x === 200), 'клетка без биома не заливается')
+      })
+
+      // код биома, которого нет в biomeColors, — заливки нет
+      withSquareGrid({ size: 100, biomeColors: { 'ЛЕ': 'rgba(1,2,3,0.5)' } }, () => {
+        SquareGrid.biomes = {}
+        SquareGrid.setBiome(1, 1, 'ZZ')
+        fake.fills.length = 0
+        SquareGrid.draw(fake, 500, 500)
+        assertEq(fake.fills.length, 0, 'неизвестный код не заливается')
+      })
+
+      // без biomeColors заливки нет вообще, даже с заданными биомами
+      withSquareGrid({ size: 100 }, () => {
+        SquareGrid.biomes = {}
+        SquareGrid.setBiome(1, 1, 'ЛЕ')
+        assertEq(SquareGrid.conf().biomeColors, null)
+        fake.fills.length = 0
+        SquareGrid.draw(fake, 500, 500)
+        assertEq(fake.fills.length, 0, 'без таблицы цветов клеток заливки нет')
+      })
+    } finally {
+      SquareGrid.biomes = savedBiomes
     }
   })
 

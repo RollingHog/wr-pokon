@@ -8,10 +8,11 @@ onEndTurnCb
 */
 
 /// <reference path="../../src/keywords.js"/>
-/// <reference path="../../src/rules.d.ts"/>
 /* global
 KW KW_LOCALS
 */
+
+/// <reference path="../../src/rules.d.ts"/>
 
 /// <reference path="../../index.js"/>
 /* global
@@ -20,15 +21,16 @@ NPCPlayers listPlayers
 userEffectsObj
 */
 
-const CELL_SIZE = 90
+const CELL_SIZE = 70
 
+/** @type {Settings} */
 const SETTINGS = {
   IS_CUSTOM: true,
   MAP_PATH: 'stach/map.png',
   // DEFAULT_FIGURE_BG: 'circle',
 
   MAX_UNIT_HP: 1,
-  VISION_RADIUS: CELL_SIZE * 1.6,
+  VISION_RADIUS: CELL_SIZE * 1.8,
   CAPITAL_SPECIAL_VISION: false,
   // may be left empty, then _pop_ wont be applied
   POP_PROP: null,
@@ -38,7 +40,18 @@ const SETTINGS = {
   DEFAULT_LINE_COLOR: 'white',
   TITLE_ABOVE: true,
   CANNOT_ACT_AFTER_PLACEMENT: true,
-} 
+
+  SQUARE_GRID: {
+    cellWidth: CELL_SIZE + 2,
+    cellHeight: CELL_SIZE - 2,
+    offsetX: 16,
+    offsetY: 16,
+    lineWidth: 3,
+    label: true,        // подписи колонок/строк в каждой клетке
+    showUnitCell: true, // справочно показывать квадрат юнита под ним
+    // biomeColors: { "ЛЕ": "rgba(46,125,50,0.35)", "ГО": "rgba(80,80,80,0.4)" },
+  },
+}
 
 const DEFAULT = {
   /* filled up later */
@@ -167,6 +180,7 @@ const EFFECT_LISTS = {
 
 const UNIT_UPKEEP = 1
 const UNDO_POP_USAGE = ['Рабочие', 1]
+/** @type {RulesDict} */
 const DICT_COMMON = {
 
   '_upkeep_': {

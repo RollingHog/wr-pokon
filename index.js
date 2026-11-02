@@ -530,7 +530,10 @@ const Viewport = {
  *                   (по умолчанию ~1/8 клетки), масштабируется вместе с картой;
  *   contrast      — контрастные толстые границы для подгонки сетки;
  *   showUnitCell  — справочный суффикс " [C7]" в подписи юнита;
- *   defaultBiome  — биом по умолчанию ('' = биома нет).
+ *   defaultBiome  — биом по умолчанию ('' = биома нет);
+ *   biomeColors   — { "XX": "css-color" } — заливка клеток, у которых биом
+ *                   задан явно (в GRID_BIOMES); unknown/нет ключа — без заливки.
+ *                   defaultBiome только в тексте, карту не заливает.
  *
  * Биомы клеток хранятся отдельно от конфига — в save-файле, в структуре
  * GRID_BIOMES = { "A1": "XX", ... }. Отсутствие ключа = биома нет.
@@ -570,6 +573,7 @@ const SquareGrid = {
       contrast: conf.contrast === true,
       showUnitCell: conf.showUnitCell !== false,
       defaultBiome: typeof conf.defaultBiome === 'string' ? conf.defaultBiome : '',
+      biomeColors: SquareGrid.normalizeBiomeColors(conf.biomeColors),
       color: conf.color || 'rgba(255,255,255,0.35)',
       contrastColor: conf.contrastColor || '#ff00ff',
       labelColor: conf.labelColor || 'rgba(255,255,255,0.55)',
@@ -633,6 +637,17 @@ const SquareGrid = {
   /** биом — строка не длиннее двух символов */
   normalizeBiome(value) {
     return Array.from(String(value == null ? '' : value).trim()).slice(0, 2).join('')
+  },
+
+  /** таблица «код биома → цвет заливки клетки» из настроек кампании */
+  normalizeBiomeColors(raw) {
+    if (!raw || typeof raw !== 'object') return null
+    const colors = {}
+    for (const [code, color] of Object.entries(raw)) {
+      const biome = this.normalizeBiome(code)
+      if (biome && color) colors[biome] = String(color)
+    }
+    return Object.keys(colors).length ? colors : null
   },
 
   getBiome(col, row) {
@@ -719,6 +734,26 @@ const SquareGrid = {
     ctx.beginPath()
     ctx.rect(0, 0, mapW, mapH)
     ctx.clip()
+
+    // Заливаем клетки, для которых биом задан явно в GRID_BIOMES
+    // (defaultBiome оставляем только справочным текстом, чтобы не заливать всю карту).
+    // Цвета — из SETTINGS.SQUARE_GRID.biomeColors. Заливка под линиями и подписями.
+    if (conf.biomeColors) {
+      const biomeColors = conf.biomeColors
+      for (let col = firstCol; col < lastCol; col++) {
+        for (let row = firstRow; row < lastRow; row++) {
+          const biome = this.biomes[this.cellKey(col, row)]
+          const color = biome && biomeColors[biome]
+          if (!color) continue
+          ctx.fillStyle = color
+          ctx.fillRect(
+            offsetX + col * stepX,
+            offsetY + row * stepY,
+            stepX, stepY
+          )
+        }
+      }
+    }
 
     ctx.strokeStyle = conf.contrast ? conf.contrastColor : conf.color
     const lineWidth = conf.contrast ? 3 : conf.lineWidth
@@ -2194,10 +2229,11 @@ const selection = {
     // именные эффекты объекта — списком в начало информации
     const namedEff = userEffectsObj.getNamedEffects(selectedElement)
     const namedStr = namedEff.length
-      ? 'Именные эффекты:\n' + namedEff.map(e => `${e[0]}: ${e[1]} [${e[2]}]`).join('\n') + '\n\n'
+      ? '\n\nИменные эффекты:\n' + namedEff.map(e => `${e[0]}: ${e[1]} [${e[2]}]`).join('\n')
+      //  + '\n\n'
       : ''
 
-    alert(namedStr + JSON.stringify(selectedElement, 0, 2) + (gridInfo ? `\n\nКлетка: ${gridInfo}` : ''))
+    alert(JSON.stringify(selectedElement, 0, 2) + (gridInfo ? `\n\nКлетка: ${gridInfo}` : '') + namedStr)
   }
 }
 
@@ -2642,10 +2678,10 @@ const userEffectsObj = {
   getNamedEffects(obj) {
     const username = Players.byColor(obj.color)
     const groups = [
-      ['по имени', DICT_COMMON_A?.[obj.name]],
-      ['по title «' + (obj.title ?? '') + '»',
+      ['DICT_COMMON', DICT_COMMON_A?.[obj.name]],
+      ['TITLE «' + (obj.title ?? '') + '»',
         obj.title ? DICT_COMMON_A?.[KW.TITLE_EFFECTS]?.[obj.title] : undefined],
-      ['от игрока', [].concat(
+      ['DICT_USER', [].concat(
         DICT_USER[username]?.[obj.name],
         TechUtils.getUnitTechEffects(username, obj.name),
       ).filter(e => e)],
