@@ -90,6 +90,7 @@
                 Пути</span>
             </label>
             <button id="renderBtn">🎯 Отрисовать</button>
+            <button id="copyBiomesBtn" style="background:#4f7bdc; border-bottom-color:#2f4f9c; margin-left:10px;" title="Копировать json-карту биомов">📋</button>
         </div>
         <div class="canvas-wrapper">
             <canvas id="gridCanvas" width="700" height="500"></canvas>
@@ -108,6 +109,7 @@
             const chanceInput = document.getElementById('chanceInput');
             const chanceDisplay = document.getElementById('chanceDisplay');
             const renderBtn = document.getElementById('renderBtn');
+            const copyBiomesBtn = document.getElementById('copyBiomesBtn');
             const lanesToggle = document.getElementById('lanesToggle');
 
             const CELL_W = 72;
@@ -212,6 +214,14 @@
                 return connections;
             }
 
+            function colLabel(i) {
+                if (i < 0) return '-' + colLabel(-i - 1);
+                return i < 26 ? String.fromCharCode(65 + i) : colLabel(Math.floor(i / 26) - 1) + String.fromCharCode(65 + i % 26);
+            }
+            function cellKey(col, row) {
+                return colLabel(col - 1) + row;
+            }
+
             function drawCanvas() {
                 let cols = parseInt(widthInput.value, 10);
                 let rows = parseInt(heightInput.value, 10);
@@ -255,6 +265,7 @@
 
                 const hyperlanes = buildHyperlanes(stars);
                 const starSet = new Set(stars.map(s => `${s.col},${s.row}`));
+                const starList = stars.map(s => ({col: s.col, row: s.row}));
 
                 // Фон
                 ctx.fillStyle = '#000000';
@@ -347,7 +358,7 @@
                         }
 
                         // Номер
-                        const text = `${String(col).padStart(2,'0')}.${String(row).padStart(2,'0')}`;
+                        const text = cellKey(col, row);
                         ctx.font = 'bold 17px "JetBrains Mono","Fira Code",monospace';
                         ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
                         ctx.fillStyle = '#f0f4ff';
@@ -359,6 +370,27 @@
                 // Внешняя обводка
                 ctx.strokeStyle = '#6d7f9c'; ctx.lineWidth = 3;
                 ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+
+                // Генерация словаря биомов для Stach: ЗВ - звезда, ОЗ - окрестность звезды
+                const biomeMap = {};
+                for (const star of starList) {
+                    biomeMap[cellKey(star.col, star.row)] = 'ЗВ';
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            if (dr === 0 && dc === 0) continue;
+                            const nr = star.row + dr;
+                            const nc = star.col + dc;
+                            if (nr < 1 || nr > rows || nc < 1 || nc > cols) continue;
+                            const nKey = cellKey(nc, nr);
+                            if (biomeMap[nKey] === 'ЗВ') continue;
+                            if (!biomeMap[nKey]) {
+                                biomeMap[nKey] = 'ОЗ';
+                            }
+                        }
+                    }
+                }
+                console.log('GRID_BIOMES:', JSON.stringify(biomeMap));
+                window.__GRID_BIOMES__ = biomeMap;
             }
 
             chanceInput.addEventListener('input', () => {
@@ -372,6 +404,24 @@
                 chanceInput.value = v; chanceDisplay.textContent = v;
             });
             renderBtn.addEventListener('click', drawCanvas);
+            if (copyBiomesBtn) {
+                copyBiomesBtn.addEventListener('click', () => {
+                    if (!window.__GRID_BIOMES__ || Object.keys(window.__GRID_BIOMES__).length === 0) {
+                        alert('Сначала сгенерируйте карту');
+                        return;
+                    }
+                    const text = JSON.stringify(window.__GRID_BIOMES__);
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            // alert('Карта биомов скопирована');
+                        }).catch(() => {
+                            prompt('Скопируйте:', text);
+                        });
+                    } else {
+                        prompt('Скопируйте:', text);
+                    }
+                });
+            }
             [widthInput, heightInput, chanceInput].forEach(inp =>
                 inp.addEventListener('keypress', e => { if (e.key === 'Enter') drawCanvas(); })
             );

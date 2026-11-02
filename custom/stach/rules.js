@@ -52,8 +52,8 @@ const SETTINGS = {
     label: false,        
     showUnitCell: false, 
     biomeColors: { 
-      "ЛЕ": "rgba(46,125,50,0.35)", 
-      "ГО": "rgba(80,80,80,0.4)" 
+      "ЗВ": "rgba(125, 88, 46, 0.35)", 
+      "ОЗ": "rgba(80,80,80,0.35)" 
     },
   },
 }

@@ -4750,7 +4750,7 @@ OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
 USER_RESOURCES=${JSON.stringify(userResources, 0, 2)};
 USER_TECH_LVLS=${JSON.stringify(typeof USER_TECH_LVLS !== 'undefined' ? USER_TECH_LVLS : {}, 0, 2)};
 OWNER_MAP=${JSON.stringify(typeof ownerMap !== 'undefined' ? ownerMap : {})};
-GRID_BIOMES=${JSON.stringify(SquareGrid.exportBiomes(), 0, 2)};
+GRID_BIOMES=${JSON.stringify(SquareGrid.exportBiomes())};
 DEFAULT_DATA=`
     + JSON.stringify(defaultData, 0, 2)
   )
