@@ -1,8 +1,8 @@
-CURRENT_TURN=1;
+CURRENT_TURN=2;
 OTHER_SAVE_DATA={
-  "scale": 0.9805595978824272,
-  "canvasOffsetX": -629.4376848722286,
-  "canvasOffsetY": -190.17749296157,
+  "scale": 0.7553269609453085,
+  "canvasOffsetX": -124.39941699712949,
+  "canvasOffsetY": -86.5593526088864,
   "shapeColor": "#0000ff"
 };
 USER_RESOURCES={
@@ -13,10 +13,10 @@ USER_RESOURCES={
   },
   "МСФК": {
     "Еда": 0,
-    "Металл": 0,
-    "Кремний": 10,
-    "Уран": 5,
-    "Наука": 0
+    "Металл": 30,
+    "Кремний": 27,
+    "Уран": 15.5,
+    "Наука": 5
   },
   "Варвары": {},
   "Колорады": {
@@ -25,7 +25,12 @@ USER_RESOURCES={
     "Уран": 10,
     "Наука": 0
   },
-  "КуртАльф": {}
+  "КуртАльф": {
+    "Металл": 13,
+    "Кремний": 15,
+    "Уран": 15.5,
+    "Наука": 6
+  }
 };
 USER_TECH_LVLS={
   "МСФК": {
@@ -61,7 +66,7 @@ USER_TECH_LVLS={
     "Щиты": 0
   }
 };
-OWNER_MAP={"117":[55],"121":[118],"122":[120],"140":[70]};
+OWNER_MAP={"117":[55],"121":[118],"122":[120],"140":[70],"147":[35]};
 GRID_BIOMES={};
 DEFAULT_DATA=[
   {
@@ -346,14 +351,13 @@ DEFAULT_DATA=[
     "name": "Холодный_мир",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1108.99,
-    "y": 481.5,
+    "x": 1115.11,
+    "y": 474.36,
     "width": 50,
     "height": 50,
     "src": "pokras-spc/images/buildings/Холодный_мир.png",
     "curr_hp": 1,
-    "endedTurn": false,
-    "disabled": true
+    "endedTurn": false
   },
   {
     "id": 36,
@@ -1020,7 +1024,7 @@ DEFAULT_DATA=[
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
     "curr_hp": 1,
-    "endedTurn": true
+    "endedTurn": false
   },
   {
     "id": 100,
@@ -1108,19 +1112,6 @@ DEFAULT_DATA=[
     "src": "pokras-spc/images/buildings/Умеренный_мир.png",
     "curr_hp": 1,
     "disabled": 1,
-    "endedTurn": false
-  },
-  {
-    "id": 110,
-    "type": "shape",
-    "name": "Колонизатор",
-    "shape": "custom",
-    "color": "#0000ff",
-    "x": 1144.11,
-    "y": 794.22,
-    "width": 40,
-    "height": 40,
-    "curr_hp": 1,
     "endedTurn": false
   },
   {
@@ -1507,13 +1498,13 @@ DEFAULT_DATA=[
     "name": "Фрегат",
     "shape": "custom",
     "color": "#0000ff",
-    "x": 1068.25,
-    "y": 779.37,
+    "x": 1071.31,
+    "y": 807.93,
     "width": 40,
     "height": 40,
     "src": "pokras-spc/images/units/Фрегат.png",
     "curr_hp": 1,
-    "endedTurn": true,
+    "endedTurn": false,
     "title": "Кромсатель"
   },
   {
@@ -1576,6 +1567,19 @@ DEFAULT_DATA=[
     "color": "#930000",
     "x": 1544.39,
     "y": 536.5,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false
+  },
+  {
+    "id": 147,
+    "type": "shape",
+    "name": "Молодая_колония",
+    "shape": "custom",
+    "color": "#0000ff",
+    "x": 1117.11,
+    "y": 478.69,
     "width": 40,
     "height": 40,
     "curr_hp": 1,
