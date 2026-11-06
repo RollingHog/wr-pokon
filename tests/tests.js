@@ -844,6 +844,75 @@
     }
   })
 
+  // ---------- сетевой режим (общий сейв на сервере ходов) ----------
+
+  test('Net: applySave применяет ход, ресурсы и биомы без перезагрузки', () => {
+    resetGame([])
+    const player = Players.list()[0]
+    const savedScale = Viewport.scale
+    const text = [
+      'CURRENT_TURN=5;',
+      'OTHER_SAVE_DATA=' + JSON.stringify({ scale: 1.5, canvasOffsetX: 0, canvasOffsetY: 0 }) + ';',
+      'USER_RESOURCES=' + JSON.stringify({ [player]: { 'Еда': 7 } }) + ';',
+      'USER_TECH_LVLS=' + JSON.stringify({ [player]: { 'Тех': 2 } }) + ';',
+      'OWNER_MAP={};',
+      'GRID_BIOMES=' + JSON.stringify({ 'A1': 'ЛЕ' }) + ';',
+      'DEFAULT_DATA=' + JSON.stringify([
+        { id: 11, type: 'shape', shape: 'custom', name: 'Жители', color: '#0000ff', x: 10, y: 20, width: 40, height: 40 },
+      ]),
+    ].join('')
+    try {
+      Net.applySave(text, 5)
+      assertEq(CURRENT_TURN, 5, 'ход применён')
+      assertEq(elements.length, 1, 'объекты заменены')
+      assertEq(elements[0].name, 'Жители', 'объект из сейва')
+      assertEq(USER_RESOURCES[player]['Еда'], 7, 'ресурсы применены')
+      assertEq(USER_TECH_LVLS[player]['Тех'], 2, 'технологии применены')
+      assertEq(SquareGrid.biomes['A1'], 'ЛЕ', 'биомы применены')
+      assertEq(Viewport.scale, 1.5, 'масштаб из сейва')
+      assertEq(Net.version, 5, 'версия запомнена')
+    } finally {
+      Viewport.scale = savedScale
+      Net.version = 0
+      resetGame([])
+    }
+  })
+
+  test('Net: push отправляет сейв и повторяет отправку после конфликта версий', async () => {
+    const savedFetch = window.fetch
+    const savedEnabled = Net.enabled
+    const savedVersion = Net.version
+    const savedStatus = Net.status
+    const sent = []
+    resetGame([])
+    Net.enabled = true
+    Net.version = 3
+    Net.status = () => {}
+    try {
+      let attempt = 0
+      window.fetch = async (url, opts) => {
+        sent.push(JSON.parse(opts.body))
+        attempt++
+        if (attempt === 1) {
+          return { ok: false, status: 409, json: async () => ({ version: 7 }) }
+        }
+        return { ok: true, status: 200, json: async () => ({ version: 8 }) }
+      }
+      await Net.push()
+      assertEq(sent.length, 2, 'конфликт версий → повторная отправка')
+      assertEq(sent[0].version, 3, 'первая отправка со своей версией')
+      assertEq(sent[1].version, 7, 'повторная — уже с версией сервера')
+      assert(sent[0].text.includes('CURRENT_TURN='), 'в теле запроса текст сейва')
+      assertEq(Net.version, 8, 'версия обновлена после успеха')
+    } finally {
+      window.fetch = savedFetch
+      Net.enabled = savedEnabled
+      Net.version = savedVersion
+      Net.status = savedStatus
+      resetGame([])
+    }
+  })
+
   // ---------- запуск ----------
   async function runAll() {
     try {

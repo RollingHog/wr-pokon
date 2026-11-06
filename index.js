@@ -148,7 +148,13 @@ function init() {
         </label>
         <br>
         <button id="place-biome-btn" title="Режим правки биомов клеток">Биом</button>
-        <select id="biome-code" title="Биом клетки: коды из biomeColors + биом по умолчанию + стирание"></select>`;
+        <select id="biome-code" title="Биом клетки: коды из biomeColors + биом по умолчанию + стирание"></select>
+        <br>
+        <span id="net-controls" hidden>
+          <button id="net-pull-btn" title="Загрузить последний ход с сервера (несохранённые изменения пропадут)">Загрузить ход</button>
+          <button id="net-push-btn" title="Передать текущее состояние на сервер ходов">Передать ход</button>
+          <span id="net-status" style="font-size: 12px;"></span>
+        </span>`;
     shapePanel.appendChild(controlsSpan);
   }
 
@@ -311,6 +317,9 @@ function init() {
   const playerBtns = Array.from(document.querySelectorAll('.player-btn'))
   playerBtns.forEach(onPlayerChange)
   playerBtns[0].click()
+
+  // сетевой режим включается только при ?net=... (см. Net.init)
+  Net.init()
 }
 
 /**
@@ -1229,29 +1238,68 @@ function onCustomImageLoad(filename, src) {
   modalShapesContainer.appendChild(modalPreview);
 }
 
-function loadDefaultData() {
-  if (typeof DEFAULT_DATA !== 'undefined') {
-    elements = DEFAULT_DATA
-  }
-  assignIdsToElements()
+/**
+ * Применить разобранное состояние сейва к игре. Общий код для стартовой
+ * загрузки data.json.js (loadDefaultData) и для хода, полученного по сети
+ * (Net.applySave). Все поля необязательны.
+ * @param {{elements?: object[], other?: object|null, ownerMap?: object|null,
+ *   biomes?: object|null, resources?: object|null, techLvls?: object|null,
+ *   turn?: number}} save
+ */
+function applySaveState(save) {
+  if (!save) return
 
-  if (typeof OTHER_SAVE_DATA !== 'undefined') {
-    const oth = OTHER_SAVE_DATA
-    Viewport.scale = oth.scale
-    if (oth.shapeColor) {
-      setTimeout(_ => setShapeColor(oth.shapeColor), 0)
+  if (Array.isArray(save.elements)) {
+    elements = save.elements
+    assignIdsToElements()
+  }
+
+  if (save.other) {
+    if (typeof save.other.scale === 'number') Viewport.scale = save.other.scale
+    if (save.other.shapeColor) {
+      setTimeout(_ => setShapeColor(save.other.shapeColor), 0)
     }
-    // Viewport.offsetX = oth.canvasOffsetX
-    // Viewport.offsetY
+    // canvasOffsetX/Y не применяем: положение карты на экране у каждого своё
   }
 
-  if (typeof OWNER_MAP !== 'undefined') {
-    Pins.fromJSON(OWNER_MAP)
+  if (save.ownerMap) {
+    Pins.ownedObjs.length = 0
+    Pins.fromJSON(save.ownerMap)
   }
 
-  if (typeof GRID_BIOMES !== 'undefined') {
-    SquareGrid.setBiomes(GRID_BIOMES)
+  if (save.biomes) {
+    SquareGrid.setBiomes(save.biomes)
   }
+
+  if (typeof USER_RESOURCES !== 'undefined' && save.resources && typeof save.resources === 'object') {
+    for (const key of Object.keys(USER_RESOURCES)) delete USER_RESOURCES[key]
+    Object.assign(USER_RESOURCES, save.resources)
+    for (const player of Players.list()) {
+      if (!USER_RESOURCES[player] || typeof USER_RESOURCES[player] !== 'object') USER_RESOURCES[player] = {}
+    }
+  }
+  if (typeof USER_TECH_LVLS !== 'undefined' && save.techLvls && typeof save.techLvls === 'object') {
+    for (const key of Object.keys(USER_TECH_LVLS)) delete USER_TECH_LVLS[key]
+    Object.assign(USER_TECH_LVLS, save.techLvls)
+    for (const player of Players.list()) {
+      if (!USER_TECH_LVLS[player] || typeof USER_TECH_LVLS[player] !== 'object') USER_TECH_LVLS[player] = {}
+    }
+  }
+
+  if (typeof save.turn === 'number') {
+    // eslint-disable-next-line no-global-assign
+    CURRENT_TURN = save.turn
+  }
+}
+
+function loadDefaultData() {
+  // ресурсы, технологии и ход уже загружены одноимёнными глобалами data.json.js
+  applySaveState({
+    elements: typeof DEFAULT_DATA !== 'undefined' ? DEFAULT_DATA : [],
+    other: typeof OTHER_SAVE_DATA !== 'undefined' ? OTHER_SAVE_DATA : null,
+    ownerMap: typeof OWNER_MAP !== 'undefined' ? OWNER_MAP : null,
+    biomes: typeof GRID_BIOMES !== 'undefined' ? GRID_BIOMES : null,
+  })
 }
 
 function assignIdsToElements() {
@@ -4729,7 +4777,8 @@ function saveMap() {
   link.click();
 }
 
-function saveGame() {
+/** текст сейва (data.json.js) без скачивания файла — для сети и saveGame */
+function buildSaveText() {
   const defaultData = elements.filter(e => e.y)
   defaultData.forEach((el) => {
     delete el.originalX
@@ -4745,7 +4794,7 @@ function saveGame() {
   }
 
   const userResources = typeof USER_RESOURCES !== 'undefined' ? USER_RESOURCES : {}
-  saveFile(`data.json.js`, `CURRENT_TURN=${CURRENT_TURN};
+  return `CURRENT_TURN=${CURRENT_TURN};
 OTHER_SAVE_DATA=${JSON.stringify(otherData, 0, 2)};
 USER_RESOURCES=${JSON.stringify(userResources, 0, 2)};
 USER_TECH_LVLS=${JSON.stringify(typeof USER_TECH_LVLS !== 'undefined' ? USER_TECH_LVLS : {}, 0, 2)};
@@ -4753,7 +4802,10 @@ OWNER_MAP=${JSON.stringify(typeof ownerMap !== 'undefined' ? ownerMap : {})};
 GRID_BIOMES=${JSON.stringify(SquareGrid.exportBiomes())};
 DEFAULT_DATA=`
     + JSON.stringify(defaultData, 0, 2)
-  )
+}
+
+function saveGame() {
+  saveFile(`data.json.js`, buildSaveText())
 }
 
 function loadGame(e) {
@@ -4846,7 +4898,10 @@ const Delta = {
     return new Function(
       'var CURRENT_TURN,OTHER_SAVE_DATA,USER_RESOURCES,USER_TECH_LVLS,OWNER_MAP,GRID_BIOMES,DEFAULT_DATA;\n'
       + text
-      + '\n;return { turn: CURRENT_TURN || 1, elements: DEFAULT_DATA || [] };'
+      + '\n;return { turn: CURRENT_TURN || 1, elements: DEFAULT_DATA || [],'
+      + ' other: OTHER_SAVE_DATA || null, resources: USER_RESOURCES || {},'
+      + ' techLvls: USER_TECH_LVLS || {}, ownerMap: OWNER_MAP || {},'
+      + ' biomes: GRID_BIOMES || {} };'
     )()
   },
 
@@ -4990,6 +5045,191 @@ const Delta = {
 
     anchor.appendChild(btn)
     anchor.appendChild(input)
+  },
+}
+
+/**
+ * Сетевой режим «два игрока по локальной сети»: общий сейв на сервере ходов
+ * (serve.py). Включается только параметром в адресе страницы:
+ *   ?net=1                         — сервер тот же, откуда открыта страница
+ *   ?net=http://192.168.1.5:8123   — явный адрес сервера ходов
+ * Без параметра модуль не делает ни одного запроса — обычная одиночная игра.
+ *
+ * Схема: сервер хранит один сейв и номер версии. «Передать ход» отправляет
+ * текущее состояние (buildSaveText), «Загрузить ход» применяет сейв с сервера
+ * без перезагрузки страницы. Раз в несколько секунд страница проверяет версию
+ * и подсказывает, что соперник передал ход.
+ */
+const Net = {
+  enabled: false,
+  /** адрес сервера ходов без завершающего слэша; '' = тот же origin */
+  baseUrl: '',
+  /** последняя известная версия общего сейва */
+  version: 0,
+  busy: false,
+  pollTimer: null,
+  POLL_MS: 5000,
+
+  init() {
+    const param = new URLSearchParams(location.search).get('net')
+    if (param === null) return
+    this.enabled = true
+    this.baseUrl = param && param !== '1' ? param.replace(/\/+$/, '') : ''
+
+    const box = document.getElementById('net-controls')
+    if (box) box.hidden = false
+    document.getElementById('net-pull-btn')?.addEventListener('click', () => this.pull())
+    document.getElementById('net-push-btn')?.addEventListener('click', () => this.push())
+
+    this.status('подключение к серверу ходов…')
+    this.loadInitial()
+    this.pollTimer = setInterval(() => this.poll(), this.POLL_MS)
+  },
+
+  apiUrl() {
+    return `${this.baseUrl}/api/save`
+  },
+
+  status(text, isError = false) {
+    const el = document.getElementById('net-status')
+    if (!el) return
+    el.textContent = text ? ` ${text}` : ''
+    el.style.color = isError ? '#c00' : ''
+  },
+
+  /** подсветить «Загрузить ход», когда на сервере появилась новая версия */
+  setFresh(isFresh) {
+    const btn = document.getElementById('net-pull-btn')
+    if (btn) btn.style.outline = isFresh ? '2px solid #ffb300' : ''
+  },
+
+  async requestSave() {
+    const res = await fetch(this.apiUrl(), { cache: 'no-store' })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return res.json()
+  },
+
+  /** при открытии страницы подхватываем актуальный ход с сервера */
+  async loadInitial() {
+    let save
+    try {
+      save = await this.requestSave()
+    } catch (e) {
+      this.status('нет связи с сервером ходов (запустите serve.py)', true)
+      return
+    }
+    if (!save.text) {
+      this.status('общего сейва пока нет — нажмите «Передать ход»')
+      return
+    }
+    try {
+      this.applySave(save.text, save.version)
+      this.status(`загружен ход с сервера (версия ${this.version})`)
+    } catch (e) {
+      this.status('не удалось применить ход: ' + (e?.message || e), true)
+    }
+  },
+
+  /** периодическая проверка: не передал ли ход соперник */
+  async poll() {
+    if (!this.enabled || this.busy || document.hidden) return
+    try {
+      const save = await this.requestSave()
+      if (save.text && save.version > this.version) {
+        this.setFresh(true)
+        this.status(`соперник передал ход (версия ${save.version}) — нажмите «Загрузить ход»`)
+      }
+    } catch (e) {
+      this.status('нет связи с сервером ходов', true)
+    }
+  },
+
+  /** отправить текущее состояние на сервер */
+  async push() {
+    if (!this.enabled || this.busy) return
+    this.busy = true
+    try {
+      await this.sendSave(this.version, false)
+    } catch (e) {
+      this.status('не удалось передать ход: сервер недоступен', true)
+    } finally {
+      this.busy = false
+    }
+  },
+
+  async sendSave(version, forceTried) {
+    const res = await fetch(this.apiUrl(), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ version, text: buildSaveText() }),
+    })
+    const data = await res.json().catch(() => ({}))
+
+    if (res.status === 409) {
+      if (!forceTried) {
+        const serverVersion = data.version ?? '?'
+        if (confirm(`На сервере уже лежит ход версии ${serverVersion}. Перезаписать его текущим состоянием?`)) {
+          return this.sendSave(data.version || 0, true)
+        }
+      }
+      this.setFresh(true)
+      this.status('на сервере более новый ход — сначала загрузите его', true)
+      return
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    this.version = data.version
+    this.setFresh(false)
+    this.status(`ход передан (версия ${this.version})`)
+  },
+
+  /** взять последний ход с сервера (с подтверждением) */
+  async pull() {
+    if (!this.enabled || this.busy) return
+    this.busy = true
+    try {
+      let save
+      try {
+        save = await this.requestSave()
+      } catch (e) {
+        this.status('не удалось загрузить ход: сервер недоступен', true)
+        return
+      }
+      if (!save.text) {
+        this.status('на сервере ещё нет сейва', true)
+        return
+      }
+      if (save.version === this.version) {
+        this.status(`у вас уже последняя версия (${this.version})`)
+        return
+      }
+      if (!confirm(`Загрузить ход с сервера (версия ${save.version})? Несохранённые изменения на этой странице пропадут.`)) {
+        this.status('загрузка отменена')
+        return
+      }
+      try {
+        this.applySave(save.text, save.version)
+      } catch (e) {
+        this.status('не удалось применить ход: ' + (e?.message || e), true)
+        return
+      }
+      this.setFresh(false)
+      this.status(`загружен ход с сервера (версия ${this.version})`)
+    } finally {
+      this.busy = false
+    }
+  },
+
+  /** применить текст сейва к текущей странице (без перезагрузки) */
+  applySave(text, version) {
+    applySaveState(Delta.parseSaveText(text))
+
+    selectedElement = null
+    if (editPanel) editPanel.style.display = 'none'
+    biomeModeObj.lastKey = null
+
+    this.version = version
+    drawCanvas({ infoPanel: true })
+    drawTurnDisplay()
   },
 }
 
