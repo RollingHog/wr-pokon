@@ -16,6 +16,9 @@ const KW = /** @type {const} */ ({
    */
   COST: '_cost_',
   LOOT: '_loot_',
+  
+  GLOBAL_BUILDING_EFF: '_building_',
+  GLOBAL_UNIT_EFF: '_unit_',
   /** optional object description */
   DESC: '_desc_',
   SPRITE_SIZE: '_sprite_size_',

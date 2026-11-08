@@ -20,6 +20,7 @@ DICT_COMMON SETTINGS EMOJI_IMAGES
 CATEGORY_PRICES OBJ_CATEGORIES 
 EFFECT_LISTS DEFAULT 
 TECH_EFFECTS 
+BALANCE
 onEndTurnCb
 */
 
@@ -4195,6 +4196,78 @@ const Reports = {
       return { rows, effects }
     },
 
+    /**
+     * Строки баланса объектов: суммарная стоимость, эффект в УРЕ и разница.
+     * В отличие от effectRows, здесь не отбрасываются ключи, начинающиеся с `_`:
+     * они учитываются, если для них задан курс в BALANCE.rates и они не в ignore.
+     * Цена и описание эффектами не считаются.
+     * @param {string[]} objNames
+     * @param {{ rates?: Object<string, number>, ignore?: string[] }} [config] конфиг BALANCE (rates/ignore)
+     * @returns {{
+     *   rows: Array<{ name: string, cost: number, effect: number, balance: number }>,
+     *   total: { cost: number, effect: number, balance: number }
+     * }}
+     */
+    balanceRows(objNames, config) {
+      const rates = (config && config.rates) || {}
+      const ignore = new Set((config && config.ignore) || [])
+
+      const rows = []
+      let totalCost = 0
+      let totalEffect = 0
+
+      for (const objName of new Set(objNames)) {
+        if (ignore.has(objName)) continue
+
+        const objData = DICT_COMMON?.[objName]
+        if (!objData || typeof objData !== 'object' || Array.isArray(objData)) continue
+
+        const costDef = objData[KW.COST]
+        let cost = 0
+        if (costDef && typeof costDef === 'object') {
+          for (const value of Object.values(costDef)) {
+            const numValue = Number(value)
+            if (!isNaN(numValue)) cost += numValue
+          }
+        }
+
+        const ignoreKeywords = [
+          KW.COST,
+          KW.DESC,
+          KW.SPRITE_SIZE,
+          KW.START_DISABLED,
+          KW.GLOBAL_UNIT_EFF,
+          KW.GLOBAL_BUILDING_EFF,
+          KW.VISION,
+        ]
+
+        let effect = 0
+        for (const [key, value] of Object.entries(objData)) {
+          if (ignoreKeywords.includes(key)) continue
+          if (ignore.has(key)) continue
+
+          const rate = rates[key]
+          if (typeof rate !== 'number') {
+            console.warn('not in balance table:', key, objName)
+            continue
+          }
+
+          const numValue = Number(value)
+          if (isNaN(numValue)) continue
+          effect += numValue * rate
+        }
+
+        rows.push({ name: objName, cost, effect, balance: effect - cost })
+        totalCost += cost
+        totalEffect += effect
+      }
+
+      return {
+        rows,
+        total: { cost: totalCost, effect: totalEffect, balance: totalEffect - totalCost },
+      }
+    },
+
     /** be noted: it counts only COMMON prices */
     sumPrices() {
       if (!DICT_COMMON || !OBJ_CATEGORIES) {
@@ -4532,6 +4605,132 @@ const Reports = {
       // Строка итогов
       const totalCells = orderedEffects.map(effect => `**${totalsByEffect[effect] || 0}**`);
       markdown += `| Итого эффект | ${totalCells.join(' | ')} | **${grandTotal}** |\n`;
+
+      return markdown;
+    },
+
+    /**
+     * Сводная таблица баланса по субкатегориям:
+     * суммарная стоимость и суммарный эффект в УРЕ.
+     * Стоимость считается как в allCosts (сумма ресурсов), эффект — по BALANCE.rates.
+     * Ключи эффектов, начинающиеся с `_`, учитываются, если для них задан курс
+     * и они не перечислены в BALANCE.ignore. Объекты вне OBJ_CATEGORIES
+     * попадают в раздел «Вне категорий».
+     * @returns {string}
+     */
+    balance() {
+      if (!DICT_COMMON) {
+        console.error("Reports.md.balance: DICT_COMMON не определён");
+        return '';
+      }
+
+      const config = (typeof BALANCE !== 'undefined' && BALANCE) ? BALANCE : {};
+      const ignore = new Set(config.ignore || []);
+      const header = ['Объект', 'Цена', 'Эффект', 'Баланс'];
+      const formatNumber = value => String(Math.round(value * 100) / 100);
+      const displayName = name => (name || '').replace(/_/g, ' ').trim().slice(0, 15);
+
+      const isObject = name => {
+        const value = DICT_COMMON[name];
+        return !!value && typeof value === 'object' && !Array.isArray(value);
+      };
+
+      const makeTable = objNames => {
+        const { rows, total } = Reports.data.balanceRows(objNames, config);
+        if (rows.length === 0) return '';
+
+        const tableRows = rows.map(row => [
+          displayName(row.name),
+          formatNumber(row.cost),
+          formatNumber(row.effect),
+          formatNumber(row.balance),
+        ]);
+        const totalRow = [
+          'Итого',
+          formatNumber(total.cost),
+          formatNumber(total.effect),
+          formatNumber(total.balance),
+        ];
+        return this.formatTable(header, tableRows, totalRow);
+      };
+
+      const usedNames = new Set();
+      const allNames = [];
+
+      /** Добавляет группу объектов и возвращает её таблицу (или ''). */
+      const addGroup = objNames => {
+        const names = [...new Set(objNames)].filter(name =>
+          !usedNames.has(name) && !ignore.has(name) && isObject(name)
+        );
+        if (names.length === 0) return '';
+
+        const table = makeTable(names);
+        if (!table) return '';
+
+        names.forEach(name => usedNames.add(name));
+        allNames.push(...names);
+        return table;
+      };
+
+      const categoryTitles = { UNITS: 'Юниты', BUILDINGS: 'Здания' };
+      const categorySections = [];
+      const standaloneSections = [];
+
+      if (typeof OBJ_CATEGORIES !== 'undefined' && OBJ_CATEGORIES) {
+        for (const [categoryKey, categoryData] of Object.entries(OBJ_CATEGORIES)) {
+          if (!categoryData || typeof categoryData !== 'object') continue;
+
+          const groups = [];
+          for (const [subCategoryKey, objNames] of Object.entries(categoryData)) {
+            if (subCategoryKey === '_default_' || !Array.isArray(objNames)) continue;
+
+            const table = addGroup(objNames);
+            if (!table) continue;
+
+            const title = subCategoryKey === '_none_' ? 'Прочее' : displayName(subCategoryKey);
+            groups.push({ title, table });
+          }
+
+          if (groups.length > 0) {
+            categorySections.push({
+              title: categoryTitles[categoryKey] || displayName(categoryKey),
+              groups,
+            });
+          }
+        }
+      }
+
+      // Объекты, которых нет ни в одной категории (например, Биозонд).
+      // Служебные ключи DICT_COMMON начинаются с `_` — их пропускаем.
+      const restNames = Object.keys(DICT_COMMON).filter(name => name.startsWith('_'));
+      const restTable = addGroup(restNames);
+      if (restTable) {
+        standaloneSections.push({ title: 'Вне категорий', table: restTable });
+      }
+
+      if (categorySections.length === 0 && standaloneSections.length === 0) {
+        return '';
+      }
+
+      const { total } = Reports.data.balanceRows(allNames, config);
+      const totalTable = this.formatTable(header, [], [
+        'Все объекты',
+        formatNumber(total.cost),
+        formatNumber(total.effect),
+        formatNumber(total.balance),
+      ]);
+
+      let markdown = '';
+      for (const section of categorySections) {
+        markdown += `## ${section.title}\n\n`;
+        for (const group of section.groups) {
+          markdown += `### ${group.title}\n\n${group.table}\n`;
+        }
+      }
+      for (const section of standaloneSections) {
+        markdown += `## ${section.title}\n\n${section.table}\n`;
+      }
+      markdown += `## Итого\n\n${totalTable}`;
 
       return markdown;
     },

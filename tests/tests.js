@@ -975,15 +975,15 @@
     withReportTestObjects(() => {
       const cost = Reports.md.cost('BUILDINGS', 'Тест')
       const headerCells = cost.split('\n')[0].split('|').map(c => c.trim()).filter(Boolean)
-      assertEq(headerCells.join(' / '), 'Тип мира / Металл / Кремний / Итого по объекту',
+      assertEq(headerCells.join(' / '), 'Объект / М / К / Итого',
         'заголовок таблицы цен')
-      assert(/Итого по ресурсу\s*\|\s*11\s*\|\s*5\s*\|\s*16/.test(cost), 'итоги по ресурсам')
+      assert(/Итого ресурс\s*\|\s*11\s*\|\s*5\s*\|\s*16/.test(cost), 'итоги по ресурсам')
       assertEq(Reports.generateMDSubcategoryCostTable('BUILDINGS', 'Тест'), cost,
         'старое имя возвращает ту же таблицу цен')
 
       const effects = Reports.md.effects('BUILDINGS', 'Тест')
       assert(effects.includes('| Лимит населения | Хранилище |'), 'заголовок таблицы эффектов')
-      assert(effects.includes('| **Итого по эффекту** | **3** | **2** | **5** |'), 'итоги по эффектам')
+      assert(effects.includes('| Итого эффект | **3** | **2** | **5** |'), 'итоги по эффектам')
       assertEq(Reports.generateMDSubcategoryEffectsTable('BUILDINGS', 'Тест'), effects,
         'старое имя возвращает ту же таблицу эффектов')
 
@@ -993,7 +993,7 @@
 
       const all = Reports.md.allCosts()
       assert(all.includes('## Юниты') && all.includes('## Здания'), 'сводный отчёт по юнитам и зданиям')
-      assert(all.includes('Итого по ресурсу'), 'в сводный отчёт попала тестовая подкатегория')
+      assert(all.includes('Итого ресурс'), 'в сводный отчёт попала тестовая подкатегория')
     })
   })
 
@@ -1033,6 +1033,76 @@
         else DICT_COMMON[noCostName] = savedEntry
       }
     })
+  })
+
+  test('Reports.md.balance: группировка по субкатегориям и УРЕ', () => {
+    const name = 'Тест_Баланс'
+    const ignoredName = 'Тест_Игнор'
+    const hadName = Object.prototype.hasOwnProperty.call(DICT_COMMON, name)
+    const savedName = DICT_COMMON[name]
+    const hadIgnored = Object.prototype.hasOwnProperty.call(DICT_COMMON, ignoredName)
+    const savedIgnored = DICT_COMMON[ignoredName]
+    const hadBalance = Object.prototype.hasOwnProperty.call(window, 'BALANCE')
+    const savedBalance = window.BALANCE
+    try {
+      // BALANCE в тестах не задан (он живёт в rules.js кампании) — подставляем свой
+      window.BALANCE = {
+        rates: {
+          Металл: 1,
+          Кремний: 1,
+          Уран: 1,
+          Наука: 30,
+          ОО: 1,
+          'Лимит населения': 1,
+          'Хранилище': 1,
+          '_тестовый_эффект': 2,
+          '_игнор_эффект': 2,
+        },
+        ignore: ['Колоний', '_игнор_эффект', ignoredName],
+      }
+
+      withReportTestObjects(names => {
+        // Объект добавлен только в DICT_COMMON, без категории — попадает в «Вне категорий»
+        DICT_COMMON[name] = {
+          [KW.COST]: { Металл: 10, Кремний: 5 },
+          [KW.DESC]: 'описание не считается',
+          Наука: 2,          // 2 * 30 = 60 УРЕ
+          ОО: 3,             // локальный эффект, 3 УРЕ
+          Уран: -1,          // отрицательный эффект, -1 УРЕ
+          Колоний: 100,      // в списке игнора
+          [KW.SPRITE_SIZE]: 50, // служебный ключ без курса — не эффект
+          '_тестовый_эффект': 4, // 4 * 2 = 8 УРЕ: `_`-ключ с курсом учитывается
+          '_игнор_эффект': 10,   // `_`-ключ с курсом, но явно в ignore — не считается
+          'Неизвестный_эффект': 5, // нет курса в BALANCE.rates
+        }
+        DICT_COMMON[ignoredName] = {
+          [KW.COST]: { Металл: 999 },
+          Наука: 999,
+        }
+
+        const balance = Reports.md.balance()
+
+        assert(balance.includes('## Здания'), 'есть раздел «Здания»')
+        assert(balance.includes('### Тест'), 'есть подкатегория «Тест»')
+        assert(balance.includes('## Вне категорий'), 'есть раздел «Вне категорий»')
+        assert(/\|\s*Тест Баланс\s*\|\s*15\s*\|\s*70\s*\|\s*55\s*\|/.test(balance),
+          'стоимость 15, эффект 70 УРЕ, баланс 55')
+        assert(balance.includes(`| ${names[0].replace('_', ' ')}`),
+          'объект подкатегории попал в отчёт')
+        assert(!balance.includes('Тест Игнор'), 'объект из ignore пропущен')
+        assert(!balance.includes('описание не считается'), 'описание не учитывается')
+        assert(balance.includes('| Итого'), 'есть итог по подкатегории')
+        assert(balance.includes('## Итого'), 'есть общий итог')
+        assertEq(Reports.md.balance(), balance, 'результат стабилен')
+      })
+    } finally {
+      if (hadName) DICT_COMMON[name] = savedName
+      else delete DICT_COMMON[name]
+      if (hadIgnored) DICT_COMMON[ignoredName] = savedIgnored
+      else delete DICT_COMMON[ignoredName]
+      if (hadBalance) window.BALANCE = savedBalance
+      else delete window.BALANCE
+    }
   })
 
   // ---------- запуск ----------

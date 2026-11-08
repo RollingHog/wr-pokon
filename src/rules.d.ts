@@ -154,6 +154,20 @@ interface EffectLists {
   local?: string[];
 }
 
+/** Курсы пересчёта эффектов в условные ресурсные единицы (УРЕ).
+ *  Ключ — название эффекта, значение — сколько УРЕ даёт 1 очко эффекта. */
+interface BalanceRates {
+  [effect: string]: number;
+}
+
+/** Содержимое BALANCE: настройки Reports.md.balance() */
+interface BalanceConfig {
+  /** эффект → курс в УРЕ; эффекты без курса в расчёт не попадают */
+  rates?: BalanceRates;
+  /** имена эффектов и объектов, которые не учитываются в балансе */
+  ignore?: string[];
+}
+
 /** Содержимое DEFAULT: служебные списки имён */
 interface RulesDefaults {
   buildings: string[];
