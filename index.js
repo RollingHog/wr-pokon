@@ -5159,7 +5159,7 @@ const Delta = {
   isMarkable(el) {
     return el.type === 'shape' && el.shape === 'custom' && el.name
       && typeof el.x === 'number' && typeof el.y === 'number'
-      && !isNoHealth(el)
+      // && !isNoHealth(el)
   },
 
   /**
