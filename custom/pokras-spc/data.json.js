@@ -1,9 +1,9 @@
 CURRENT_TURN=2;
 OTHER_SAVE_DATA={
-  "scale": 0.7553269609453085,
-  "canvasOffsetX": -124.39941699712949,
-  "canvasOffsetY": -86.5593526088864,
-  "shapeColor": "#0000ff"
+  "scale": 0.42786285338947555,
+  "canvasOffsetX": -135.01438460541374,
+  "canvasOffsetY": -323.54167569157624,
+  "shapeColor": "#d3d3d3"
 };
 USER_RESOURCES={
   "Нейтралы": {},
@@ -1584,5 +1584,117 @@ DEFAULT_DATA=[
     "height": 40,
     "curr_hp": 1,
     "endedTurn": false
+  },
+  {
+    "id": 148,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 52.05,
+    "y": 59.72,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "Пираты"
+  },
+  {
+    "id": 149,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 515.14,
+    "y": 836.54,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "Пираты"
+  },
+  {
+    "id": 150,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 812.35,
+    "y": 1227.74,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "космический монстр"
+  },
+  {
+    "id": 151,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1672.22,
+    "y": 10.8,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "д20"
+  },
+  {
+    "id": 152,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 489.4615687018633,
+    "y": 259.4798160156619,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "пусто"
+  },
+  {
+    "id": 153,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1569.8081216379244,
+    "y": 359.3089474986694,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "пусто"
+  },
+  {
+    "id": 154,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1459.96,
+    "y": 1443.78,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "аборигены: вышли в космос"
+  },
+  {
+    "id": 155,
+    "type": "shape",
+    "name": "_info_",
+    "shape": "custom",
+    "color": "#d3d3d3",
+    "x": 1782.17,
+    "y": 952.6,
+    "width": 40,
+    "height": 40,
+    "curr_hp": 1,
+    "endedTurn": false,
+    "title": "древний артефакт"
   }
 ]
