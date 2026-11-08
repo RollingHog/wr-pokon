@@ -913,6 +913,128 @@
     }
   })
 
+  // ---------- отчёты (Reports) ----------
+
+  /**
+   * Временно добавляет в правила тестовую подкатегорию зданий с двумя
+   * объектами (цены + числовые эффекты) и убирает её после проверки.
+   */
+  function withReportTestObjects(fn) {
+    const names = ['Тест_А', 'Тест_Б']
+    const saved = {}
+    const hadCategory = Object.prototype.hasOwnProperty.call(OBJ_CATEGORIES.BUILDINGS, 'Тест')
+    const savedCategory = OBJ_CATEGORIES.BUILDINGS['Тест']
+    try {
+      OBJ_CATEGORIES.BUILDINGS['Тест'] = [...names, names[0]] // дубль — должен схлопнуться
+      for (const name of names) saved[name] = DICT_COMMON[name]
+      DICT_COMMON[names[0]] = {
+        [KW.COST]: { Металл: 10, Кремний: 5 },
+        [KW.DESC]: 'Первый тестовый объект',
+        'Лимит населения': 3,
+      }
+      DICT_COMMON[names[1]] = {
+        [KW.COST]: { Металл: 1 },
+        'Хранилище': 2,
+      }
+      return fn(names)
+    } finally {
+      if (hadCategory) OBJ_CATEGORIES.BUILDINGS['Тест'] = savedCategory
+      else delete OBJ_CATEGORIES.BUILDINGS['Тест']
+      for (const name of names) {
+        if (saved[name] === undefined) delete DICT_COMMON[name]
+        else DICT_COMMON[name] = saved[name]
+      }
+    }
+  }
+
+  test('Reports.data: собирает цены и эффекты подкатегории без дублей', () => {
+    withReportTestObjects(names => {
+      const objects = Reports.data.objects('BUILDINGS', 'Тест')
+      assertEq(objects.length, 2, 'дубликаты убраны')
+      assertEq(objects.join(','), names.join(','), 'порядок сохранён')
+
+      const costs = Reports.data.costRows(objects)
+      assertEq(costs.rows.length, 2, 'строка на каждый объект')
+      assertEq(costs.rows[0].resources['Металл'], 10)
+      assertEq(costs.rows[0].resources['Кремний'], 5)
+      assertEq(costs.rows[1].resources['Кремний'], undefined, 'нет ресурса — нет ключа')
+      assertEq([...costs.resources].sort().join(','), ['Металл', 'Кремний'].sort().join(','),
+        'набор ресурсов подкатегории')
+
+      const effects = Reports.data.effectRows(objects)
+      assertEq(effects.rows[0].effects['Лимит населения'], 3, 'числовой эффект собран')
+      assertEq(effects.rows[0].effects[KW.COST], undefined, 'цена не считается эффектом')
+      assertEq(effects.rows[0].effects[KW.DESC], undefined, 'описание не считается эффектом')
+      assertEq(effects.rows[1].effects['Хранилище'], 2)
+      assertEq([...effects.effects].sort().join(','),
+        ['Лимит населения', 'Хранилище'].sort().join(','), 'набор эффектов подкатегории')
+    })
+  })
+
+  test('Reports.md: таблицы цен/эффектов и совместимость старых имён', () => {
+    withReportTestObjects(() => {
+      const cost = Reports.md.cost('BUILDINGS', 'Тест')
+      const headerCells = cost.split('\n')[0].split('|').map(c => c.trim()).filter(Boolean)
+      assertEq(headerCells.join(' / '), 'Тип мира / Металл / Кремний / Итого по объекту',
+        'заголовок таблицы цен')
+      assert(/Итого по ресурсу\s*\|\s*11\s*\|\s*5\s*\|\s*16/.test(cost), 'итоги по ресурсам')
+      assertEq(Reports.generateMDSubcategoryCostTable('BUILDINGS', 'Тест'), cost,
+        'старое имя возвращает ту же таблицу цен')
+
+      const effects = Reports.md.effects('BUILDINGS', 'Тест')
+      assert(effects.includes('| Лимит населения | Хранилище |'), 'заголовок таблицы эффектов')
+      assert(effects.includes('| **Итого по эффекту** | **3** | **2** | **5** |'), 'итоги по эффектам')
+      assertEq(Reports.generateMDSubcategoryEffectsTable('BUILDINGS', 'Тест'), effects,
+        'старое имя возвращает ту же таблицу эффектов')
+
+      const ref = Reports.md.objectReference()
+      assert(ref.includes('## BUILDINGS'), 'справочник идёт по категориям')
+      assert(ref.includes('Первый тестовый объект'), 'описание объекта попало в справочник')
+
+      const all = Reports.md.allCosts()
+      assert(all.includes('## Юниты') && all.includes('## Здания'), 'сводный отчёт по юнитам и зданиям')
+      assert(all.includes('Итого по ресурсу'), 'в сводный отчёт попала тестовая подкатегория')
+    })
+  })
+
+  test('Reports.md.objectTable: таблица «Объект | Цена | Описание» одной подкатегории', () => {
+    withReportTestObjects(names => {
+      const table = Reports.md.objectTable('BUILDINGS', 'Тест')
+      const lines = table.split('\n')
+      assertEq(lines[0], '| Объект | Цена | Описание |', 'заголовок таблицы')
+      assertEq(lines[1], '|--------|---------------|---|', 'разделитель таблицы')
+      assert(table.includes(`| ${names[0].replace('_', ' ')}  | М: 10; К: 5 | Первый тестовый объект |`),
+        'строка с ценой и описанием')
+      assert(table.includes(`| ${names[1].replace('_', ' ')}  | М: 1 |  |`),
+        'объект без описания')
+      assertEq(Reports.md.objectTableRows(Reports.data.objects('BUILDINGS', 'Тест')), table,
+        'objectTable переиспользует objectTableRows')
+      assertEq(Reports.md.objectTable('BUILDINGS', 'НетТакой'), '',
+        'пустая подкатегория → пустая строка')
+      assertEq(Reports.md.objectTable('НетТакой', 'Тест'), '',
+        'неизвестная категория → пустая строка')
+
+      // Подкатегория, где ни у одного объекта нет цены
+      const noCostName = 'Тест_БезЦены'
+      const savedEntry = DICT_COMMON[noCostName]
+      const subKey = 'ТестБезЦены'
+      const hadSub = Object.prototype.hasOwnProperty.call(OBJ_CATEGORIES.BUILDINGS, subKey)
+      const savedSub = OBJ_CATEGORIES.BUILDINGS[subKey]
+      try {
+        OBJ_CATEGORIES.BUILDINGS[subKey] = [noCostName]
+        DICT_COMMON[noCostName] = { [KW.DESC]: 'Без цены' }
+        const noCost = Reports.md.objectTable('BUILDINGS', subKey)
+        assert(noCost.includes('Нет данных о цене'), 'если цен нет ни у кого — примечание')
+        assert(noCost.includes('Без цены'), 'описание попало в таблицу')
+      } finally {
+        if (hadSub) OBJ_CATEGORIES.BUILDINGS[subKey] = savedSub
+        else delete OBJ_CATEGORIES.BUILDINGS[subKey]
+        if (savedEntry === undefined) delete DICT_COMMON[noCostName]
+        else DICT_COMMON[noCostName] = savedEntry
+      }
+    })
+  })
+
   // ---------- запуск ----------
   async function runAll() {
     try {
