@@ -193,6 +193,48 @@
     assert(elements.includes(sol), 'могила должна остаться на карте')
   })
 
+  test('разобрать: кнопка только для юнитов с здоровьем, возврат 50% цены', () => {
+    const dismantleBtn = document.getElementById('edit-dismantle-btn')
+    assert(dismantleBtn, 'кнопка разбора не создана')
+    assertEq(dismantleBtn.textContent, '💥', 'текст кнопки разбора')
+    assertEq(dismantleBtn.title, 'разобрать', 'подсказка кнопки разбора')
+
+    // обычный юнит — кнопка видна
+    resetGame([])
+    const sol = placeTestObject('Жители', '#ff0000')
+    clickElement(sol)
+    assertEq(selectedElement, sol, 'юнит не выделен')
+    assertEq(dismantleBtn.hidden, false, 'для юнита кнопка разбора должна быть видна')
+
+    // здание — кнопка тоже есть
+    resetGame([])
+    const farm = placeTestObject('Ферма', '#ff0000')
+    clickElement(farm)
+    assertEq(dismantleBtn.hidden, false, 'для здания кнопка разбора скрыта')
+
+    // объект из noHealth — кнопки нет
+    resetGame([])
+    DEFAULT.noHealth.push('Жители')
+    try {
+      const ghost = placeTestObject('Жители', '#ff0000')
+      clickElement(ghost)
+      assertEq(dismantleBtn.hidden, true, 'для noHealth-юнита кнопка разбора скрыта')
+    } finally {
+      DEFAULT.noHealth.pop()
+    }
+
+    // разбор: юнит исчезает, владельцу возвращается половина цены (Еда 2 → 1)
+    resetGame([])
+    const worker = placeTestObject('Жители', '#ff0000')
+    clickElement(worker)
+    USER_RESOURCES['Красные']['Еда'] = 0
+    selection.dismantle()
+    assert(!elements.includes(worker), 'юнит должен исчезнуть с карты')
+    assertEq(USER_RESOURCES['Красные']['Еда'], 1, 'возврат 50% цены создания')
+    assertEq(selectedElement, null, 'выделение сброшено')
+    assertEq(editPanel.style.display, 'none', 'панель редактирования скрыта')
+  })
+
   test('перетаскивание юнита мышью', () => {
     resetGame([])
     const sol = placeTestObject('Жители', '#0000ff', 300, 300)

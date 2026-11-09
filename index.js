@@ -118,6 +118,7 @@ function init() {
         <button id="edit-atk-btn">Атк</button>
         <button id="edit-pin-btn" title="pin / select owner" hotkey="B">P</button>
         <button id="remove-pin-btn" title="unpin / unselect owner">U</button>
+        <button id="edit-dismantle-btn" title="разобрать объект и получить 50% стоимости" hidden>💥</button>
         <br>
         <div id="edit-obj-name" list="obj-names-list"></div>
         <div class="color-picker">
@@ -538,6 +539,11 @@ const UI = {
       document.getElementById('remove-pin-btn').disabled = true
     }
 
+    // разобрать можно только юнит, у которого есть здоровье
+    const dismantleBtn = document.getElementById('edit-dismantle-btn')
+    // isUnit(element) && 
+    if (dismantleBtn) dismantleBtn.hidden = !(!isNoHealth(element))
+
     // document.getElementById('edit-color').value = element.color || '#000000';
     document.getElementById('obj-lvl').value = element.lvl || MIN_LVL;
     // document.getElementById('obj-lvl').select();
@@ -593,6 +599,7 @@ function addListeners() {
   document.getElementById('edit-atk-btn').addEventListener('click', enableAttackMode);
   document.getElementById('edit-pin-btn')?.addEventListener('click', enablePinMode);
   document.getElementById('remove-pin-btn')?.addEventListener('click', () => { Pins.removePreviousOwnership(selectedElement) });
+  document.getElementById('edit-dismantle-btn')?.addEventListener('click', () => selection.dismantle());
   document.getElementById('sel-info-btn')?.addEventListener('click', selection.info);
   // document.getElementById('edit-close-btn').addEventListener('click', closeEditPanel);
   // document.getElementById('edit-color').addEventListener('input', updateElementColor);
@@ -2720,6 +2727,29 @@ const selection = {
       requestRedraw({infoPanel: true});
     }
   },
+  /**
+   * Уничтожает выбранный юнит и возвращает его владельцу половину цены создания.
+   * Недоступно для объектов из DEFAULT.noHealth (у них нет здоровья).
+   */
+  dismantle() {
+    if (!selectedElement) return
+    if (!isUnit(selectedElement) || isNoHealth(selectedElement)) return
+
+    const owner = Players.byColor(selectedElement.color)
+    const price = Unit.getPrice(selectedElement.name)
+    if (owner && Array.isArray(price)) {
+      for (const [resourceName, cost] of price) {
+        if (typeof cost !== 'number' || cost <= 0) continue
+        Players.offsetResources(owner, resourceName, cost * 0.5)
+      }
+    }
+
+    killObj(selectedElement, true)
+    selectedElement = null;
+    if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
+    editPanel.style.display = 'none';
+    requestRedraw({infoPanel: true});
+  },
 
   setTitle(newTitle) {
     if (!selectedElement) return
@@ -3543,6 +3573,7 @@ const Players = {
     return result;
   },
 
+  /** current player */
   current() {
     return this.byColor(getShapeColor());
   },
@@ -3700,7 +3731,7 @@ function offsetUnitHp(obj, amount) {
 /**
  * doesn't do any redraw 
  * @param {typeof elements[0]} obj
- * @param {[boolean]} force remove without any processing, for direct selection.delete
+ * @param {[boolean]} force remove without loot or grave, for direct selection.delete
  */
 function killObj(obj, force) {
   obj.disabled = undefined
@@ -4702,7 +4733,7 @@ const Reports = {
 
       // Объекты, которых нет ни в одной категории (например, Биозонд).
       // Служебные ключи DICT_COMMON начинаются с `_` — их пропускаем.
-      const restNames = Object.keys(DICT_COMMON).filter(name => name.startsWith('_'));
+      const restNames = Object.keys(DICT_COMMON).filter(name => !name.startsWith('_'));
       const restTable = addGroup(restNames);
       if (restTable) {
         standaloneSections.push({ title: 'Вне категорий', table: restTable });
@@ -5155,11 +5186,10 @@ function loadGame(e) {
  */
 const Delta = {
 
-  /** значимы для дельты только юниты/здания (картинки), без могил/декора/текста */
+  /** значимы для дельты все объекты, без текста */
   isMarkable(el) {
     return el.type === 'shape' && el.shape === 'custom' && el.name
       && typeof el.x === 'number' && typeof el.y === 'number'
-      // && !isNoHealth(el)
   },
 
   /**

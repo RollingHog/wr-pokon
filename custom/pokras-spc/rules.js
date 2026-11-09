@@ -80,7 +80,7 @@ const DEFAULT = {
 /** @type {EmojiImages} */
 const EMOJI_IMAGES = {
   [KW.GRAVE_UNIT]: '💀',
-  // [KW.WRECK_UNIT]: '🔩',
+  [KW.WRECK_UNIT]: '🔩',
 
   [KW.INFO_UNIT]: "ℹ️",
   // [KW.TIMER_UNIT]: "⏲️",
@@ -170,7 +170,7 @@ const OBJ_CATEGORIES = {
   BUILDINGS: {
     _none_: [
       KW.GRAVE_UNIT,
-      // KW.WRECK_UNIT,
+      KW.WRECK_UNIT,
       KW.INFO_UNIT,
       // KW.TIMER_UNIT,
     ],
