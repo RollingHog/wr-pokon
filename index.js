@@ -2728,12 +2728,13 @@ const selection = {
     }
   },
   /**
-   * Уничтожает выбранный юнит и возвращает его владельцу половину цены создания.
+   * Уничтожает выбранный юнит/зданиеы и возвращает его владельцу половину цены создания.
    * Недоступно для объектов из DEFAULT.noHealth (у них нет здоровья).
    */
   dismantle() {
     if (!selectedElement) return
-    if (!isUnit(selectedElement) || isNoHealth(selectedElement)) return
+    // !isUnit(selectedElement) || 
+    if (isNoHealth(selectedElement)) return
 
     const owner = Players.byColor(selectedElement.color)
     const price = Unit.getPrice(selectedElement.name)
