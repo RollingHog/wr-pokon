@@ -180,6 +180,7 @@ function init() {
   MenuWindow.init()
   SpecialOps.init()
   Delta.init()
+  MenuReports.init()
   hotkeysLib.init({
     'Escape': () => {
       biomeActionsObj.cancel()
@@ -486,17 +487,10 @@ function setShapeColor(color) {
     selectedElement.color = color
   }
 
-  const techEffects = TechUtils.getTechEffects(Players.byColor(color), { notUnitEffects: true });
-  const noTech = techEffects.length === 0
-  const allowedNames = new Set(techEffects
-    .map(effect => effect[0])
-    .map(fullName => fullName.split(': ')[1])
-    .concat(OBJ_CATEGORIES.UNITS._none_)
-    .concat(OBJ_CATEGORIES.BUILDINGS._none_)
-  )
+  const allowedNames = TechUtils.getTechAllowedNames(Players.byColor(color));
   document.querySelectorAll('.shape-preview').forEach(el => {
     const filename = el.getAttribute('data-filename');
-    if (allowedNames.has(filename) || noTech) {
+    if (!allowedNames || allowedNames.has(filename)) {
       el.removeAttribute('disabled')
     } else {
       el.setAttribute('disabled', '')
@@ -4015,6 +4009,26 @@ const TechUtils = {
   },
 
   /**
+   * Имена объектов, доступных игроку по его текущим технологиям: строки
+   * разблокировки "Юнит: имя"/"Здание: имя" из TECH_EFFECTS плюс всегда
+   * доступные _none_-категории (могилы, обломки, слоты и т.п.).
+   * Этим же фильтром панель фигур выключает недоступные превью и пользуется
+   * страница «Что я могу» в окне меню.
+   * @param {string} username - имя игрока
+   * @returns {Set<string>|null} null — технологий нет, доступно всё
+   */
+  getTechAllowedNames(username) {
+    const techEffects = TechUtils.getTechEffects(username, { notUnitEffects: true });
+    if (!techEffects || techEffects.length === 0) return null;
+    return new Set(techEffects
+      .map(effect => effect[0])
+      .map(fullName => fullName.split(': ')[1])
+      .concat(OBJ_CATEGORIES.UNITS._none_ || [])
+      .concat(OBJ_CATEGORIES.BUILDINGS._none_ || [])
+    );
+  },
+
+  /**
  * Получает цену технологии для указанного уровня.
  * Сначала проверяет корневой KW.COST (с поддержкой формул ЛВЛ), затем уровень.
  * @param {string} techName - Название технологии
@@ -5620,7 +5634,7 @@ function showHelp() {
 * E - пометить закончившим ход
 * B, Alt + B - bind/pin
 * F2 - редактировать название
-* Alt + F2 - окно меню (страницы: спецоперации и др.)
+* Alt + F2 - окно меню (спецоперации, дельта, отчёты)
 
     `)
 }
@@ -5756,6 +5770,9 @@ const MenuWindow = {
         #${MenuWindow.WINDOW_ID} .menu-title button { width: auto; margin: 0 0 0 8px; padding: 6px 12px; }
         #${MenuWindow.WINDOW_ID} button { display: block; width: 100%; margin: 3px 0; }
         #${MenuWindow.WINDOW_ID} button[hidden] { display: none; }
+        #${MenuWindow.WINDOW_ID} pre { display: block; margin: 4px 0 0 0; padding: 4px 6px;
+          text-align: left; white-space: pre; overflow: auto; max-width: 70vw; max-height: 60vh;
+          background: #f5f5f5; border: 1px solid #ddd; }
       </style>
       <div id="${MenuWindow.WINDOW_ID}"></div>`)
 
@@ -5871,6 +5888,157 @@ const SpecialOps = {
     if (subtractUnitCost(name, Players.current(), price)) {
       UI.drawInfoPanel()
     }
+  },
+}
+
+/**
+ * Текстовые отчёты — страницы окна MenuWindow (Alt+F2):
+ * «Баланс» — сводка Reports.md.balance() как текст в <pre>;
+ * «Что я могу» — сколько объектов каждого вида текущий игрок может
+ * построить при текущих ресурсах (цены через Unit.getPrice, ограничитель —
+ * самый дефицитный ресурс цены).
+ */
+const MenuReports = {
+  BALANCE_PAGE_ID: 'balance',
+  CAN_BUILD_PAGE_ID: 'can-build',
+
+  init() {
+    MenuWindow.registerPage({
+      id: MenuReports.BALANCE_PAGE_ID,
+      button: 'Баланс',
+      title: 'Баланс объектов',
+      render: bodyEl => MenuReports.renderPre(bodyEl, MenuReports.balanceText()),
+    })
+
+    MenuWindow.registerPage({
+      id: MenuReports.CAN_BUILD_PAGE_ID,
+      button: 'Что я могу',
+      title: () => `Что я могу построить — ${Players.current()}`,
+      render: bodyEl => MenuReports.renderPre(bodyEl, MenuReports.canBuildText()),
+    })
+  },
+
+  /** Текст страницы: обычный <pre> с моноширинным текстом отчёта. */
+  renderPre(bodyEl, text) {
+    const pre = document.createElement('pre')
+    pre.textContent = text || 'Нет данных'
+    bodyEl.appendChild(pre)
+  },
+
+  /** Текст «Баланс»: результат Reports.md.balance() (markdown-таблицы). */
+  balanceText() {
+    try {
+      return Reports.md.balance()
+    } catch (err) {
+      return 'Не удалось построить отчёт: ' + err.message
+    }
+  },
+
+  /**
+   * Текст «Что я могу»: по каждому объекту палитры (OBJ_CATEGORIES, в порядке
+   * панели фигур) — сколько штук можно купить при ресурсах текущего игрока.
+   * Объекты, закрытые технологиями игрока, не показываются (тот же фильтр,
+   * что и у панели фигур — TechUtils.getTechAllowedNames), их количество
+   * указано в конце отчёта. Бесплатные объекты (без цены) тоже не выводятся:
+   * как правило это технические (могила, обломки, планеты...), их количество
+   * указано там же отдельным счётчиком.
+   */
+  canBuildText() {
+    const player = Players.current()
+    const resources = USER_RESOURCES?.[player] || {}
+    const allowedNames = TechUtils.getTechAllowedNames(player)
+    const lines = []
+    lines.push(`Игрок: ${player}`)
+    lines.push(`Ресурсы: ${Object.entries(resources).map(([k, v]) => `${k} ${v}`).join(', ') || '—'}`)
+    lines.push('')
+
+    const category2ru = {
+      UNITS: 'Юниты',
+      BUILDINGS: 'Здания',
+      '_none_': 'игромех',
+      '_default_': 'Обычные',
+    }
+    const seen = new Set()
+    let hiddenByTech = 0
+    let hiddenFree = 0
+    for (const [categoryKey, categoryData] of Object.entries(OBJ_CATEGORIES || {})) {
+      for (const [subCategoryKey, objNames] of Object.entries(categoryData)) {
+        if (!Array.isArray(objNames)) continue
+        const names = objNames.filter(name => !seen.has(name) && seen.add(name))
+        if (!names.length) continue
+
+        const shown = []
+        for (const name of names) {
+          if (allowedNames && !allowedNames.has(name)) {
+            hiddenByTech++
+          } else if (MenuReports.isFree(name)) {
+            hiddenFree++
+          } else {
+            shown.push(name)
+          }
+        }
+        if (!shown.length) continue
+
+        const category = category2ru[categoryKey] || categoryKey
+        const subCategory = category2ru[subCategoryKey] || subCategoryKey
+        lines.push(`${category} / ${subCategory}:`)
+        for (const name of shown) {
+          lines.push(`  ${name.replace(/_/g, ' ').trim()} — ${MenuReports.canBuildCount(name, resources)}`)
+        }
+        lines.push('')
+      }
+    }
+    if (hiddenByTech > 0) {
+      lines.push(`Скрыто по технологиям: ${hiddenByTech}`)
+    }
+    if (hiddenFree > 0) {
+      lines.push(`Скрыто бесплатных: ${hiddenFree}`)
+    }
+    return lines.join('\n').trim()
+  },
+
+  /**
+   * Объект без цены («бесплатно» в терминах canBuildCount) — как правило,
+   * технический: могила, обломки, слот, планета и т.п.
+   * @param {string} name - имя объекта
+   * @returns {boolean}
+   */
+  isFree(name) {
+    return !MenuReports.priceEntries(Unit.getPrice(name)).length
+  },
+
+  /**
+   * Строка про один объект: «×N (Ресурс:цена, ...)» либо «бесплатно».
+   * N = минимум по ресурсам цены floor(имеется / цена).
+   * @param {string} name - имя объекта
+   * @param {Record<string, number>} resources - ресурсы игрока
+   */
+  canBuildCount(name, resources) {
+    const price = MenuReports.priceEntries(Unit.getPrice(name))
+    if (!price.length) return 'бесплатно'
+
+    let count = Infinity
+    for (const [res, amount] of price) {
+      const have = resources[res] || 0
+      count = Math.min(count, Math.floor(have / amount))
+    }
+    const priceText = price.map(([res, amount]) => `${res}:${amount}`).join(', ')
+    // (${priceText})
+    return `×${count}`
+  },
+
+  /**
+   * Цена объекта в единый вид: массив пар [Ресурс, кол-во] с кол-во > 0.
+   * Понимает оба формата цен движка: пары [[Ресурс, кол-во], ...]
+   * (CATEGORY_PRICES, DICT_COMMON_A) и объект {Ресурс: кол-во}.
+   * @param {[string, number][] | Record<string, number> | null} price
+   */
+  priceEntries(price) {
+    if (!price) return []
+    const entries = Array.isArray(price)
+      ? price
+      : Object.entries(price)
+    return entries.filter(([, amount]) => typeof amount === 'number' && amount > 0)
   },
 }
 
