@@ -177,6 +177,7 @@ function init() {
   loadDefaultMap()
   loadDefaultData()
   loadDefaultCustomImages()
+  MenuWindow.init()
   SpecialOps.init()
   Delta.init()
   hotkeysLib.init({
@@ -215,7 +216,7 @@ function init() {
       selection.setTitle(prompt('new title?', selectedElement?.title || selectedElement?.content))
     },
     'Alt F2': () => {
-      SpecialOps.toggle()
+      MenuWindow.toggle()
     },
     'Space': () => {
       onEndTurn()
@@ -5179,18 +5180,26 @@ function loadGame(e) {
 
 /**
  * Дельта карты: сравнение текущего состояния с предыдущим сейвом (.json.js,
- * выбирается в диалоге по кнопке "Дельта"). Результат — PNG полного поля
- * со стрелками (куда кто сместился), крестиками (что уничтожено) и зелёной
- * обводкой (что появилось).
+ * выбирается в диалоге на странице «Дельта» окна меню — Alt+F2). Результат —
+ * PNG полного поля со стрелками (куда кто сместился), крестиками (что
+ * уничтожено) и зелёной обводкой (что появилось).
  * Сопоставление объектов — по id (стабильны между сейвами одной партии),
  * остатки — ближайший с той же парой имя+цвет.
  */
 const Delta = {
 
-  /** значимы для дельты все объекты, без текста */
+  PAGE_ID: 'delta',
+
+  /**
+   * Значимы для дельты все объекты, кроме могил и обломков: убитый юнит
+   * превращается в могилу/обломки с тем же id, и при сопоставлении по id
+   * смерть «съедалась» бы — ни креста, ни стрелки. Могилы и обломки сами
+   * обозначают смерть, помечать их не нужно.
+   */
   isMarkable(el) {
     return el.type === 'shape' && el.shape === 'custom' && el.name
       && typeof el.x === 'number' && typeof el.y === 'number'
+      && el.name !== KW.GRAVE_UNIT && el.name !== KW.WRECK_UNIT
   },
 
   /**
@@ -5376,26 +5385,27 @@ const Delta = {
     reader.readAsText(file)
   },
 
-  /** Кнопка и скрытый file-input добавляются в секцию "Управление" тулбара */
+  /** Кнопка «Дельта» — страница окна меню (Alt+F2); скрытый file-input живёт в body */
   init() {
-    const anchor = document.getElementById('save-objects-btn')?.parentElement
-      || document.getElementById('toolbar')
-    if (!anchor) return
-
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = '.json.js'
     input.style.display = 'none'
     input.addEventListener('change', Delta.fromFile)
+    document.body.appendChild(input)
 
-    const btn = document.createElement('button')
-    btn.id = 'delta-btn'
-    btn.textContent = 'Дельта'
-    btn.title = 'Выбрать предыдущий сейв (.json.js): PNG полного поля — стрелки (перемещения), крестики (уничтожено), зелёная обводка (новое)'
-    btn.onclick = _ => input.click()
-
-    anchor.appendChild(btn)
-    anchor.appendChild(input)
+    MenuWindow.registerPage({
+      id: Delta.PAGE_ID,
+      button: 'Дельта',
+      title: 'Дельта карты',
+      render: bodyEl => {
+        const btn = document.createElement('button')
+        btn.textContent = 'Выбрать сейв для сравнения (.json.js)'
+        btn.title = 'PNG полного поля — стрелки (перемещения), крестики (уничтожено), зелёная обводка (новое)'
+        btn.onclick = _ => input.click()
+        bodyEl.appendChild(btn)
+      },
+    })
   },
 }
 
@@ -5610,7 +5620,7 @@ function showHelp() {
 * E - пометить закончившим ход
 * B, Alt + B - bind/pin
 * F2 - редактировать название
-* Alt + F2 - меню спецопераций (если список задан в rules.js)
+* Alt + F2 - окно меню (страницы: спецоперации и др.)
 
     `)
 }
@@ -5715,60 +5725,146 @@ const hotkeysLib = {
 }
 
 /**
- * Меню специальных операций (Alt+F2). Список задаётся в rules.js кампании:
- * SPECIAL_OPERATIONS = { "Название": {Ресурс: цена, ...}, ... }.
+ * Универсальное окно-меню (Alt+F2; выросло из бывшего окна спецопераций):
+ * фиксированный блок с заголовком, кнопкой «Закрыть» и кнопками-страницами.
+ * Кнопка в меню открывает свою страницу в том же окне; со страницы можно
+ * вернуться кнопкой «← Меню». Страница — объект
+ * { id, button, title, render(bodyEl), order }, регистрируется через
+ * MenuWindow.registerPage() и рисует своё содержимое в переданный bodyEl.
+ */
+const MenuWindow = {
+  WINDOW_ID: 'menu-window',
+  /** корневая страница — список кнопок зарегистрированных страниц */
+  MENU_PAGE_ID: 'menu',
+  /** зарегистрированные страницы: id -> объект страницы */
+  pages: {},
+  /** id открытой сейчас страницы */
+  currentPage: null,
+
+  /** Регистрирует страницу; order задаёт место кнопки в меню (меньше — выше). */
+  registerPage(page) {
+    MenuWindow.pages[page.id] = Object.assign({ order: 0 }, page)
+  },
+
+  init() {
+    document.body.insertAdjacentHTML('beforeend', `
+      <style>
+        #${MenuWindow.WINDOW_ID} { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
+          z-index: 30; display: none; background: white; border: 1px solid #444; padding: 8px; }
+        #${MenuWindow.WINDOW_ID} .menu-title { display: flex; align-items: center; margin: 0 0 6px 0; }
+        #${MenuWindow.WINDOW_ID} .menu-title h3 { flex: 1; margin: 0; font-size: 14px; }
+        #${MenuWindow.WINDOW_ID} .menu-title button { width: auto; margin: 0 0 0 8px; padding: 6px 12px; }
+        #${MenuWindow.WINDOW_ID} button { display: block; width: 100%; margin: 3px 0; }
+        #${MenuWindow.WINDOW_ID} button[hidden] { display: none; }
+      </style>
+      <div id="${MenuWindow.WINDOW_ID}"></div>`)
+
+    const win = document.getElementById(MenuWindow.WINDOW_ID)
+    win.title = 'Alt+F2 — показать/скрыть'
+    const titleRow = document.createElement('div')
+    titleRow.className = 'menu-title'
+    const titleEl = document.createElement('h3')
+    titleRow.appendChild(titleEl)
+    const backBtn = document.createElement('button')
+    backBtn.className = 'menu-back-btn'
+    backBtn.textContent = '← Меню'
+    backBtn.onclick = _ => MenuWindow.show(MenuWindow.MENU_PAGE_ID)
+    titleRow.appendChild(backBtn)
+    const closeBtn = document.createElement('button')
+    closeBtn.textContent = 'Закрыть'
+    closeBtn.onclick = _ => MenuWindow.close()
+    titleRow.appendChild(closeBtn)
+    win.appendChild(titleRow)
+    const bodyEl = document.createElement('div')
+    bodyEl.className = 'menu-body'
+    win.appendChild(bodyEl)
+  },
+
+  /** Показывает окно с указанной страницей (по умолчанию — корневое меню). */
+  show(pageId = MenuWindow.MENU_PAGE_ID) {
+    const win = document.getElementById(MenuWindow.WINDOW_ID)
+    if (!win) return
+    MenuWindow.currentPage = pageId
+    win.style.display = 'block'
+    MenuWindow.render()
+  },
+
+  /** Показать/скрыть окно; повторный вызов с той же страницей скрывает его. */
+  toggle(pageId = MenuWindow.MENU_PAGE_ID) {
+    const win = document.getElementById(MenuWindow.WINDOW_ID)
+    if (!win) return
+    if (win.style.display === 'block' && MenuWindow.currentPage === pageId) {
+      MenuWindow.close()
+    } else {
+      MenuWindow.show(pageId)
+    }
+  },
+
+  close() {
+    const win = document.getElementById(MenuWindow.WINDOW_ID)
+    if (win) win.style.display = 'none'
+  },
+
+  /** Перерисовывает окно под текущую страницу. */
+  render() {
+    const win = document.getElementById(MenuWindow.WINDOW_ID)
+    if (!win) return
+    const titleEl = win.querySelector('.menu-title h3')
+    const backBtn = win.querySelector('.menu-back-btn')
+    const bodyEl = win.querySelector('.menu-body')
+    bodyEl.innerHTML = ''
+
+    if (MenuWindow.currentPage === MenuWindow.MENU_PAGE_ID) {
+      titleEl.innerText = 'Меню'
+      backBtn.hidden = true
+      const pages = Object.values(MenuWindow.pages).sort((a, b) => a.order - b.order)
+      for (const page of pages) {
+        const btn = document.createElement('button')
+        btn.textContent = page.button
+        btn.onclick = _ => MenuWindow.show(page.id)
+        bodyEl.appendChild(btn)
+      }
+      return
+    }
+
+    const page = MenuWindow.pages[MenuWindow.currentPage]
+    if (!page) return MenuWindow.show(MenuWindow.MENU_PAGE_ID)
+    titleEl.innerText = typeof page.title === 'function' ? page.title() : (page.title || page.button)
+    backBtn.hidden = false
+    page.render(bodyEl)
+  },
+}
+
+/**
+ * Спецоперации — страница окна MenuWindow (Alt+F2). Список задаётся в rules.js
+ * кампании: SPECIAL_OPERATIONS = { "Название": {Ресурс: цена, ...}, ... }.
  * Нажатие кнопки списывает цену с текущего игрока; если ресурсов не хватает,
- * покупка отменяется. Если SPECIAL_OPERATIONS не задан — меню не создаётся.
+ * покупка отменяется. Если SPECIAL_OPERATIONS не задан — страница не регистрируется.
  */
 const SpecialOps = {
-  MENU_ID: 'special-ops-menu',
+  PAGE_ID: 'special-ops',
 
   init() {
     if (typeof SPECIAL_OPERATIONS === 'undefined' || !Object.keys(SPECIAL_OPERATIONS).length) return
+    MenuWindow.registerPage({
+      id: SpecialOps.PAGE_ID,
+      button: 'Спецоперации',
+      title: () => `Спецоперации — ${Players.current()}`,
+      render: bodyEl => SpecialOps.renderButtons(bodyEl),
+    })
+  },
 
-    document.body.insertAdjacentHTML('beforeend', `
-      <style>
-        #${SpecialOps.MENU_ID} { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
-          z-index: 30; display: none; background: white; border: 1px solid #444; padding: 8px; }
-        #${SpecialOps.MENU_ID} .ops-title { display: flex; align-items: center; margin: 0 0 6px 0; }
-        #${SpecialOps.MENU_ID} .ops-title h3 { flex: 1; margin: 0; font-size: 14px; }
-        #${SpecialOps.MENU_ID} .ops-title button { width: auto; margin: 0 0 0 8px; padding: 6px 12px; }
-        #${SpecialOps.MENU_ID} button { display: block; width: 100%; margin: 3px 0; }
-      </style>
-      <div id="${SpecialOps.MENU_ID}"></div>`)
-
-    const menu = document.getElementById(SpecialOps.MENU_ID)
-    menu.title = 'Alt+F2 — показать/скрыть'
-    const titleRow = document.createElement('div')
-    titleRow.className = 'ops-title'
-    const titleEl = document.createElement('h3')
-    titleRow.appendChild(titleEl)
-    const closeBtn = document.createElement('button')
-    closeBtn.textContent = '×'
-    closeBtn.title = 'Закрыть'
-    closeBtn.onclick = _ => SpecialOps.toggle()
-    titleRow.appendChild(closeBtn)
-    menu.appendChild(titleRow)
+  renderButtons(bodyEl) {
     for (const [name, price] of Object.entries(SPECIAL_OPERATIONS)) {
       const btn = document.createElement('button')
       btn.textContent = `${name} — ${SpecialOps.priceText(price)}`
       btn.onclick = _ => SpecialOps.pay(name, price)
-      menu.appendChild(btn)
+      bodyEl.appendChild(btn)
     }
   },
 
   priceText(price) {
     return Object.entries(price).map(([res, amount]) => `${res}:${amount}`).join(', ')
-  },
-
-  toggle() {
-    const menu = document.getElementById(SpecialOps.MENU_ID)
-    if (!menu) return
-    const show = menu.style.display !== 'block'
-    menu.style.display = show ? 'block' : 'none'
-    if (show) {
-      menu.querySelector('h3').innerText = `Спецоперации — ${Players.current()}`
-    }
   },
 
   pay(name, price) {

@@ -197,7 +197,7 @@
     const dismantleBtn = document.getElementById('edit-dismantle-btn')
     assert(dismantleBtn, 'кнопка разбора не создана')
     assertEq(dismantleBtn.textContent, '💥', 'текст кнопки разбора')
-    assertEq(dismantleBtn.title, 'разобрать', 'подсказка кнопки разбора')
+    assertEq(dismantleBtn.title, 'разобрать объект и получить 50% стоимости', 'подсказка кнопки разбора')
 
     // обычный юнит — кнопка видна
     resetGame([])
@@ -210,7 +210,7 @@
     resetGame([])
     const farm = placeTestObject('Ферма', '#ff0000')
     clickElement(farm)
-    assertEq(dismantleBtn.hidden, false, 'для здания кнопка разбора скрыта')
+    assertEq(dismantleBtn.hidden, false, 'для здания кнопка разбора видна')
 
     // объект из noHealth — кнопки нет
     resetGame([])
