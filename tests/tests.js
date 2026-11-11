@@ -235,6 +235,69 @@
     assertEq(editPanel.style.display, 'none', 'панель редактирования скрыта')
   })
 
+  test('таймер: при смерти выводится alert с title', () => {
+    const savedAlert = window.alert
+    const alerts = []
+    window.alert = msg => alerts.push(msg)
+    const hadTimer = DEFAULT.noHealth.includes(KW.TIMER_UNIT)
+    if (!hadTimer) DEFAULT.noHealth.push(KW.TIMER_UNIT)
+    try {
+      const makeTimer = extra => ({
+        type: 'shape', shape: 'custom', name: KW.TIMER_UNIT, color: '#0000ff',
+        x: 100, y: 100, width: 40, height: 40, lvl: 1, ...extra,
+      })
+
+      resetGame([])
+      const plain = makeTimer()
+      elements.push(plain)
+      assignIdsToElements()
+      offsetObjLvl(plain, -1)
+      assert(!elements.includes(plain), 'таймер без title должен исчезнуть')
+      assertEq(alerts.length, 1, 'один alert без title')
+      assertEq(alerts[0], 'Таймер', 'сообщение без title')
+
+      resetGame([])
+      const titled = makeTimer({ title: 'Осада' })
+      elements.push(titled)
+      assignIdsToElements()
+      offsetObjLvl(titled, -1)
+      assertEq(alerts.length, 2, 'alert с title')
+      assertEq(alerts[1], 'Таймер: Осада', 'title попал в сообщение')
+
+      // при включённой сетке к сообщению добавляется клетка (центр 570;570 → F6)
+      withSquareGrid({ size: 100 }, () => {
+        resetGame([])
+        const cellTimer = makeTimer({ title: 'Клетка', x: 550, y: 550 })
+        elements.push(cellTimer)
+        assignIdsToElements()
+        offsetObjLvl(cellTimer, -1)
+        assertEq(alerts.length, 3, 'alert с title и клеткой')
+        assertEq(alerts[2], 'Таймер: Клетка [F6]', 'клетка попала в сообщение')
+
+        resetGame([])
+        const cellOnly = makeTimer({ x: 550, y: 550 })
+        elements.push(cellOnly)
+        assignIdsToElements()
+        offsetObjLvl(cellOnly, -1)
+        assertEq(alerts.length, 4, 'alert с клеткой без title')
+        assertEq(alerts[3], 'Таймер [F6]', 'клетка без title')
+      })
+
+      // принудительное удаление — не смерть, alert не нужен
+      resetGame([])
+      const forced = makeTimer({ title: 'Удалён' })
+      elements.push(forced)
+      assignIdsToElements()
+      selectedElement = forced
+      killObj(forced, true)
+      assertEq(alerts.length, 4, 'принудительное удаление не выводит alert')
+      selectedElement = null
+    } finally {
+      window.alert = savedAlert
+      if (!hadTimer) DEFAULT.noHealth.pop()
+    }
+  })
+
   test('перетаскивание юнита мышью', () => {
     resetGame([])
     const sol = placeTestObject('Жители', '#0000ff', 300, 300)

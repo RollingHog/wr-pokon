@@ -135,7 +135,7 @@ function init() {
     controlsSpan.innerHTML = `
         <button id="place-shape-btn" hotkey="A" title="Разместить фигуру">Р</button>
         <button id="clone-shape-btn" hotkey="C" title="Копировать фигуру" hidden>Копия</button>
-        <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Эфф</button>
+        <button id="user-effects-btn" hotkey="R" title="Вывести список эффектов выбранного пользователя">Э</button>
         <label for="ch_switch_edits" title="Переключать параметры выбранного юнита при переключении цвета и типа">
           <input type="checkbox" name="ch_switch_edits" id="ch_switch_edits">
           Ed
@@ -3616,6 +3616,7 @@ const warn = (...args) => {
   if (!document.getElementById('el_error').hidden) return
   document.getElementById('el_error_inner').innerText = [...args]
   document.getElementById('el_error').hidden = false
+  console.warn('WARN:', [...args])
   setTimeout(_ => document.getElementById('el_error').hidden = true, 4000)
 }
 
@@ -3731,6 +3732,14 @@ function offsetUnitHp(obj, amount) {
  * @param {[boolean]} force remove without loot or grave, for direct selection.delete
  */
 function killObj(obj, force) {
+  // таймер при смерти сообщает свой title и клетку, если они есть
+  if (!force && obj.name === KW.TIMER_UNIT) {
+    let message = obj.title ? `Таймер: ${obj.title}` : 'Таймер'
+    const cell = SquareGrid.isEnabled() ? SquareGrid.cellOfElement(obj) : null
+    if (cell) message += ` [координаты ${SquareGrid.nameByCoords(cell.col, cell.row)}]`
+    warn(message)
+  }
+
   obj.disabled = undefined
   Pins.removeOwner(obj.id)
   Pins.removePreviousOwnership(obj)
@@ -5743,7 +5752,7 @@ const MenuWindow = {
       <div id="${MenuWindow.WINDOW_ID}"></div>`)
 
     const win = document.getElementById(MenuWindow.WINDOW_ID)
-    win.title = 'Alt+F2 — показать/скрыть'
+    // win.title = 'Alt+F2 — показать/скрыть'
     const titleRow = document.createElement('div')
     titleRow.className = 'menu-title'
     const titleEl = document.createElement('h3')
