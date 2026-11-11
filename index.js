@@ -179,6 +179,7 @@ function init() {
   loadDefaultCustomImages()
   MenuWindow.init()
   SpecialOps.init()
+  StudyTech.init()
   Delta.init()
   MenuReports.init()
   hotkeysLib.init({
@@ -4093,75 +4094,38 @@ const TechUtils = {
     subtractUnitCost(`${techName} ${level}`, player, price);
   },
 
-  selectTechToStudy() {
-    const player = Players.current();
-    if (!player) {
-      warn('Не выбран игрок');
-      return;
-    }
+  /**
+   * Технологии, доступные игроку для изучения: без KW.NO_STUDY, не достигшие
+   * максимума и с заданными эффектами следующего уровня. Тем же критерием
+   * пользуется selectTechToStudy и раздел «Технологии» в «Что я могу».
+   * @param {string} player - имя игрока
+   * @returns {string[]} имена технологий в порядке TECH_EFFECTS
+   */
+  getStudyableTechs(player) {
+    const maxLvl = SETTINGS?.MAX_TECH_LVL || 3;
+    return Object.keys(TECH_EFFECTS).filter(techName => {
+      const techData = TECH_EFFECTS[techName];
+      if (!techData) return false;
+      if (techData[KW.NO_STUDY]) return false;
 
-    // 1. Формируем список доступных для изучения технологий
+      const currentLvl = USER_TECH_LVLS[player]?.[techName] || 0;
+      return currentLvl < maxLvl && techData[currentLvl + 1];
+    });
+  },
+
+  /**
+   * Открывает окно изучения технологий — страницу StudyTech в MenuWindow.
+   * Замена бывшего диалога prompt(); вызывается кликом по блоку технологий
+   * в панели эффектов игрока.
+   */
+  selectTechToStudy() {
     const techList = Object.keys(TECH_EFFECTS);
     if (techList.length === 0) {
       warn('Нет доступных технологий');
       return;
     }
 
-    const maxLvl = SETTINGS?.MAX_TECH_LVL || 3;
-    
-    // Фильтруем только те, что можно улучшить
-    const availableTechs = techList.filter(techName => {
-      const techData = TECH_EFFECTS[techName];
-      if (!techData) return false;
-      if (techData[KW.NO_STUDY]) return false;
-
-      const currentLvl = USER_TECH_LVLS[player]?.[techName] || 0;
-      return currentLvl < maxLvl && TECH_EFFECTS[techName][currentLvl + 1];
-    });
-
-    if (availableTechs.length === 0) {
-      warn('Все технологии изучены на максимум или нет доступных для исследования.');
-      return;
-    }
-
-    // 2. Показываем пользователю выбор
-    const message = 'Выберите технологию для изучения:\n' + 
-      availableTechs.map((t, i) => `${i + 1}. ${t} (цена: ${TechUtils.getTechPrice(t, USER_TECH_LVLS[player]?.[t] + 1)})`).join('\n');
-    
-    const input = prompt(message);
-    if (input === null) return;
-
-    const index = parseInt(input, 10) - 1;
-    if (isNaN(index) || index < 0 || index >= availableTechs.length) {
-      warn('Некорректный номер технологии');
-      return;
-    }
-
-    const selectedTech = availableTechs[index];
-    const nextLevel = (USER_TECH_LVLS[player]?.[selectedTech] || 0) + 1;
-
-    // 3. Пытаемся списать ресурсы и зафиксировать уровень
-    // Используем модифицированную subtractUnitCost, передавая цену явно через TechUtils.getTechPrice
-    const price = TechUtils.getTechPrice(selectedTech, nextLevel);
-
-    if(!price) {
-      warn(`Цена для технологии ${selectedTech} ${nextLevel} не задана`)
-      return
-    }
-    
-    if (subtractUnitCost(`${selectedTech} ${nextLevel}`, player, price)) {
-      if (!USER_TECH_LVLS[player]) USER_TECH_LVLS[player] = {};
-      USER_TECH_LVLS[player][selectedTech] = nextLevel;
-      
-      // Сбрасываем кеш эффектов, так как они изменились
-      TechUtils.techEffectCache = {}; 
-      TechUtils.unitTechEffectCache = {};
-      
-      setShapeColor(getShapeColor())
-      // alert(`Технология "${selectedTech}" улучшена до уровня ${nextLevel}!`);
-    } else {
-      // Ошибка уже выведена внутри subtractUnitCost
-    }
+    MenuWindow.show(StudyTech.PAGE_ID);
   },
 }
 
@@ -5773,6 +5737,8 @@ const MenuWindow = {
         #${MenuWindow.WINDOW_ID} pre { display: block; margin: 4px 0 0 0; padding: 4px 6px;
           text-align: left; white-space: pre; overflow: auto; max-width: 70vw; max-height: 60vh;
           background: #f5f5f5; border: 1px solid #ddd; }
+        #${MenuWindow.WINDOW_ID} .menu-tech-effects { margin: -2px 0 6px 6px; font-size: 12px;
+          color: #555; text-align: left; white-space: pre-line; }
       </style>
       <div id="${MenuWindow.WINDOW_ID}"></div>`)
 
@@ -5887,6 +5853,117 @@ const SpecialOps = {
   pay(name, price) {
     if (subtractUnitCost(name, Players.current(), price)) {
       UI.drawInfoPanel()
+    }
+  },
+}
+
+/**
+ * Изучение технологий — страница окна MenuWindow (Alt+F2), замена бывшего
+ * диалога prompt() из TechUtils.selectTechToStudy. Показывает доступные
+ * игроку технологии (TechUtils.getStudyableTechs): кнопка «имя — ур. N → N+1
+ * (цена)», под ней — эффекты изучаемого уровня. Нажатие списывает цену и
+ * повышает уровень; если ресурсов не хватает, покупка отменяется.
+ * Если TECH_EFFECTS пуст — страница не регистрируется.
+ */
+const StudyTech = {
+  PAGE_ID: 'study-tech',
+
+  init() {
+    if (typeof TECH_EFFECTS === 'undefined' || !Object.keys(TECH_EFFECTS).length) return
+    MenuWindow.registerPage({
+      id: StudyTech.PAGE_ID,
+      button: 'Изучить технологию',
+      title: () => `Изучение технологий — ${Players.current()}`,
+      render: bodyEl => StudyTech.renderTechs(bodyEl),
+    })
+  },
+
+  renderTechs(bodyEl) {
+    const player = Players.current()
+    const techs = TechUtils.getStudyableTechs(player)
+
+    if (!techs.length) {
+      const note = document.createElement('div')
+      note.textContent = 'Все технологии изучены на максимум или нет доступных для исследования.'
+      bodyEl.appendChild(note)
+      return
+    }
+
+    for (const techName of techs) {
+      const currentLvl = USER_TECH_LVLS[player]?.[techName] || 0
+      const nextLevel = currentLvl + 1
+      const price = TechUtils.getTechPrice(techName, nextLevel)
+      const priceText = price
+        ? price.map(([res, amount]) => `${res}:${amount}`).join(', ')
+        : 'цена не задана'
+
+      const btn = document.createElement('button')
+      btn.textContent = `${techName} — ур. ${currentLvl} → ${nextLevel} (${priceText})`
+      btn.disabled = !price
+      btn.onclick = _ => StudyTech.study(techName)
+      bodyEl.appendChild(btn)
+
+      const effEl = document.createElement('div')
+      effEl.className = 'menu-tech-effects'
+      const effLines = StudyTech.techEffectsLines(techName, nextLevel)
+      effEl.textContent = effLines.length ? effLines.join('\n') : 'нет новых эффектов'
+      bodyEl.appendChild(effEl)
+    }
+  },
+
+  /**
+   * Строки эффектов уровня технологии: разблокировки («Юнит: имя»,
+   * «Здание: имя») и именованные эффекты («Объект: Эффект +N, ...»).
+   * Цена и служебные пометки («НУЖНА ЕЩЕ ТЕХА?») не показываются.
+   * @param {string} techName - название технологии
+   * @param {number} level - уровень технологии
+   * @returns {string[]}
+   */
+  techEffectsLines(techName, level) {
+    const effects = TECH_EFFECTS[techName]?.[level]
+    if (!Array.isArray(effects)) return []
+
+    const lines = []
+    for (const eff of effects) {
+      if (typeof eff === 'string') {
+        if (eff.startsWith('НУЖНА ЕЩЕ ТЕХА?')) continue
+        lines.push(eff.replace(/_/g, ' '))
+      } else if (Array.isArray(eff)) {
+        if (eff[0] === KW.COST) continue
+        const [objName, objEffects] = eff
+        const effText = objEffects
+          .map(([k, v]) => `${k.replace(/_/g, ' ')} ${v > 0 ? '+' : ''}${v}`)
+          .join(', ')
+        lines.push(`${objName.replace(/_/g, ' ')}: ${effText}`)
+      }
+    }
+    return lines
+  },
+
+  /** Изучает следующий уровень технологии: списывает цену и повышает уровень. */
+  study(techName) {
+    const player = Players.current()
+    const nextLevel = (USER_TECH_LVLS[player]?.[techName] || 0) + 1
+    const price = TechUtils.getTechPrice(techName, nextLevel)
+
+    if (!price) {
+      warn(`Цена для технологии ${techName} ${nextLevel} не задана`)
+      return
+    }
+
+    if (subtractUnitCost(`${techName} ${nextLevel}`, player, price)) {
+      if (!USER_TECH_LVLS[player]) USER_TECH_LVLS[player] = {}
+      USER_TECH_LVLS[player][techName] = nextLevel
+
+      // Сбрасываем кеш эффектов, так как они изменились
+      TechUtils.techEffectCache = {}
+      TechUtils.unitTechEffectCache = {}
+
+      setShapeColor(getShapeColor())
+      UI.drawInfoPanel()
+
+      // перерисовываем страницу под новый уровень и ресурсы
+      MenuWindow.show(StudyTech.PAGE_ID)
     }
   },
 }
