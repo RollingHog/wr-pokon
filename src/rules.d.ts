@@ -38,6 +38,8 @@ interface RulesObjectDef {
   'Радиус зрения'?: number;
   /** сдвиг уровня за ход; ключ KW.LVL_DRIFT */
   'Сдвиг уровня'?: number | string;
+  /** шахматный набор ходов; ключ KW.MOVE_SET, значения из KW.MOVE_SETS */
+  '_move_set_'?: string;
 }
 
 /** Содержимое DICT_USER[player]: эффекты по ключу объекта.

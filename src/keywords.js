@@ -37,6 +37,18 @@ const KW = /** @type {const} */ ({
   /** not implemented yet */
   MAX_LVL: '_max_lvl_',
   LVL_DRIFT: 'Сдвиг уровня',
+  /** шахматный набор ходов объекта; одно из значений KW.MOVE_SETS */
+  MOVE_SET: '_move_set_',
+  /** доступные шахматные наборы ходов (значения для KW.MOVE_SET) */
+  MOVE_SETS: {
+    Пешка: 'Пешка',
+    Ладья: 'Ладья',
+    Слон: 'Слон',
+    Ферзь: 'Ферзь',
+    Король: 'Король',
+    Конь: 'Конь',
+    Магараджа: 'Магараджа',
+  },
   VISION: 'Радиус зрения',
   NO_VISION: -1,
   /** if object should spawn with disabled: true */
@@ -61,6 +73,7 @@ const KW_LOCALS = [
   KW.MAX_HP,
   KW.INIT_LVL,
   KW.LVL_DRIFT,
+  KW.MOVE_SET,
   KW.REGEN,
 
   KW.DESC,

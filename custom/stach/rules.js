@@ -285,6 +285,7 @@ const DICT_COMMON = {
     [KW.COST]: {
       Минералы: 5,
     },
+    [KW.MOVE_SET]: KW.MOVE_SETS.Король,
     Снабжение: 2,
   },
 
@@ -292,6 +293,7 @@ const DICT_COMMON = {
     [KW.COST]: {
       Минералы: 12,
     },
+    [KW.MOVE_SET]: KW.MOVE_SETS.Магараджа,
     [KW.VISION]: CELL_SIZE * 2.7,
     [KW.INIT_HP]: SETTINGS.MAX_UNIT_HP + 2,
   },
@@ -300,6 +302,7 @@ const DICT_COMMON = {
     [KW.COST]: {
       Минералы: 9,
     },
+    [KW.MOVE_SET]: KW.MOVE_SETS.Ферзь,
     [KW.VISION]: CELL_SIZE * 2.7,
     [KW.INIT_HP]: SETTINGS.MAX_UNIT_HP + 2,
   },
@@ -308,6 +311,7 @@ const DICT_COMMON = {
     [KW.COST]: {
       Минералы: 5,
     },
+    [KW.MOVE_SET]: KW.MOVE_SETS.Ладья,
     [KW.VISION]: CELL_SIZE * 2.5,
     [KW.INIT_HP]: SETTINGS.MAX_UNIT_HP + 1,
     Строитель: 1,
@@ -319,6 +323,7 @@ const DICT_COMMON = {
     [KW.COST]: {
       Минералы: 3,
     },
+    [KW.MOVE_SET]: KW.MOVE_SETS.Слон,
     [KW.VISION]: CELL_SIZE * 2,
   },
 
@@ -326,12 +331,14 @@ const DICT_COMMON = {
     [KW.COST]: {
       Минералы: 3,
     },
+    [KW.MOVE_SET]: KW.MOVE_SETS.Конь,
   },
 
   "Пешка": {
     [KW.COST]: {
       Минералы: 1,
     },
+    [KW.MOVE_SET]: KW.MOVE_SETS.Пешка,
     [KW.VISION]: CELL_SIZE,
     Строитель: 1,
   },

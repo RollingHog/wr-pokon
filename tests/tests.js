@@ -235,10 +235,16 @@
     assertEq(editPanel.style.display, 'none', 'панель редактирования скрыта')
   })
 
-  test('таймер: при смерти выводится alert с title', () => {
-    const savedAlert = window.alert
-    const alerts = []
-    window.alert = msg => alerts.push(msg)
+  test('таймер: при смерти выводится предупреждение с title и клеткой', () => {
+    const errorBox = document.getElementById('el_error')
+    const errorText = document.getElementById('el_error_inner')
+    const warnings = []
+    const resetWarn = () => { errorBox.hidden = true }
+    const takeWarn = () => {
+      warnings.push(errorText.innerText)
+      resetWarn()
+      return warnings[warnings.length - 1]
+    }
     const hadTimer = DEFAULT.noHealth.includes(KW.TIMER_UNIT)
     if (!hadTimer) DEFAULT.noHealth.push(KW.TIMER_UNIT)
     try {
@@ -247,53 +253,54 @@
         x: 100, y: 100, width: 40, height: 40, lvl: 1, ...extra,
       })
 
+      resetWarn()
       resetGame([])
       const plain = makeTimer()
       elements.push(plain)
       assignIdsToElements()
       offsetObjLvl(plain, -1)
       assert(!elements.includes(plain), 'таймер без title должен исчезнуть')
-      assertEq(alerts.length, 1, 'один alert без title')
-      assertEq(alerts[0], 'Таймер', 'сообщение без title')
+      assertEq(takeWarn(), 'Таймер', 'предупреждение без title')
 
+      resetWarn()
       resetGame([])
       const titled = makeTimer({ title: 'Осада' })
       elements.push(titled)
       assignIdsToElements()
       offsetObjLvl(titled, -1)
-      assertEq(alerts.length, 2, 'alert с title')
-      assertEq(alerts[1], 'Таймер: Осада', 'title попал в сообщение')
+      assertEq(takeWarn(), 'Таймер: Осада', 'title попал в предупреждение')
 
       // при включённой сетке к сообщению добавляется клетка (центр 570;570 → F6)
       withSquareGrid({ size: 100 }, () => {
+        resetWarn()
         resetGame([])
         const cellTimer = makeTimer({ title: 'Клетка', x: 550, y: 550 })
         elements.push(cellTimer)
         assignIdsToElements()
         offsetObjLvl(cellTimer, -1)
-        assertEq(alerts.length, 3, 'alert с title и клеткой')
-        assertEq(alerts[2], 'Таймер: Клетка [F6]', 'клетка попала в сообщение')
+        assertEq(takeWarn(), 'Таймер: Клетка [координаты F6]', 'клетка попала в предупреждение')
 
+        resetWarn()
         resetGame([])
         const cellOnly = makeTimer({ x: 550, y: 550 })
         elements.push(cellOnly)
         assignIdsToElements()
         offsetObjLvl(cellOnly, -1)
-        assertEq(alerts.length, 4, 'alert с клеткой без title')
-        assertEq(alerts[3], 'Таймер [F6]', 'клетка без title')
+        assertEq(takeWarn(), 'Таймер [координаты F6]', 'клетка без title')
       })
 
-      // принудительное удаление — не смерть, alert не нужен
+      // принудительное удаление — не смерть, предупреждение не нужно
+      resetWarn()
       resetGame([])
       const forced = makeTimer({ title: 'Удалён' })
       elements.push(forced)
       assignIdsToElements()
       selectedElement = forced
       killObj(forced, true)
-      assertEq(alerts.length, 4, 'принудительное удаление не выводит alert')
+      assertEq(errorBox.hidden, true, 'принудительное удаление не показывает предупреждение')
+      assertEq(warnings.length, 4, 'новых предупреждений нет')
       selectedElement = null
     } finally {
-      window.alert = savedAlert
       if (!hadTimer) DEFAULT.noHealth.pop()
     }
   })
@@ -527,6 +534,59 @@
       assertEq(SquareGrid.cellName(150, 50), 'B1')
       assertEq(SquareGrid.unitSuffix({ x: 90, y: 90, width: 40, height: 40 }), ' [B2]')
     })
+  })
+
+  test('computeMoves: набор ходов берётся из KW.MOVE_SET, а не из name', () => {
+    const savedCommonA = DICT_COMMON_A
+    const names = ['Тест_ладья', 'Тест_пешка', 'Ладья']
+    const savedRules = new Map(names.map(name => [name, DICT_COMMON[name]]))
+    try {
+      DICT_COMMON['Тест_ладья'] = { [KW.MOVE_SET]: KW.MOVE_SETS.Ладья }
+      DICT_COMMON['Тест_пешка'] = { [KW.MOVE_SET]: KW.MOVE_SETS.Пешка }
+      // старое название без настройки не должно ожить
+      DICT_COMMON['Ладья'] = {}
+      DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
+
+      withSquareGrid({ size: 100 }, () => {
+        const make = (name) => ({
+          type: 'shape', shape: 'custom', name, color: '#111111',
+          x: 140, y: 140, width: 20, height: 20, lvl: 1, // центр 150;150 → B2
+        })
+        const has = (moves, col, row, type) => moves.some(
+          m => m.col === col && m.row === row && m.type === type)
+
+        resetGame([])
+        const rook = make('Тест_ладья')
+        elements.push(rook)
+        chessMoves.invalidate()
+        let moves = chessMoves.computeMoves(rook)
+        assert(has(moves, 2, 1, 'move'), 'ладья ходит вправо по настройке')
+        assert(has(moves, 1, 2, 'move'), 'ладья ходит вниз по настройке')
+        assert(!has(moves, 2, 2, 'move'), 'ладья не ходит по диагонали')
+
+        resetGame([])
+        const oldName = make('Ладья')
+        elements.push(oldName)
+        chessMoves.invalidate()
+        assertEq(chessMoves.computeMoves(oldName).length, 0,
+          'одно название "Ладья" без KW.MOVE_SET ходов не даёт')
+
+        resetGame([])
+        const pawn = make('Тест_пешка')
+        elements.push(pawn)
+        chessMoves.invalidate()
+        moves = chessMoves.computeMoves(pawn)
+        assert(has(moves, 2, 1, 'move'), 'пешка ходит по ортогонали по настройке')
+        assert(!has(moves, 2, 2, 'capture'), 'пустая диагональ не даёт взятия')
+      })
+    } finally {
+      for (const [name, value] of savedRules) {
+        if (value === undefined) delete DICT_COMMON[name]
+        else DICT_COMMON[name] = value
+      }
+      DICT_COMMON_A = savedCommonA
+      chessMoves.invalidate()
+    }
   })
 
   test('Delta: сопоставление по id — стрелки и кресты', () => {

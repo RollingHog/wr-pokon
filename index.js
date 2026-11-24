@@ -57,7 +57,7 @@ let DICT_COMMON_A = {}
 const DEFAULT_LINE_COLOR = SETTINGS?.DEFAULT_LINE_COLOR || 'black'
 /** minimal level @type {number} */
 const MIN_LVL = typeof SETTINGS?.MIN_LVL !== 'undefined' ? SETTINGS?.MIN_LVL : 1
-const EFFECTS_TO_IGNORE = [KW.COST, KW.LOOT, KW.DESC, KW.SPRITE_SIZE]
+const EFFECTS_TO_IGNORE = [KW.COST, KW.LOOT, KW.DESC, KW.SPRITE_SIZE, KW.MOVE_SET]
 /** 
 * @type {{
 *     id: number,
@@ -1549,9 +1549,23 @@ const lvlTextSize = Math.floor(parseInt(document.getElementById('shape-size').va
 const chessMoves = {
   cache: null,
   cacheKey: null,
+  /** Набор ходов берётся из настроек объекта, а не из его имени. */
+  getMoveSet(el) {
+    if (!el) return null
+    const entries = userEffectsObj.getRawEffectsList(el)
+    for (const group of entries) {
+      if (!Array.isArray(group)) continue
+      const entry = group.find(e => Array.isArray(e) && e[0] === KW.MOVE_SET)
+      if (entry) return entry[1]
+    }
+    return null
+  },
   getKey(el) {
     if (!el) return null
-    return el.id + '|' + el.x + '|' + el.y + '|' + el.color + '|' + el.name + '|' + (el.endedTurn ? 1 : 0)
+    return [
+      el.id, el.x, el.y, el.color,
+      this.getMoveSet(el), el.title || '', el.endedTurn ? 1 : 0,
+    ].join('|')
   },
   invalidate() {
     this.cache = null
@@ -1573,14 +1587,14 @@ const chessMoves = {
     if (!conf) return []
     const start = SquareGrid.cellOfElement(el)
     if (!start) return []
-    const name = el.name
+    const moveSet = this.getMoveSet(el)
     const playerColor = el.color
     const dirsRook = [[1,0],[-1,0],[0,1],[0,-1]]
     const dirsBishop = [[1,1],[1,-1],[-1,1],[-1,-1]]
     const dirsQueen = dirsRook.concat(dirsBishop)
     const kingDirs = dirsQueen
     const knight = [[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[-1,-2],[1,-2],[2,-1]]
-    if (name === 'Пешка') {
+    if (moveSet === KW.MOVE_SETS.Пешка) {
       const res = []
       const ortho = [[1,0],[-1,0],[0,1],[0,-1]]
       const diag = [[1,1],[1,-1],[-1,1],[-1,-1]]
@@ -1607,11 +1621,11 @@ const chessMoves = {
     let rays = []
     let leaps = []
     let maxSteps = 1
-    if (name === 'Ладья') { rays = dirsRook; maxSteps = 100 }
-    else if (name === 'Слон') { rays = dirsBishop; maxSteps = 100 }
-    else if (name === 'Ферзь') { rays = dirsQueen; maxSteps = 100 }
-    else if (name === 'Король' || name === 'Магараджа') { leaps = kingDirs; maxSteps = 1 }
-    else if (name === 'Конь') { leaps = knight; maxSteps = 1 }
+    if (moveSet === KW.MOVE_SETS.Ладья) { rays = dirsRook; maxSteps = 100 }
+    else if (moveSet === KW.MOVE_SETS.Слон) { rays = dirsBishop; maxSteps = 100 }
+    else if (moveSet === KW.MOVE_SETS.Ферзь) { rays = dirsQueen; maxSteps = 100 }
+    else if (moveSet === KW.MOVE_SETS.Король || moveSet === KW.MOVE_SETS.Магараджа) { leaps = kingDirs; maxSteps = 1 }
+    else if (moveSet === KW.MOVE_SETS.Конь) { leaps = knight; maxSteps = 1 }
     else {
       return []
     }
