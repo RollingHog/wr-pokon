@@ -18,23 +18,19 @@
         }
         .controls {
             display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 28px;
-            background: #2b333f; padding: 20px 28px; border-radius: 48px; border: 1px solid #40506a;
+            /* background: #2b333f; padding: 20px 28px; border-radius: 48px; border: 1px solid #40506a; */
         }
-        .input-group { display: flex; flex-direction: column; gap: 8px; min-width: 140px; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; min-width2: 140px; }
         .input-group label {
             color: #b5ceff; font-weight: 500; font-size: 0.8rem;
             letter-spacing: 0.7px; text-transform: uppercase; opacity: 0.9;
         }
-        .input-group input {
+        .input-group input, .input-group select {
             background: #101720; border: 2px solid #3d506b; color: white;
             font-size: 1.2rem; font-weight: 600; padding: 10px 18px;
             border-radius: 40px; width: 100%; outline: none; transition: 0.15s;
         }
-        .input-group input:focus { border-color: #96b5fc; box-shadow: 0 0 0 3px rgba(150,181,252,0.3); }
-        .chance-panel {
-            display: flex; align-items: center; gap: 15px; background: #1f2835;
-            padding: 5px 20px 5px 26px; border-radius: 60px; border: 1px solid #5f7393;
-        }
+        .input-group input:focus, .input-group select:focus { border-color: #96b5fc; box-shadow: 0 0 0 3px rgba(150,181,252,0.3); }
         .chance-panel span { color: #d6e6ff; font-weight: 500; }
         .chance-panel input {
             width: 90px; background: #0d1624; border: 2px solid #61799e;
@@ -70,15 +66,22 @@
     <div class="canvas-card">
         <div class="controls">
             <div class="input-group">
-                <label>📌 Столбцов (ширина)</label>
+                <label for="presetSelect">Пресеты</label>
+                <select id="presetSelect" style="border-radius: 0;">
+                    <option value="stars">Звезды</option>
+                    <option value="castles">Замки</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Ширина</label>
                 <input type="number" id="widthInput" value="24" min="1" max="30" step="1">
             </div>
             <div class="input-group">
-                <label>📏 Строк (высота)</label>
+                <label>Высота</label>
                 <input type="number" id="heightInput" value="24" min="1" max="25" step="1">
-            </div>
-            <div class="chance-panel">
-                <span>🔴 шар %</span>
+              </div>
+            <div class="chance-panel input-group">
+                <label>шар %</label>
                 <input type="number" id="chanceInput" value="15" min="0" max="100" step="1">
             </div>
             <label class="input-group"
@@ -89,14 +92,31 @@
                 style="color: #b5ceff; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.7px;">🔗
                 Пути</span>
             </label>
-            <button id="renderBtn">🎯 Отрисовать</button>
+            <label class="input-group"
+              style="min-width: auto; flex-direction: row; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" id="chessToggle"
+                style="width: 22px; height: 22px; accent-color: #4fd47f; cursor: pointer;">
+              <span
+                style="color: #b5ceff; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.7px;">♟️
+                Клетки</span>
+            </label>
+            <label class="input-group" title="рисовать границу окрестностей звезды"
+              style="min-width: auto; flex-direction: row; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" id="neighborhoodToggle" checked
+                title="рисовать границу окрестностей звезды"
+                style="width: 22px; height: 22px; accent-color: #ff8c00; cursor: pointer;">
+              <span
+                style="color: #b5ceff; font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.7px;">🖌️
+                Окрестности</span>
+            </label>
+            <button id="renderBtn">GO</button>
             <button id="copyBiomesBtn" style="background:#4f7bdc; border-bottom-color:#2f4f9c; margin-left:10px;" title="Копировать json-карту биомов">📋</button>
         </div>
         <div class="canvas-wrapper">
             <canvas id="gridCanvas" width="700" height="500"></canvas>
         </div>
         <div class="info-row">
-            <span>⚫ номер = столбец.строка (внизу) • красная точка с шансом <span id="chanceDisplay">15</span>%</span>
+            <span>⚫ номер = столбец.строка (внизу) • маркер с шансом <span id="chanceDisplay">15</span>%</span>
         </div>
     </div>
 
@@ -111,10 +131,18 @@
             const renderBtn = document.getElementById('renderBtn');
             const copyBiomesBtn = document.getElementById('copyBiomesBtn');
             const lanesToggle = document.getElementById('lanesToggle');
+            const chessToggle = document.getElementById('chessToggle');
+            const neighborhoodToggle = document.getElementById('neighborhoodToggle');
+            const presetSelect = document.getElementById('presetSelect');
 
             const CELL_W = 72;
             const CELL_H = 68;
             const DOT_RADIUS = 9;
+            const TGT_EMOJI = '🏰';
+
+            // Чтобы переключение пресетов/галочек не генерировало новую карту
+            let lastStars = null;
+            let lastSize = '';
 
             function updateChanceText() {
                 let val = parseInt(chanceInput.value, 10);
@@ -222,7 +250,7 @@
                 return colLabel(col - 1) + row;
             }
 
-            function drawCanvas() {
+            function drawCanvas(reuseStars) {
                 let cols = parseInt(widthInput.value, 10);
                 let rows = parseInt(heightInput.value, 10);
                 if (isNaN(cols) || cols < 1) cols = 1;
@@ -247,20 +275,28 @@
                 canvas.height = canvasHeight;
 
                 // Генерация звезд с минимальной дистанцией
-                const stars = [];
-                const MIN_DISTANCE = 3;
-                for (let row = 1; row <= rows; row++) {
-                    for (let col = 1; col <= cols; col++) {
-                        if (Math.random() * 100 < chance) {
-                            let tooClose = false;
-                            for (const star of stars) {
-                                if (Math.max(Math.abs(star.col - col), Math.abs(star.row - row)) < MIN_DISTANCE) {
-                                    tooClose = true; break;
+                const sizeKey = `${cols}x${rows}`;
+                let stars;
+                if (reuseStars && lastStars && lastSize === sizeKey) {
+                    stars = lastStars;
+                } else {
+                    stars = [];
+                    const MIN_DISTANCE = 3;
+                    for (let row = 1; row <= rows; row++) {
+                        for (let col = 1; col <= cols; col++) {
+                            if (Math.random() * 100 < chance) {
+                                let tooClose = false;
+                                for (const star of stars) {
+                                    if (Math.max(Math.abs(star.col - col), Math.abs(star.row - row)) < MIN_DISTANCE) {
+                                        tooClose = true; break;
+                                    }
                                 }
+                                if (!tooClose) stars.push({ col, row });
                             }
-                            if (!tooClose) stars.push({ col, row });
                         }
                     }
+                    lastStars = stars;
+                    lastSize = sizeKey;
                 }
 
                 const hyperlanes = buildHyperlanes(stars);
@@ -270,6 +306,22 @@
                 // Фон
                 ctx.fillStyle = '#000000';
                 ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                // Шахматная разметка: чередующиеся светлые и тёмно-зелёные клетки
+                if (chessToggle.checked) {
+                    const light = '#4f8f62';
+                    const dark = '#2b5b3e';
+                    for (let row = 1; row <= rows; row++) {
+                        for (let col = 1; col <= cols; col++) {
+                            ctx.fillStyle = (row + col) % 2 === 0 ? light : dark;
+                            ctx.fillRect(
+                                padding + (col - 1) * CELL_W,
+                                padding + (row - 1) * CELL_H,
+                                CELL_W, CELL_H
+                            );
+                        }
+                    }
+                }
 
                 // Сетка
                 ctx.strokeStyle = '#2f3a48'; ctx.lineWidth = 2.5; ctx.beginPath();
@@ -315,46 +367,59 @@
                         const isStar = starSet.has(`${col},${row}`);
 
                         if (isStar) {
-                            // Рамка 3x3
-                            const zx = padding + (col - 2) * CELL_W;
-                            const zy = padding + (row - 2) * CELL_H;
-                            ctx.save();
-                            ctx.strokeStyle = 'rgba(255,140,0,0.6)'; ctx.lineWidth = 3;
-                            ctx.shadowColor = '#ff8c00'; ctx.shadowBlur = 10;
-                            ctx.strokeRect(zx, zy, CELL_W * 3, CELL_H * 3);
-                            ctx.restore();
+                            // Рамка 3x3 — граница окрестностей звезды
+                            if (neighborhoodToggle.checked) {
+                                const zx = padding + (col - 2) * CELL_W;
+                                const zy = padding + (row - 2) * CELL_H;
+                                ctx.save();
+                                ctx.strokeStyle = 'rgba(255,140,0,0.6)'; ctx.lineWidth = 3;
+                                ctx.shadowColor = '#ff8c00'; ctx.shadowBlur = 10;
+                                ctx.strokeRect(zx, zy, CELL_W * 3, CELL_H * 3);
+                                ctx.restore();
+                            }
 
-                            // Свечение
-                            const glow = ctx.createRadialGradient(
-                                x + CELL_W/2, y + CELL_H/2, CELL_H * 0.1,
-                                x + CELL_W/2, y + CELL_H/2, CELL_H
-                            );
-                            glow.addColorStop(0, 'rgba(255,140,0,0.25)');
-                            glow.addColorStop(0.5, 'rgba(255,140,0,0.15)');
-                            glow.addColorStop(1, 'rgba(255,140,0,0.05)');
-                            ctx.fillStyle = glow;
-                            ctx.beginPath();
-                            ctx.arc(x + CELL_W/2, y + CELL_H/2, CELL_H * 0.6, 0, 2 * Math.PI);
-                            ctx.fill();
+                            // Свечение — только у звёзд
+                            if (presetSelect.value !== 'castles') {
+                                const glow = ctx.createRadialGradient(
+                                    x + CELL_W/2, y + CELL_H/2, CELL_H * 0.1,
+                                    x + CELL_W/2, y + CELL_H/2, CELL_H
+                                );
+                                glow.addColorStop(0, 'rgba(255,140,0,0.25)');
+                                glow.addColorStop(0.5, 'rgba(255,140,0,0.15)');
+                                glow.addColorStop(1, 'rgba(255,140,0,0.05)');
+                                ctx.fillStyle = glow;
+                                ctx.beginPath();
+                                ctx.arc(x + CELL_W/2, y + CELL_H/2, CELL_H * 0.6, 0, 2 * Math.PI);
+                                ctx.fill();
+                            }
 
-                            // Шарик
-                            ctx.beginPath();
-                            ctx.arc(x + CELL_W/2, y + CELL_H/2, DOT_RADIUS, 0, 2 * Math.PI);
-                            const grad = ctx.createRadialGradient(
-                                x + CELL_W/2 - 3, y + CELL_H/2 - 3, 3,
-                                x + CELL_W/2, y + CELL_H/2, DOT_RADIUS + 3
-                            );
-                            grad.addColorStop(0, '#ffb347');
-                            grad.addColorStop(0.7, '#ff8c00');
-                            grad.addColorStop(1, '#c45c00');
-                            ctx.fillStyle = grad; ctx.fill();
-                            ctx.shadowColor = '#ff8888'; ctx.shadowBlur = 12; ctx.fill();
-                            ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
+                            // Маркер зависит от пресета
+                            if (presetSelect.value === 'castles') {
+                                ctx.save();
+                                ctx.font = `${Math.round(CELL_H * 0.55)}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
+                                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                                ctx.fillText(TGT_EMOJI, x + CELL_W/2, y + CELL_H/2);
+                                ctx.restore();
+                            } else {
+                                // Шарик
+                                ctx.beginPath();
+                                ctx.arc(x + CELL_W/2, y + CELL_H/2, DOT_RADIUS, 0, 2 * Math.PI);
+                                const grad = ctx.createRadialGradient(
+                                    x + CELL_W/2 - 3, y + CELL_H/2 - 3, 3,
+                                    x + CELL_W/2, y + CELL_H/2, DOT_RADIUS + 3
+                                );
+                                grad.addColorStop(0, '#ffb347');
+                                grad.addColorStop(0.7, '#ff8c00');
+                                grad.addColorStop(1, '#c45c00');
+                                ctx.fillStyle = grad; ctx.fill();
+                                ctx.shadowColor = '#ff8888'; ctx.shadowBlur = 12; ctx.fill();
+                                ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
 
-                            // Блик
-                            ctx.beginPath();
-                            ctx.arc(x + CELL_W/2 - 3, y + CELL_H/2 - 3, 2.5, 0, 2 * Math.PI);
-                            ctx.fillStyle = '#fff9f9'; ctx.fill();
+                                // Блик
+                                ctx.beginPath();
+                                ctx.arc(x + CELL_W/2 - 3, y + CELL_H/2 - 3, 2.5, 0, 2 * Math.PI);
+                                ctx.fillStyle = '#fff9f9'; ctx.fill();
+                            }
                         }
 
                         // Номер
@@ -375,16 +440,18 @@
                 const biomeMap = {};
                 for (const star of starList) {
                     biomeMap[cellKey(star.col, star.row)] = 'ЗВ';
-                    for (let dr = -1; dr <= 1; dr++) {
-                        for (let dc = -1; dc <= 1; dc++) {
-                            if (dr === 0 && dc === 0) continue;
-                            const nr = star.row + dr;
-                            const nc = star.col + dc;
-                            if (nr < 1 || nr > rows || nc < 1 || nc > cols) continue;
-                            const nKey = cellKey(nc, nr);
-                            if (biomeMap[nKey] === 'ЗВ') continue;
-                            if (!biomeMap[nKey]) {
-                                biomeMap[nKey] = 'ОЗ';
+                    if (neighborhoodToggle.checked) {
+                        for (let dr = -1; dr <= 1; dr++) {
+                            for (let dc = -1; dc <= 1; dc++) {
+                                if (dr === 0 && dc === 0) continue;
+                                const nr = star.row + dr;
+                                const nc = star.col + dc;
+                                if (nr < 1 || nr > rows || nc < 1 || nc > cols) continue;
+                                const nKey = cellKey(nc, nr);
+                                if (biomeMap[nKey] === 'ЗВ') continue;
+                                if (!biomeMap[nKey]) {
+                                    biomeMap[nKey] = 'ОЗ';
+                                }
                             }
                         }
                     }
@@ -403,7 +470,7 @@
                 if (isNaN(v)) v = 15; v = Math.max(0, Math.min(100, v));
                 chanceInput.value = v; chanceDisplay.textContent = v;
             });
-            renderBtn.addEventListener('click', drawCanvas);
+            renderBtn.addEventListener('click', () => drawCanvas());
             if (copyBiomesBtn) {
                 copyBiomesBtn.addEventListener('click', () => {
                     if (!window.__GRID_BIOMES__ || Object.keys(window.__GRID_BIOMES__).length === 0) {
@@ -434,7 +501,10 @@
             }
             widthInput.addEventListener('blur', clampDimensions);
             heightInput.addEventListener('blur', clampDimensions);
-            lanesToggle.addEventListener('change', drawCanvas); 
+            lanesToggle.addEventListener('change', () => drawCanvas(true));
+            chessToggle.addEventListener('change', () => drawCanvas(true));
+            neighborhoodToggle.addEventListener('change', () => drawCanvas(true));
+            presetSelect.addEventListener('change', () => drawCanvas(true));
 
             updateChanceText();
             drawCanvas();
