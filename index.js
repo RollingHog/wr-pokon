@@ -2696,6 +2696,7 @@ const selection = {
     selectedElement = null;
     if (typeof chessMoves !== 'undefined') chessMoves.invalidate()
     editPanel.style.display = 'none';
+    requestRedraw({ infoPanel: false });
   },
   damage(amount = 1) {
     if (!selectedElement) return

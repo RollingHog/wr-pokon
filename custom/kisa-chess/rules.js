@@ -49,15 +49,18 @@ const SETTINGS = {
   // offsetX/offsetY подгони под рамку своей карты.
   SQUARE_GRID: {
     cellWidth: CELL_SIZE,
-    cellHeight: CELL_SIZE,
-    offsetX: 0,
-    offsetY: 0,
+    cellHeight: CELL_SIZE - 4,
+    offsetX: 16,
+    offsetY: 16,
     cols: 24,
     rows: 24,
-    lineWidth: 1,
+    lineWidth: 3,
     label: false,
     showGrid: false,
     showUnitCell: false,
+    biomeColors: {
+      "ЗВ": "rgba(242, 135, 14, 0.35)",
+    },
   },
 }
 
@@ -149,7 +152,20 @@ const EFFECT_LISTS = {
   local: [...KW_LOCALS],
 }
 
-const TECH_EFFECTS = {}
+// По одной технологии на фракцию: она уже изучена в data.json.js и запирает
+// панель фигур под цвет игрока. KW.NO_STUDY убирает техи из меню изучения.
+const TECH_EFFECTS = {
+  "БЕЛЫЕ": {
+    [KW.NO_STUDY]: true,
+    "0": [],
+    "1": CHESS_PIECES.map(([base]) => `Юнит: ${base}_Б`),
+  },
+  "ЧЕРНЫЕ": {
+    [KW.NO_STUDY]: true,
+    "0": [],
+    "1": CHESS_PIECES.map(([base]) => `Юнит: ${base}_Ч`),
+  },
+}
 
 const onEndTurnCb = () => {
 }

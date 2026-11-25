@@ -589,6 +589,54 @@
     }
   })
 
+  test('selection.drop: снятие выбора запускает перерисовку подсказок ходов', () => {
+    const savedGrid = SETTINGS.SQUARE_GRID
+    const savedCommonA = DICT_COMMON_A
+    const name = 'Жители' // имя с существующим спрайтом
+    const hadRules = name in DICT_COMMON
+    const savedRules = DICT_COMMON[name]
+    const savedRedraw = requestRedraw
+    try {
+      SETTINGS.SQUARE_GRID = { size: 100 }
+      DICT_COMMON[name] = { ...(savedRules || {}), [KW.MOVE_SET]: KW.MOVE_SETS.Ладья }
+      DICT_COMMON_A = userEffectsObj.convertFromPlainObject(DICT_COMMON)
+
+      resetGame([])
+      const piece = {
+        type: 'shape', shape: 'custom', name, color: '#111111',
+        x: 140, y: 140, width: 20, height: 20, lvl: 1, // B2
+      }
+      elements.push(piece)
+      assignIdsToElements()
+      selectedElement = piece
+      chessMoves.invalidate()
+      drawCanvas()
+      assert(chessMoves.getMoves(piece).length > 0, 'подсказки есть до снятия выбора')
+
+      let redrawOptions = null
+      requestRedraw = opts => { redrawOptions = opts }
+      try {
+        selection.drop()
+      } finally {
+        requestRedraw = savedRedraw
+      }
+
+      assert(redrawOptions, 'после снятия выбора запрошена перерисовка')
+      assertEq(redrawOptions.infoPanel, true, 'панель игрока тоже обновляется')
+      assertEq(selectedElement, null, 'выбор снят')
+      assertEq(editPanel.style.display, 'none', 'панель скрыта')
+      assert(chessMoves.getMoves(piece).length > 0, 'ходы остались, убралась только подсветка')
+    } finally {
+      requestRedraw = savedRedraw
+      if (hadRules) DICT_COMMON[name] = savedRules
+      else delete DICT_COMMON[name]
+      DICT_COMMON_A = savedCommonA
+      if (savedGrid) SETTINGS.SQUARE_GRID = savedGrid
+      else delete SETTINGS.SQUARE_GRID
+      chessMoves.invalidate()
+    }
+  })
+
   test('Delta: сопоставление по id — стрелки и кресты', () => {
     const prev = [
       { type: 'shape', shape: 'custom', name: 'Фрегат', color: 'red', id: 1, x: 100, y: 100, width: 40, height: 40 },
